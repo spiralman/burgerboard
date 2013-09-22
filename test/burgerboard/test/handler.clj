@@ -14,11 +14,12 @@
     (let [response
           (app
            (->
-            (request :post "/login")
+            (request :post "/api/v1/login")
             (content-type "application/json")
             (body (json/write-str {:foo "bar"}))
             ))]
       (is (= (:status response) 200))
+      (is (contains? (:headers response) "Set-Cookie"))
       )
     )
   
