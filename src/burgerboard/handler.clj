@@ -20,5 +20,17 @@
   (route/resources "/")
   (route/not-found "Not Found"))
 
+(defn wrap-db [handler db]
+  (fn [request]
+    (handler (assoc request :db db))
+    ))
+
+(defn bind-app [db]
+  (->
+   (handler/site app-routes)
+   (wrap-db db)
+   )
+  )
+
 (def app
-  (handler/site app-routes))
+  (bind-app {}))
