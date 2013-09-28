@@ -77,6 +77,18 @@
         )
       )
     )
+
+  (testing "Boards route"
+    (testing "requires login"
+      (let [response
+            (app
+             (request :get "/api/v1/boards"))
+            ]
+        (is (= (:status response) 401))
+        (is (= (:body response) "Login required"))
+        )
+      )
+    )
   
   (testing "not-found route"
     (let [response (app (request :get "/invalid"))]
