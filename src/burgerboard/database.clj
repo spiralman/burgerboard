@@ -18,22 +18,16 @@
   (entity-fields :password)
   )
 
-(defn create-user [username password]
+(defn insert-user [user]
   (insert users
-          (values {:username username :password (password/encrypt password)})))
+          (values user))
+  )
 
-(defn login-valid [username password]
-  (if-let [user (first
-                 (exec
-                  (->
-                   (select* users)
-                   (where {:username username})))
-                 )]
-    (password/check
-     password
-     (:password
-      user
-      )
-     )
-    )
+(defn find-user [username]
+  (first
+   (exec
+    (->
+     (select* users)
+     (where {:username username})
+     )))
   )

@@ -57,14 +57,14 @@
     )
   )
 
-(deftest test-users
-  (testing "User creation and password verification"
-    (create-user "username" "password")
+(deftest test-user-tables
+  (testing "User insertion and retrieval"
+    (insert-user {:username "user" :password "pass"})
 
-    (is (not (= "password" (:password (first (exec (select* users)))))))
-    (is (login-valid "username" "password"))
-    (is (not (login-valid "username" "other password")))
-    (is (not (login-valid "other-user" "password")))
+    (is (= {:username "user" :password "pass"} (first (exec (select* users)))))
+
+    (is (= {:username "user" :password "pass"} (find-user "user")))
+    (is (= nil (find-user "asdf")))
     )
   )
 
