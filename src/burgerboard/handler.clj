@@ -1,17 +1,28 @@
 (ns burgerboard.handler
-  (:use compojure.core)
+  (:use compojure.core
+        burgerboard.database
+        burgerboard.users
+        )
   (:require [compojure.handler :as handler]
             [compojure.route :as route]))
 
-(defn login [session]
-  (assoc session :username "some_user")
-  {:status 200
-   :session session
-   :body "Login"}
+(defn login [session username password]
+  (if (login-valid (find-user username) username password)
+    (do
+      (assoc session :username "some_user")
+      {:status 200
+       :session session
+       :body "Login"}
+      )
+    {:status 403
+     :body "Invalid username or password"}
+    )
   )
+  
 
 (defroutes api-routes
-  (POST "/login" {session :session} (login session))
+  (POST "/login" [username password :as {session :session}]
+        (login session username password))
   )
 
 (defroutes app-routes
@@ -20,17 +31,5 @@
   (route/resources "/")
   (route/not-found "Not Found"))
 
-(defn wrap-db [handler db]
-  (fn [request]
-    (handler (assoc request :db db))
-    ))
-
-(defn bind-app [db]
-  (->
-   (handler/site app-routes)
-   (wrap-db db)
-   )
-  )
-
 (def app
-  (bind-app {}))
+  (handler/site app-routes))
