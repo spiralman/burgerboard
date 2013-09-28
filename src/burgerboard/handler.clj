@@ -8,12 +8,9 @@
 
 (defn login [session username password]
   (if (login-valid (find-user username) username password)
-    (do
-      (assoc session :username "some_user")
-      {:status 200
-       :session session
-       :body "Login"}
-      )
+    {:status 200
+     :session (assoc session :username "some_user")
+     :body "Login"}
     {:status 403
      :body "Invalid username or password"}
     )
