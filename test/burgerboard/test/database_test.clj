@@ -101,5 +101,18 @@
             :users [{:email "user@example.com" :name "Name"}]}
            (find-group 1)))
     )
+
+  (testing "Adding a user to a group"
+    (insert-user {:email "other@example.com" :password "pass" :name "Other"
+                  :groups []})
+
+    (insert-member {:id 1} {:email "other@example.com"})
+
+    (is (= [{:id 1 :name "group"}] (:groups (find-user "other@example.com"))))
+    (is (= {:email "other@example.com" :name "Other"}
+           (first (filter
+                   (fn [user] (= (:email user) "other@example.com"))
+                   (:users (find-group 1))))))
+    )
   )
 

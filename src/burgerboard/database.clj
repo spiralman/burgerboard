@@ -55,7 +55,7 @@
         user (dissoc user :groups)]
     (insert users
             (values user))
-    (if groups
+    (if (not-empty groups)
       (insert memberships
               (values (map
                        (fn [group]
@@ -75,6 +75,12 @@
           (fields :id :name))
     (where {:email email})
     ))
+  )
+
+(defn insert-member [group user]
+  (insert memberships
+          (values {:user_email (:email user)
+                   :group_id (:id group)}))
   )
 
 (defn find-group [id]
