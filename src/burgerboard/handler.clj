@@ -2,6 +2,7 @@
   (:use compojure.core
         burgerboard.database
         burgerboard.users
+        [clojure.data.json :as json]
         )
   (:require [compojure.handler :as handler]
             [compojure.route :as route]))
@@ -16,6 +17,27 @@
     )
   )
 
+(defn invalid-user []
+  {:status 400
+   :body "Invalid user"}
+  )
+
+(defn signup [session email password name]
+  (if (not (nil? (find-user email)))
+   (invalid-user)
+   (if-let [user (create-user email password name)]
+     (do
+       (insert-user user)
+       {:status 201
+        :session (assoc session :email email)
+        :body (json/write-str (dissoc user :password))
+        }
+       )
+      (invalid-user)
+     )
+   )
+  )
+
 (defn boards [session]
   (if-not (:email session)
     {:status 401
@@ -26,6 +48,8 @@
 (defroutes api-routes
   (POST "/login" [email password :as {session :session}]
         (login session email password))
+  (POST "/signups" [email password name :as {session :session}]
+        (signup session email password name))
   (GET "/boards" [:as {session :session}]
        (boards session))
   )
