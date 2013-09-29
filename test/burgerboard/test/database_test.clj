@@ -59,6 +59,7 @@
 
       (let [groups-cols (get-columns "groups")]
         (is (= "INTEGER" (:type_name (get-column "id" groups-cols))))
+        (is (= "VARCHAR" (:type_name (get-column "owner" groups-cols))))
         (is (= "VARCHAR" (:type_name (get-column "name" groups-cols))))
         )
 
@@ -85,13 +86,16 @@
 
 (deftest test-groups
   (testing "User belonging to a group"
-    (insert-group {:name "group"})
+    (insert-group {:name "group" :owner "user"})
     (insert-user {:username "user" :password "pass"
                   :groups [{:id 1 :name "group"}]})
 
     (is (= {:username "user" :password "pass"
             :groups [{:id 1 :name "group"}]}
            (find-user "user")))
+
+    (is (= {:id 1 :name "group" :owner "user" :users [{:username "user"}]}
+           (find-group 1)))
     )
   )
 

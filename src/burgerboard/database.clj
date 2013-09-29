@@ -15,6 +15,7 @@
    :groups
    [:id "INTEGER" "PRIMARY KEY"]
    [:name "varchar"]
+   [:owner "varchar"]
    )
   (jdbc/create-table
    :memberships
@@ -24,8 +25,12 @@
    )
   )
 
+(declare users)
+
 (defentity groups
   (entity-fields :name)
+  (has-one users)
+  (many-to-many users :memberships {:lfk :group_id :rfk :user_username})
   )
 
 (defentity users
@@ -65,7 +70,19 @@
   (first
    (select
     users
-    (with groups)
+    (with groups
+          (fields :id :name))
     (where {:username username})
     ))
   )
+
+(defn find-group [id]
+  (first
+   (select
+    groups
+    (with users
+          (fields :username))
+    (where {:id id})
+    ))
+  )
+          
