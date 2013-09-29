@@ -8,7 +8,7 @@
 (defn create-schema []
   (jdbc/create-table
    :users
-   [:username "varchar" "PRIMARY KEY"]
+   [:email "varchar" "PRIMARY KEY"]
    [:password "varchar"]
    )
   (jdbc/create-table
@@ -20,7 +20,7 @@
   (jdbc/create-table
    :memberships
    [:id "INTEGER" "PRIMARY KEY"]
-   [:user_username "VARCHAR"]
+   [:user_email "VARCHAR"]
    [:group_id "INTEGER"]
    )
   )
@@ -30,18 +30,18 @@
 (defentity groups
   (entity-fields :name)
   (has-one users)
-  (many-to-many users :memberships {:lfk :group_id :rfk :user_username})
+  (many-to-many users :memberships {:lfk :group_id :rfk :user_email})
   )
 
 (defentity users
-  (pk :username)
+  (pk :email)
   (entity-fields :password)
-  (many-to-many groups :memberships {:lfk :user_username :rfk :group_id})
+  (many-to-many groups :memberships {:lfk :user_email :rfk :group_id})
   )
 
 (defentity memberships
   ;; Only used internally for inserting the relationships
-  (entity-fields :user_username :group_id)
+  (entity-fields :user_email :group_id)
   )
 
 (defn insert-group [group]
@@ -58,7 +58,7 @@
       (insert memberships
               (values (map
                        (fn [group]
-                         {:user_username (:username user)
+                         {:user_email (:email user)
                           :group_id (:id group)})
                        groups))
               )
@@ -66,13 +66,13 @@
     )
   )
 
-(defn find-user [username]
+(defn find-user [email]
   (first
    (select
     users
     (with groups
           (fields :id :name))
-    (where {:username username})
+    (where {:email email})
     ))
   )
 
@@ -81,8 +81,7 @@
    (select
     groups
     (with users
-          (fields :username))
+          (fields :email))
     (where {:id id})
     ))
   )
-          

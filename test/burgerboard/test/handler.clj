@@ -21,7 +21,7 @@
 (defn single-user-fixture [f]
   (jdbc/with-connection testing-db-spec
     (create-schema)
-    (insert-user (create-user "some_user" "password"))
+    (insert-user (create-user "some_user@example.com" "password"))
     (f)
     )
   )
@@ -35,12 +35,12 @@
       (is (= (:body response) "Hello World"))))
 
   (testing "login route"
-    (testing "valid username and password"
+    (testing "valid email and password"
       (let [response
             (app
              (->
               (request :post "/api/v1/login")
-              (body {:username "some_user"
+              (body {:email "some_user@example.com"
                      :password "password"})
               ))]
         (is (= (:status response) 200))
@@ -48,12 +48,12 @@
         )
       )
 
-    (testing "invalid username"
+    (testing "invalid email"
       (let [response
             (app
              (->
               (request :post "/api/v1/login")
-              (body {:username "bad_user"
+              (body {:email "bad_user@example.com"
                      :password "password"})
               ))]
         (is (= (:status response) 403))
@@ -66,7 +66,7 @@
             (app
              (->
               (request :post "/api/v1/login")
-              (body {:username "some_user"
+              (body {:email "some_user@example.com"
                      :password "wrong_pass"})
               ))]
         (is (= (:status response) 403))

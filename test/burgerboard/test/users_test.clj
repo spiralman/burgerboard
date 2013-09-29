@@ -5,12 +5,12 @@
 
 (deftest test-users
   (testing "User creation and password verification"
-    (let [user (create-user "username" "password")]
+    (let [user (create-user "user@example.com" "password")]
       (is (not (= "password" (:password user))))
-      (is (login-valid user "username" "password"))
-      (is (not (login-valid user "username" "other password")))
-      (is (not (login-valid user "other-user" "password")))
-      (is (not (login-valid nil "other-user" "password")))
+      (is (login-valid user "user@example.com" "password"))
+      (is (not (login-valid user "user@example.com" "other password")))
+      (is (not (login-valid user "other-user@example.com" "password")))
+      (is (not (login-valid nil "other-user@example.com" "password")))
       )
     )
   )

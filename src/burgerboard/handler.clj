@@ -6,26 +6,26 @@
   (:require [compojure.handler :as handler]
             [compojure.route :as route]))
 
-(defn login [session username password]
-  (if (login-valid (find-user username) username password)
+(defn login [session email password]
+  (if (login-valid (find-user email) email password)
     {:status 200
-     :session (assoc session :username username)
+     :session (assoc session :email email)
      :body "Login"}
     {:status 403
-     :body "Invalid username or password"}
+     :body "Invalid email or password"}
     )
   )
 
 (defn boards [session]
-  (if-not (:username session)
+  (if-not (:email session)
     {:status 401
      :body "Login required"}
     )
   )
 
 (defroutes api-routes
-  (POST "/login" [username password :as {session :session}]
-        (login session username password))
+  (POST "/login" [email password :as {session :session}]
+        (login session email password))
   (GET "/boards" [:as {session :session}]
        (boards session))
   )

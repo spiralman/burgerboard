@@ -51,7 +51,7 @@
       (is (not (nil? (get-table "users" tables))))
 
       (let [users-cols (get-columns "users")]
-        (is (= "VARCHAR" (:type_name (get-column "username" users-cols))))
+        (is (= "VARCHAR" (:type_name (get-column "email" users-cols))))
         (is (= "VARCHAR" (:type_name (get-column "password" users-cols))))
         )
 
@@ -66,7 +66,7 @@
       (is (not (nil? (get-table "memberships" tables))))
 
       (let [membership-cols (get-columns "memberships")]
-        (is (= "VARCHAR" (:type_name (get-column "user_username" membership-cols))))
+        (is (= "VARCHAR" (:type_name (get-column "user_email" membership-cols))))
         (is (= "INTEGER" (:type_name (get-column "group_id" membership-cols))))
         )
       )
@@ -75,11 +75,13 @@
 
 (deftest test-user-tables
   (testing "User insertion and retrieval"
-    (insert-user {:username "user" :password "pass"})
+    (insert-user {:email "user@example.com" :password "pass"})
 
-    (is (= {:username "user" :password "pass"} (first (exec (select* users)))))
+    (is (= {:email "user@example.com" :password "pass"}
+           (first (exec (select* users)))))
 
-    (is (= {:username "user" :password "pass" :groups []} (find-user "user")))
+    (is (= {:email "user@example.com" :password "pass" :groups []}
+           (find-user "user@example.com")))
     (is (= nil (find-user "asdf")))
     )
   )
@@ -87,14 +89,15 @@
 (deftest test-groups
   (testing "User belonging to a group"
     (insert-group {:name "group" :owner "user"})
-    (insert-user {:username "user" :password "pass"
+    (insert-user {:email "user@example.com" :password "pass"
                   :groups [{:id 1 :name "group"}]})
 
-    (is (= {:username "user" :password "pass"
+    (is (= {:email "user@example.com" :password "pass"
             :groups [{:id 1 :name "group"}]}
-           (find-user "user")))
+           (find-user "user@example.com")))
 
-    (is (= {:id 1 :name "group" :owner "user" :users [{:username "user"}]}
+    (is (= {:id 1 :name "group" :owner "user"
+            :users [{:email "user@example.com"}]}
            (find-group 1)))
     )
   )
