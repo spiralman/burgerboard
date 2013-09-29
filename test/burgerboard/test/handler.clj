@@ -40,7 +40,6 @@
             (app
              (->
               (request :post "/api/v1/login")
-              (content-type "application/json")
               (body {:username "some_user"
                      :password "password"})
               ))]
@@ -54,7 +53,6 @@
             (app
              (->
               (request :post "/api/v1/login")
-              (content-type "application/json")
               (body {:username "bad_user"
                      :password "password"})
               ))]
@@ -68,7 +66,6 @@
             (app
              (->
               (request :post "/api/v1/login")
-              (content-type "application/json")
               (body {:username "some_user"
                      :password "wrong_pass"})
               ))]
