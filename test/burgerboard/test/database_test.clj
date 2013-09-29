@@ -53,6 +53,7 @@
       (let [users-cols (get-columns "users")]
         (is (= "VARCHAR" (:type_name (get-column "email" users-cols))))
         (is (= "VARCHAR" (:type_name (get-column "password" users-cols))))
+        (is (= "VARCHAR" (:type_name (get-column "name" users-cols))))
         )
 
       (is (not (nil? (get-table "groups" tables))))
@@ -75,12 +76,12 @@
 
 (deftest test-user-tables
   (testing "User insertion and retrieval"
-    (insert-user {:email "user@example.com" :password "pass"})
+    (insert-user {:email "user@example.com" :password "pass" :name "Name"})
 
-    (is (= {:email "user@example.com" :password "pass"}
+    (is (= {:email "user@example.com" :password "pass" :name "Name"}
            (first (exec (select* users)))))
 
-    (is (= {:email "user@example.com" :password "pass" :groups []}
+    (is (= {:email "user@example.com" :password "pass" :name "Name" :groups []}
            (find-user "user@example.com")))
     (is (= nil (find-user "asdf")))
     )
@@ -89,15 +90,15 @@
 (deftest test-groups
   (testing "User belonging to a group"
     (insert-group {:name "group" :owner "user"})
-    (insert-user {:email "user@example.com" :password "pass"
+    (insert-user {:email "user@example.com" :password "pass" :name "Name"
                   :groups [{:id 1 :name "group"}]})
 
-    (is (= {:email "user@example.com" :password "pass"
+    (is (= {:email "user@example.com" :password "pass" :name "Name"
             :groups [{:id 1 :name "group"}]}
            (find-user "user@example.com")))
 
     (is (= {:id 1 :name "group" :owner "user"
-            :users [{:email "user@example.com"}]}
+            :users [{:email "user@example.com" :name "Name"}]}
            (find-group 1)))
     )
   )

@@ -10,6 +10,7 @@
    :users
    [:email "varchar" "PRIMARY KEY"]
    [:password "varchar"]
+   [:name "varchar"]
    )
   (jdbc/create-table
    :groups
@@ -35,7 +36,7 @@
 
 (defentity users
   (pk :email)
-  (entity-fields :password)
+  (entity-fields :password :name)
   (many-to-many groups :memberships {:lfk :user_email :rfk :group_id})
   )
 
@@ -81,7 +82,7 @@
    (select
     groups
     (with users
-          (fields :email))
+          (fields :email :name))
     (where {:id id})
     ))
   )

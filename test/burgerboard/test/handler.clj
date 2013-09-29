@@ -21,7 +21,7 @@
 (defn single-user-fixture [f]
   (jdbc/with-connection testing-db-spec
     (create-schema)
-    (insert-user (create-user "some_user@example.com" "password"))
+    (insert-user (create-user "some_user@example.com" "password" "Some User"))
     (f)
     )
   )
