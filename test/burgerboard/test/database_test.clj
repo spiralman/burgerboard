@@ -39,6 +39,7 @@
   (jdbc/with-connection testing-db-spec
     (create-schema)
     (f)
+    (map (fn [table] (jdbc/drop-table (:table_name table))) (get-tables))
     )
   )
 
@@ -53,6 +54,20 @@
         (is (= "VARCHAR" (:type_name (get-column "username" users-cols))))
         (is (= "VARCHAR" (:type_name (get-column "password" users-cols))))
         )
+
+      (is (not (nil? (get-table "groups" tables))))
+
+      (let [groups-cols (get-columns "groups")]
+        (is (= "INTEGER" (:type_name (get-column "id" groups-cols))))
+        (is (= "VARCHAR" (:type_name (get-column "name" groups-cols))))
+        )
+
+      (is (not (nil? (get-table "memberships" tables))))
+
+      (let [membership-cols (get-columns "memberships")]
+        (is (= "VARCHAR" (:type_name (get-column "user_username" membership-cols))))
+        (is (= "INTEGER" (:type_name (get-column "group_id" membership-cols))))
+        )
       )
     )
   )
@@ -63,8 +78,20 @@
 
     (is (= {:username "user" :password "pass"} (first (exec (select* users)))))
 
-    (is (= {:username "user" :password "pass"} (find-user "user")))
+    (is (= {:username "user" :password "pass" :groups []} (find-user "user")))
     (is (= nil (find-user "asdf")))
+    )
+  )
+
+(deftest test-groups
+  (testing "User belonging to a group"
+    (insert-group {:name "group"})
+    (insert-user {:username "user" :password "pass"
+                  :groups [{:id 1 :name "group"}]})
+
+    (is (= {:username "user" :password "pass"
+            :groups [{:id 1 :name "group"}]}
+           (find-user "user")))
     )
   )
 
