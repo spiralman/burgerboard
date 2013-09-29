@@ -63,10 +63,9 @@
 
 (defn find-user [username]
   (first
-   (exec
-    (->
-     (select* users)
-     (with groups)
-     (where {:username username})
-     )))
+   (select
+    users
+    (with groups)
+    (where {:username username})
+    ))
   )
