@@ -43,11 +43,7 @@
   {:status 201}
   )
 
-(defn boards [session]
-  (if-not (:email session)
-    {:status 401
-     :body "Login required"}
-    )
+(defn boards [user request]
   )
 
 (defn require-login [request handler]
@@ -63,10 +59,10 @@
    request
    (fn [user request]
      (if-let [group (find-group (:group-id (:params request)))]
-       (if-not (= (:owner group) (:email user))
+       (if (= (:owner group) (:email user))
+         (handler user group request)
          {:status 403
           :body ""}
-         (handler user group request)
          )
        )
      )
@@ -83,8 +79,8 @@
   (POST "/groups/:group-id/members" request
         (require-ownership request invite))
 
-  (GET "/boards" [:as {session :session}]
-       (boards session))
+  (GET "/boards" [request]
+       (require-ownership request boards))
   )
 
 (defroutes app-routes
