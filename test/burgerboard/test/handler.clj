@@ -6,9 +6,34 @@
         burgerboard.database
         burgerboard.users
         korma.db)
-    (:require
-     [clojure.java.jdbc :as jdbc])
-    )
+  (:require
+   [clojure.java.jdbc :as jdbc])
+  (:import [java.net HttpCookie])
+  )
+
+(defn login-as [email password]
+  (->
+   (app
+    (->
+     (request :post "/api/v1/login")
+     (body {:email email
+            :password password})))
+   (:headers)
+   (get "Set-Cookie")
+   (first)
+   (HttpCookie/parse)
+   (first)
+   (.toString)
+   )
+  )
+
+(defn find-member [groups email]
+  (first
+   (filter
+    (fn [user]
+      (= (:email user) email))
+    (:users groups)))
+  )
 
 (def testing-db-spec
   (sqlite3
@@ -21,7 +46,12 @@
 (defn single-user-fixture [f]
   (jdbc/with-connection testing-db-spec
     (create-schema)
+    (insert-user (create-user "owner@example.com" "password" "Owner User"))
     (insert-user (create-user "some_user@example.com" "password" "Some User"))
+    (insert-user (create-user "second_user@example.com" "password" "Second User"))
+    (insert-group {:name "Group" :owner "owner@example.com"})
+    (insert-member {:id 1} {:email "owner@example.com"})
+    (insert-member {:id 1} {:email "some_user@example.com"})
     (f)
     )
   )
@@ -112,6 +142,48 @@
                          :name "Duplicate user"})
                   ))]
         (is (= (:status response) 400))
+        )
+      )
+    )
+
+  (testing "Invitation route"
+    (testing "requires login"
+      (let [response
+            (app
+             (->
+              (request :post "/api/v1/groups/1/members")
+              (body {:email "second_user@example.com"
+                     :name "Second User"})
+              ))]
+        (is (= (:status response) 401))
+        )
+      )
+
+    (testing "requires ownership"
+      (let [response
+            (app
+             (->
+              (request :post "/api/v1/groups/1/members")
+              (header "Cookie" (login-as "some_user@example.com" "password"))
+              (body {:email "second_user@example.com"
+                     :name "Second User"})
+              ))]
+        (is (= (:status response) 403))
+        )
+      )
+
+    (testing "inserts existing user"
+      (let [response
+            (app
+             (->
+              (request :post "/api/v1/groups/1/members")
+              (header "Cookie" (login-as "owner@example.com" "password"))
+              (body {:email "second_user@example.com"
+                     :name "Second User"})
+              ))]
+        (is (= (:status response) 201))
+        (is (= {:email "second_user@example.com" :name "Second User"}
+               (find-member (find-group 1) "second_user@example.com")))
         )
       )
     )

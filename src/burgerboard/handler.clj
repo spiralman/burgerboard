@@ -38,6 +38,11 @@
    )
   )
 
+(defn invite [user group request]
+  (insert-member group (find-user (:email (:params request))))
+  {:status 201}
+  )
+
 (defn boards [session]
   (if-not (:email session)
     {:status 401
@@ -45,11 +50,39 @@
     )
   )
 
+(defn require-login [request handler]
+  (if-let [email (:email (:session request))]
+    (handler (find-user email) request)
+    {:status 401
+     :body "Login required"}
+    )
+  )
+
+(defn require-ownership [request handler]
+  (require-login
+   request
+   (fn [user request]
+     (if-let [group (find-group (:group-id (:params request)))]
+       (if-not (= (:owner group) (:email user))
+         {:status 403
+          :body ""}
+         (handler user group request)
+         )
+       )
+     )
+   )
+  )
+
 (defroutes api-routes
   (POST "/login" [email password :as {session :session}]
         (login session email password))
+
   (POST "/signups" [email password name :as {session :session}]
         (signup session email password name))
+
+  (POST "/groups/:group-id/members" request
+        (require-ownership request invite))
+
   (GET "/boards" [:as {session :session}]
        (boards session))
   )
