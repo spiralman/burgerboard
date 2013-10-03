@@ -2,6 +2,8 @@
   (:use compojure.core
         burgerboard.database
         burgerboard.users
+        burgerboard.authentication
+        burgerboard.board-handlers
         [clojure.data.json :as json]
         )
   (:require [compojure.handler :as handler]
@@ -43,32 +45,6 @@
   {:status 201}
   )
 
-(defn boards [user request]
-  )
-
-(defn require-login [request handler]
-  (if-let [email (:email (:session request))]
-    (handler (find-user email) request)
-    {:status 401
-     :body "Login required"}
-    )
-  )
-
-(defn require-ownership [request handler]
-  (require-login
-   request
-   (fn [user request]
-     (if-let [group (find-group (:group-id (:params request)))]
-       (if (= (:owner group) (:email user))
-         (handler user group request)
-         {:status 403
-          :body ""}
-         )
-       )
-     )
-   )
-  )
-
 (defroutes api-routes
   (POST "/login" [email password :as {session :session}]
         (login session email password))
@@ -79,8 +55,7 @@
   (POST "/groups/:group-id/members" request
         (require-ownership request invite))
 
-  (GET "/boards" [request]
-       (require-ownership request boards))
+  (context "/boards" [] board-routes)
   )
 
 (defroutes app-routes
