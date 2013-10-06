@@ -4,7 +4,7 @@
         burgerboard.users
         burgerboard.authentication
         burgerboard.board-handlers
-        [clojure.data.json :as json]
+        [clojure.data.json :as json :only [read-str write-str]]
         )
   (:require [compojure.handler :as handler]
             [compojure.route :as route]))

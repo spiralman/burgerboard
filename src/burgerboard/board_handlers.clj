@@ -1,6 +1,6 @@
 (ns burgerboard.board-handlers
   (:use compojure.core
-        [clojure.data.json :as json]
+        [clojure.data.json :as json :only [read-str write-str]]
         burgerboard.authentication
         burgerboard.database
         )

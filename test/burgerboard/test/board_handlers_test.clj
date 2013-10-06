@@ -1,6 +1,6 @@
 (ns burgerboard.test.board-handlers-test
   (:use clojure.test
-        [clojure.data.json :as json]
+        [clojure.data.json :as json :only [read-str write-str]]
         ring.mock.request
         burgerboard.test.test-fixtures
         burgerboard.handler)
