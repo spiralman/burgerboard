@@ -74,6 +74,11 @@
                 (header "Cookie" (login-as "owner@example.com" "password"))
                 (body (json/write-str {:name "New Board"}))))]
           (is (= (:status response) 201))
+          (is (= {:name "New Board"
+                  :id 3
+                  :group {:id 1 :name "Group"}}
+                 (json/read-str (:body response)
+                                :key-fn keyword)))
           )
         )
       )

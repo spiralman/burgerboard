@@ -130,10 +130,11 @@
     (insert-user {:email "user@example.com" :password "pass" :name "Name"
                   :groups [{:id 1 :name "group"}]})
 
-    (insert-board {:name "board" :group {:id 1}})
-
-    (is (= {:id 1 :name "board" :group_id 1}
-           (first (select boards))))
+    (let [new-board (insert-board {:name "board" :group {:id 1}})]
+      (is (= {:id 1 :name "board" :group {:id 1}} new-board))
+      (is (= {:id 1 :name "board" :group_id 1}
+             (first (select boards))))
+      )
     )
 
   (testing "Getting the boards for a user"

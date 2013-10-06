@@ -106,9 +106,13 @@
   )
 
 (defn insert-board [board]
-  (insert boards
-          (values {:name (:name board)
-                   :group_id (:id (:group board))}))
+  (assoc board
+    :id ((keyword "last_insert_rowid()")
+         (insert boards
+                 (values {:name (:name board)
+                          :group_id (:id (:group board))}))
+         )
+    )
   )
 
 (defn find-users-boards [user]

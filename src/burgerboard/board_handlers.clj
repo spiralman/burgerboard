@@ -3,6 +3,7 @@
         [clojure.data.json :as json :only [read-str write-str]]
         burgerboard.authentication
         burgerboard.database
+        burgerboard.boards
         )
   )
 
@@ -13,7 +14,14 @@
   )
 
 (defn post-board [user group request]
-  {:status 201}
+  (let [name (:name (json/read-str (slurp (:body request))
+                                   :key-fn keyword))]
+    {:status 201
+     :body (json/write-str (merge
+                            (insert-board (create-board name group))
+                            {:group (select-keys group [:id :name])}
+                            ))}
+    )
   )
 
 (defroutes board-routes
