@@ -1,11 +1,15 @@
 (ns burgerboard.board-handlers
   (:use compojure.core
+        [clojure.data.json :as json]
         burgerboard.authentication
+        burgerboard.database
         )
   )
 
 (defn get-boards [user request]
-  {:status 200}
+  {:status 200
+   :body (json/write-str {:boards (find-users-boards user)})
+   }
   )
 
 (defn post-board [user group request]

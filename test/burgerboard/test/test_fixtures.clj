@@ -55,10 +55,11 @@
     )
   )
 
-(defn single-board-fixture [f]
+(defn basic-board-fixture [f]
   (single-user-fixture
    (fn []
-     (insert-board {:name "Some Board" :group 1})
+     (insert-board {:name "Some Board" :group {:id 1}})
+     (insert-board {:name "Other Board" :group {:id 2}})
      (f)
      )
    )

@@ -126,7 +126,7 @@
 
 (deftest test-boards
   (testing "Adding a board to a group"
-    (insert-group {:name "group" :owner "user"})
+    (insert-group {:name "group" :owner "user@example.com"})
     (insert-user {:email "user@example.com" :password "pass" :name "Name"
                   :groups [{:id 1 :name "group"}]})
 
@@ -134,6 +134,19 @@
 
     (is (= {:id 1 :name "board" :group_id 1}
            (first (select boards))))
+    )
+
+  (testing "Getting the boards for a user"
+    (insert-group {:name "group2" :owner "user@example.com"})
+    (insert-member {:id 2} {:email "user@example.com"})
+
+    (insert-board {:name "board2" :group {:id 2}})
+
+    (insert-board {:name "hidden" :group {:id 3}})
+
+    (is (= [{:id 1 :name "board" :group {:id 1 :name "group"}}
+            {:id 2 :name "board2" :group {:id 2 :name "group2"}}]
+           (find-users-boards (find-user "user@example.com"))))
     )
   )
 

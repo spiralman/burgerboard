@@ -6,7 +6,7 @@
         burgerboard.handler)
   )
 
-(use-fixtures :each single-board-fixture)
+(use-fixtures :each basic-board-fixture)
 
 (deftest test-board-handlers
   (testing "Boards route"
@@ -29,6 +29,13 @@
                 (header "Cookie" (login-as "some_user@example.com"
                                            "password"))))]
           (is (= (:status response) 200))
+          (is (= {:boards
+                  [{:name "Some Board"
+                    :id 1
+                    :group {:id 1 :name "Group"}}]
+                  }
+                 (json/read-str (:body response)
+                                :key-fn keyword)))
           )
         )
       )

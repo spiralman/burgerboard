@@ -54,7 +54,7 @@
 
 (defentity boards
   (entity-fields :name)
-  (belongs-to groups)
+  (belongs-to groups {:fk :group_id})
   )
 
 (defn insert-group [group]
@@ -109,4 +109,20 @@
   (insert boards
           (values {:name (:name board)
                    :group_id (:id (:group board))}))
+  )
+
+(defn find-users-boards [user]
+  (map
+   (fn [splated]
+     {:id (:id splated)
+      :name (:name splated)
+      :group {:id (:group_id splated)
+              :name (:group_name splated)}}
+     )
+   (select boards
+           (fields :id :name)
+           (with groups
+                 (fields [:id :group_id] [:name :group_name]))
+           (where (in :group_id (map :id (:groups user)))))
+   )
   )
