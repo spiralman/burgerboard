@@ -1,6 +1,7 @@
 # burgerboard
 
-FIXME
+Burgerboard lets groups of people host their own private restaurant
+ratings.
 
 ## Prerequisites
 
@@ -16,4 +17,4 @@ To start a web server for the application, run:
 
 ## License
 
-Copyright © 2013 FIXME
+Copyright © 2013 Thomas Stephens
