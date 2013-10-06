@@ -6,7 +6,7 @@
         burgerboard.handler)
   )
 
-(use-fixtures :each single-user-fixture)
+(use-fixtures :each single-board-fixture)
 
 (deftest test-board-handlers
   (testing "Boards route"

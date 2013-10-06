@@ -70,6 +70,14 @@
         (is (= "VARCHAR" (:type_name (get-column "user_email" membership-cols))))
         (is (= "INTEGER" (:type_name (get-column "group_id" membership-cols))))
         )
+
+      (is (not (nil? (get-table "boards" tables))))
+
+      (let [boards-cols (get-columns "boards")]
+        (is (= "INTEGER" (:type_name (get-column "id" boards-cols))))
+        (is (= "INTEGER" (:type_name (get-column "group_id" boards-cols))))
+        (is (= "VARCHAR" (:type_name (get-column "name" boards-cols))))
+        )
       )
     )
   )
@@ -113,6 +121,19 @@
            (first (filter
                    (fn [user] (= (:email user) "other@example.com"))
                    (:users (find-group 1))))))
+    )
+  )
+
+(deftest test-boards
+  (testing "Adding a board to a group"
+    (insert-group {:name "group" :owner "user"})
+    (insert-user {:email "user@example.com" :password "pass" :name "Name"
+                  :groups [{:id 1 :name "group"}]})
+
+    (insert-board {:name "board" :group {:id 1}})
+
+    (is (= {:id 1 :name "board" :group_id 1}
+           (first (select boards))))
     )
   )
 

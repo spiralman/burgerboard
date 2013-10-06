@@ -54,3 +54,12 @@
     (f)
     )
   )
+
+(defn single-board-fixture [f]
+  (single-user-fixture
+   (fn []
+     (insert-board {:name "Some Board" :group 1})
+     (f)
+     )
+   )
+  )

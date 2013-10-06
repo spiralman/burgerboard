@@ -24,14 +24,21 @@
    [:user_email "VARCHAR"]
    [:group_id "INTEGER"]
    )
+  (jdbc/create-table
+   :boards
+   [:id "INTEGER" "PRIMARY KEY"]
+   [:group_id "INTEGER"]
+   [:name "varchar"]
+   )
   )
 
-(declare users)
+(declare users boards)
 
 (defentity groups
   (entity-fields :name)
   (has-one users)
   (many-to-many users :memberships {:lfk :group_id :rfk :user_email})
+  (has-many boards)
   )
 
 (defentity users
@@ -43,6 +50,11 @@
 (defentity memberships
   ;; Only used internally for inserting the relationships
   (entity-fields :user_email :group_id)
+  )
+
+(defentity boards
+  (entity-fields :name)
+  (belongs-to groups)
   )
 
 (defn insert-group [group]
@@ -91,4 +103,10 @@
           (fields :email :name))
     (where {:id id})
     ))
+  )
+
+(defn insert-board [board]
+  (insert boards
+          (values {:name (:name board)
+                   :group_id (:id (:group board))}))
   )
