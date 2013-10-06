@@ -20,18 +20,53 @@
           (is (= (:body response) "Login required"))
           )
         )
+
+      (testing "returns boards in users groups"
+        (let [response
+              (app
+               (->
+                (request :get "/api/v1/boards")
+                (header "Cookie" (login-as "some_user@example.com"
+                                           "password"))))]
+          (is (= (:status response) 200))
+          )
+        )
       )
 
     (testing "POST"
+      (testing "requires login"
+        (let [response
+              (app
+               (->
+                (request :post "/api/v1/groups/1/boards")
+                (header :content-type "application/json")
+                (body (json/write-str {:name "New Board"}))))]
+          (is (= (:status response) 401))
+          )
+        )
+
       (testing "requires ownership"
         (let [response
               (app
                (->
-                (request :post "/api/v1/boards")
+                (request :post "/api/v1/groups/1/boards")
                 (header :content-type "application/json")
-                (body (json/write-str {:group 1
-                                       :name "New Board"}))))]
-          (is (= (:status response) 401))
+                (header "Cookie" (login-as "some_user@example.com"
+                                           "password"))
+                (body (json/write-str {:name "New Board"}))))]
+          (is (= (:status response) 403))
+          )
+        )
+
+      (testing "creates new board"
+        (let [response
+              (app
+               (->
+                (request :post "/api/v1/groups/1/boards")
+                (header :content-type "application/json")
+                (header "Cookie" (login-as "owner@example.com" "password"))
+                (body (json/write-str {:name "New Board"}))))]
+          (is (= (:status response) 201))
           )
         )
       )

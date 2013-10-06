@@ -55,7 +55,7 @@
   (POST "/groups/:group-id/members" request
         (require-ownership request invite))
 
-  (context "/boards" [] board-routes)
+  board-routes
   )
 
 (defroutes app-routes
