@@ -7,7 +7,7 @@
         )
   )
 
-(defn get-boards [user request]
+(defn get-users-boards [user request]
   {:status 200
    :body (json/write-str {:boards (find-users-boards user)})
    }
@@ -24,10 +24,17 @@
     )
   )
 
+(defn get-board [user group request]
+  {:status 200}
+  )
+
 (defroutes board-routes
   (GET "/boards" request
-       (require-login request get-boards))
+       (require-login request get-users-boards))
 
+  (GET "/groups/:group-id/boards/:board-id" request
+       (require-membership request get-board))
+  
   (POST "/groups/:group-id/boards" request
         (require-ownership request post-board))
   )

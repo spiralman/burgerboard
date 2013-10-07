@@ -19,3 +19,11 @@
          )
     )
   )
+
+(defn is-owner? [group user]
+  (= (:owner group) (:email user))
+  )
+
+(defn is-member? [group user]
+  (some (fn [member] (= (:email user) (:email member))) (:users group))
+  )

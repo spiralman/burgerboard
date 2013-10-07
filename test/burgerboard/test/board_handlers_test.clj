@@ -9,7 +9,7 @@
 (use-fixtures :each basic-board-fixture)
 
 (deftest test-board-handlers
-  (testing "Boards route"
+  (testing "User's boards route"
     (testing "GET"
       (testing "requires login"
         (let [response
@@ -39,7 +39,9 @@
           )
         )
       )
+    )
 
+  (testing "Group's boards route"
     (testing "POST"
       (testing "requires login"
         (let [response
@@ -79,6 +81,42 @@
                   :group {:id 1 :name "Group"}}
                  (json/read-str (:body response)
                                 :key-fn keyword)))
+          )
+        )
+      )
+    )
+
+  (testing "Individual Board routes"
+    (testing "GET"
+      (testing "requires login"
+        (let [response
+              (app
+               (->
+                (request :get "/api/v1/groups/1/boards/1")
+                (header :content-type "application/json")))]
+          (is (= (:status response) 401))
+          )
+        )
+
+      (testing "requires membership"
+        (let [response
+              (app
+               (->
+                (request :get "/api/v1/groups/1/boards/1")
+                (header "Cookie" (login-as "second_user@example.com"
+                                           "password"))))]
+          (is (= (:status response) 403))
+          )
+        )
+
+      (testing "returns ratins"
+        (let [response
+              (app
+               (->
+                (request :get "/api/v1/groups/1/boards/1")
+                (header "Cookie" (login-as "some_user@example.com"
+                                           "password"))))]
+          (is (= (:status response) 200))
           )
         )
       )
