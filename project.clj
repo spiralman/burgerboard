@@ -5,7 +5,7 @@
                  [compojure "1.1.5"]
                  [org.clojure/data.json "0.2.3"]
                  [korma "0.3.0-RC5"]
-                 [org.xerial/sqlite-jdbc "3.7.2"]
+                 [org.xerial/sqlite-jdbc "3.7.15-M1"]
                  [javax.mail/mail "1.4.7"]
                  [crypto-password "0.1.0"]]
   :plugins [[lein-ring "0.8.5"]]

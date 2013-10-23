@@ -78,6 +78,23 @@
         (is (= "INTEGER" (:type_name (get-column "group_id" boards-cols))))
         (is (= "VARCHAR" (:type_name (get-column "name" boards-cols))))
         )
+
+      (is (not (nil? (get-table "stores" tables))))
+
+      (let [stores-cols (get-columns "stores")]
+        (is (= "INTEGER" (:type_name (get-column "id" stores-cols))))
+        (is (= "INTEGER" (:type_name (get-column "board_id" stores-cols))))
+        (is (= "VARCHAR" (:type_name (get-column "name" stores-cols))))
+        )
+      
+      (is (not (nil? (get-table "ratings" tables))))
+
+      (let [ratings-cols (get-columns "ratings")]
+        (is (= "INTEGER" (:type_name (get-column "id" ratings-cols))))
+        (is (= "INTEGER" (:type_name (get-column "store_id" ratings-cols))))
+        (is (= "VARCHAR" (:type_name (get-column "user_email" ratings-cols))))
+        (is (= "INTEGER" (:type_name (get-column "rating" ratings-cols))))
+        )
       )
     )
   )
@@ -150,4 +167,27 @@
            (find-users-boards (find-user "user@example.com"))))
     )
   )
+
+(deftest test-stores
+  (testing "Creating a new store"
+    (insert-group {:name "group" :owner "user@example.com"})
+    (insert-user {:email "user@example.com" :password "pass" :name "Name"
+                  :groups [{:id 1 :name "group"}]})
+    (insert-user {:email "other@example.com" :password "pass" :name "Other"
+                  :groups [{:id 1 :name "group"}]})
+    (insert-board {:name "board" :group {:id 1}})
+
+    (let [new-store (insert-store {:name "store" :board {:id 1 :group_id 1}})]
+      (is (= {:id 1 :name "store" :board {:id 1 :group_id 1}} new-store))
+      (is (= {:id 1 :name "store" :board_id 1}
+             (first (select stores))))
+
+      (is (= [{:id 1 :store_id 1 :user_email "user@example.com" :rating nil}
+              {:id 2 :store_id 1 :user_email "other@example.com" :rating nil}]
+             (select ratings (where {:store_id (:id new-store)}))))
+      )
+    )
+  )
+    
+
 

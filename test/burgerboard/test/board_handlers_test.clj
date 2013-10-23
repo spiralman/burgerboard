@@ -109,7 +109,7 @@
           )
         )
 
-      (testing "returns ratins"
+      (testing "returns ratings"
         (let [response
               (app
                (->

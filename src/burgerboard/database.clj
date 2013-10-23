@@ -5,6 +5,12 @@
             [crypto.password.bcrypt :as password])
   )
 
+(defn assoc-id [entity insert-result]
+  (assoc entity
+    :id ((keyword "last_insert_rowid()")
+         insert-result))
+  )
+
 (defn create-schema []
   (jdbc/create-table
    :users
@@ -30,9 +36,22 @@
    [:group_id "INTEGER"]
    [:name "varchar"]
    )
+  (jdbc/create-table
+   :stores
+   [:id "INTEGER" "PRIMARY KEY"]
+   [:board_id "INTEGER"]
+   [:name "VARCHAR"]
+   )
+  (jdbc/create-table
+   :ratings
+   [:id "INTEGER" "PRIMARY KEY"]
+   [:store_id "INTEGER"]
+   [:user_email "VARCHAR"]
+   [:rating "INTEGER"]
+   )
   )
 
-(declare users boards)
+(declare users boards stores ratings)
 
 (defentity groups
   (entity-fields :name)
@@ -55,6 +74,19 @@
 (defentity boards
   (entity-fields :name)
   (belongs-to groups {:fk :group_id})
+  (has-many stores)
+  )
+
+(defentity stores
+  (entity-fields :name)
+  (has-many ratings {:fk :store_id})
+  (belongs-to boards {:fk :board_id})
+  )
+
+(defentity ratings
+  (entity-fields :rating)
+  (belongs-to stores {:fk :store_id})
+  (belongs-to users {:fk :user_id})
   )
 
 (defn insert-group [group]
@@ -106,13 +138,12 @@
   )
 
 (defn insert-board [board]
-  (assoc board
-    :id ((keyword "last_insert_rowid()")
-         (insert boards
-                 (values {:name (:name board)
-                          :group_id (:id (:group board))}))
-         )
-    )
+  (assoc-id
+   board
+   (insert boards
+           (values {:name (:name board)
+                    :group_id (:id (:group board))}))
+   )
   )
 
 (defn find-users-boards [user]
@@ -128,5 +159,29 @@
            (with groups
                  (fields [:id :group_id] [:name :group_name]))
            (where (in :group_id (map :id (:groups user)))))
+   )
+  )
+
+(defn insert-store [store]
+  (transaction
+   (let [inserted-store 
+         (assoc-id
+          store
+          (insert stores
+                  (values {:name (:name store)
+                           :board_id (:id (:board store))}))
+          )]
+     ;; TODO: assoc the new ratings into the new store (but we don't
+     ;; know all their IDs without re-querying)
+     (insert
+      ratings
+      (values (map (fn [membership] {:user_email (:user_email membership)
+                                     :store_id (:id inserted-store)
+                                     :rating nil})
+                   (select memberships
+                           (where {:group_id (:group_id (:board store))}))))
+      )
+     inserted-store
+     )
    )
   )
