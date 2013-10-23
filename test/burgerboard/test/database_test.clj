@@ -188,6 +188,57 @@
       )
     )
   )
+
+(defn user-has-rating [email store rating-value]
+  (let [rating-record (first (select ratings
+                       (where {:store_id (:id (first
+                                               (select stores
+                                                       (where {:name store}))))
+                               :user_email email})))]
+
+    (is (not (nil? rating-record)))
+    (is (=
+         (:rating rating-record)
+         rating-value
+         ))
+    )
+  )
+
+(deftest test-new-user-ratings
+  (testing "Adding users creates ratings"
+    (insert-group {:name "group" :owner "user@example.com"})
+    (insert-group {:name "other" :owner "user@example.com"})
+
+    (insert-user {:email "other@example.com" :password "pass" :name "Other"
+                  :groups []})
+
+    (insert-board {:name "board" :group {:id 1}})
+    (insert-board {:name "board2" :group {:id 1}})
+    (insert-board {:name "other board" :group {:id 2}})
+
+    (insert-store {:name "store" :board {:id 1 :group_id 1}})
+    (insert-store {:name "store2" :board {:id 1 :group_id 1}})
+
+    (insert-store {:name "other board store" :board {:id 2 :group_id 1}})
+
+    (insert-store {:name "other group store" :board {:id 3 :group_id 2}})
+
+    
+    (insert-user {:email "user@example.com" :password "pass" :name "Name"
+                  :groups [{:id 1 :name "group"} {:id 2 :name "other"}]})
+    
+    (insert-member {:id 1} {:email "other@example.com"})
+
+    (user-has-rating "user@example.com" "store" nil)
+    (user-has-rating "user@example.com" "store2" nil)
+    (user-has-rating "user@example.com" "other board store" nil)
+    (user-has-rating "user@example.com" "other group store" nil)
+
+    (user-has-rating "other@example.com" "store" nil)
+    (user-has-rating "other@example.com" "store2" nil)
+    (user-has-rating "other@example.com" "other board store" nil)
+    )
+  )
     
 
 

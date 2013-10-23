@@ -94,19 +94,37 @@
           (values group))
   )
 
+(defn insert-member [group user]
+  (transaction
+   (let [stores (select stores
+                        (where {:board_id [in (subselect
+                                               boards
+                                               (fields :id)
+                                               (where {:group_id
+                                                       (:id group)}))]})
+                        )]
+     (insert memberships
+             (values {:user_email (:email user)
+                      :group_id (:id group)}))
+     (if (not-empty stores)
+       (insert
+        ratings
+        (values (map (fn [store] {:user_email (:email user)
+                                  :store_id (:id store)
+                                  :rating nil})
+                     stores)))
+       )
+    )
+   )
+  )
+
 (defn insert-user [user]
   (let [groups (:groups user)
         user (dissoc user :groups)]
     (insert users
             (values user))
-    (if (not-empty groups)
-      (insert memberships
-              (values (map
-                       (fn [group]
-                         {:user_email (:email user)
-                          :group_id (:id group)})
-                       groups))
-              )
+    (doseq [group groups]
+      (insert-member group user)
       )
     )
   )
@@ -119,12 +137,6 @@
           (fields :id :name))
     (where {:email email})
     ))
-  )
-
-(defn insert-member [group user]
-  (insert memberships
-          (values {:user_email (:email user)
-                   :group_id (:id group)}))
   )
 
 (defn find-group [id]
@@ -170,17 +182,22 @@
           (insert stores
                   (values {:name (:name store)
                            :board_id (:id (:board store))}))
-          )]
+          )
+         
+         members
+         (select memberships
+                 (where {:group_id (:group_id (:board store))}))]
      ;; TODO: assoc the new ratings into the new store (but we don't
      ;; know all their IDs without re-querying)
-     (insert
-      ratings
-      (values (map (fn [membership] {:user_email (:user_email membership)
-                                     :store_id (:id inserted-store)
-                                     :rating nil})
-                   (select memberships
-                           (where {:group_id (:group_id (:board store))}))))
-      )
+     (if (not (empty? members))
+       (insert
+        ratings
+        (values (map (fn [membership] {:user_email (:user_email membership)
+                                       :store_id (:id inserted-store)
+                                       :rating nil})
+                     members))
+        )
+       )
      inserted-store
      )
    )
