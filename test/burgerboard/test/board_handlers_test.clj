@@ -3,7 +3,9 @@
         [clojure.data.json :as json :only [read-str write-str]]
         ring.mock.request
         burgerboard.test.test-fixtures
-        burgerboard.handler)
+        burgerboard.handler
+        burgerboard.database
+        korma.core)
   )
 
 (use-fixtures :each basic-board-fixture)
@@ -117,6 +119,50 @@
                 (header "Cookie" (login-as "some_user@example.com"
                                            "password"))))]
           (is (= (:status response) 200))
+          )
+        )
+      )
+    )
+
+  (testing "Store routes"
+    (testing "POST"
+      (testing "requires login"
+        (let [response
+              (app
+               (->
+                (request :post "/api/v1/groups/1/boards/1/stores")
+                (header :content-type "application/json")))]
+          (is (= (:status response) 401))
+          )
+        )
+
+      (testing "requires membership"
+        (let [response
+              (app
+               (->
+                (request :post "/api/v1/groups/1/boards/1/stores")
+                (header "Cookie" (login-as "second_user@example.com"
+                                           "password"))))]
+          (is (= (:status response) 403))
+          )
+        )
+
+      (testing "Adds new store"
+        (let [response
+              (app
+               (->
+                (request :post "/api/v1/groups/1/boards/1/stores")
+                (header "Cookie" (login-as "some_user@example.com"
+                                           "password"))
+                (body (json/write-str {:name "New Store"}))))]
+          (is (= (:status response) 201))
+          (is (= {:name "New Store" :id 1
+                  :board {:id 1 :name "Some Board"
+                          :group {:id 1 :name "Group"}}}
+                 (json/read-str (:body response)
+                                :key-fn keyword)))
+          (is (= {:name "New Store" :id 1 :board_id 1}
+                 (first (select stores))))
           )
         )
       )

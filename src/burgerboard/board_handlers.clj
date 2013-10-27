@@ -28,6 +28,15 @@
   {:status 200}
   )
 
+(defn post-store [user group request]
+  (let [name (:name (json/read-str (slurp (:body request))
+                                   :key-fn keyword))
+        board (find-board (:board-id (:params request)))]
+    {:status 201
+     :body (json/write-str (insert-store (create-store name board)))}
+    )
+  )
+
 (defroutes board-routes
   (GET "/boards" request
        (require-login request get-users-boards))
@@ -37,4 +46,7 @@
   
   (POST "/groups/:group-id/boards" request
         (require-ownership request post-board))
+
+  (POST "/groups/:group-id/boards/:board-id/stores" request
+        (require-membership request post-store))
   )

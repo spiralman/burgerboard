@@ -5,3 +5,8 @@
   {:name name
    :group group}
   )
+
+(defn create-store [name board]
+  {:name name
+   :board board}
+  )
