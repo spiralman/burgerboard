@@ -278,6 +278,20 @@
     (set-rating {:id 1} {:email "other@example.com"} 0)
     (user-has-rating "other@example.com" "store" 0)
     )
+
+  (testing "Finding ratings for a board"
+    (insert-user {:email "third@example.com" :password "pass" :name "Third"
+                  :groups [{:id 1 :name "group"}]})
+
+    (is (= [{:id 1 :name "store"
+             :ratings [{:user_email "user@example.com"
+                        :rating 1}
+                       {:user_email "other@example.com"
+                        :rating 0}
+                       {:user_email "third@example.com"
+                        :rating nil}]}]
+           (find-board-ratings {:id 1})))
+    )
   )
     
 

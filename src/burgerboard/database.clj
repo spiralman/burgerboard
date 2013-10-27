@@ -250,3 +250,11 @@
            :user_email (:email user)})
    )
   )
+
+(defn find-board-ratings [board]
+  (select stores
+          (fields :id :name)
+          (with ratings
+                (fields :user_email :rating))
+          (where {:board_id (:id board)}))
+  )
