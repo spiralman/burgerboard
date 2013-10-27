@@ -2,13 +2,44 @@
   (:use korma.db
         korma.core)
   (:require [clojure.java.jdbc :as jdbc]
-            [crypto.password.bcrypt :as password])
+            [crypto.password.bcrypt :as password]
+            clojure.set)
   )
 
 (defn assoc-id [entity insert-result]
   (assoc entity
     :id ((keyword "last_insert_rowid()")
          insert-result))
+  )
+
+(defn prefixed? [prefix key]
+  (.startsWith (name key) (name prefix))
+  )
+
+(defn remove-prefix [prefix key]
+  (let [prefix-name (name prefix)
+        key-name (name key)]
+    (keyword
+     (.substring key-name (+ (.length prefix-name) 1)))
+    )
+  )
+
+(defn nest-subentity [prefix splated]
+  (let [{member-keys false nested-keys true}
+        (group-by
+         (partial prefixed? prefix)
+         (keys splated))]
+    (->
+     (select-keys splated member-keys)
+     (assoc prefix (reduce-kv
+                    (fn [nested key value]
+                      (assoc nested
+                        (remove-prefix prefix key) value)
+                      )
+                    {} (select-keys splated nested-keys)
+                    ))
+     )
+    )
   )
 
 (defn create-schema []
@@ -158,14 +189,20 @@
    )
   )
 
+(defn find-board [board-id]
+  (nest-subentity
+   :group
+   (first
+    (select boards
+            (fields :id :name)
+            (with groups
+                  (fields [:id :group_id] [:name :group_name]))
+            (where {:id board-id}))))
+  )
+
 (defn find-users-boards [user]
   (map
-   (fn [splated]
-     {:id (:id splated)
-      :name (:name splated)
-      :group {:id (:group_id splated)
-              :name (:group_name splated)}}
-     )
+   (partial nest-subentity :group)
    (select boards
            (fields :id :name)
            (with groups

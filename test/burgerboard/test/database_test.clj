@@ -99,6 +99,16 @@
     )
   )
 
+(deftest test-nest-subentity
+  (testing "Nesting a sub-entity by prefix name"
+    (is (= {:key "value" :nested {:key "value" :other "something"}}
+           (nest-subentity
+            :nested
+            {:key "value" :nested_key "value" :nested_other "something"})
+           ))
+    )
+  )
+
 (deftest test-user-tables
   (testing "User insertion and retrieval"
     (insert-user {:email "user@example.com" :password "pass" :name "Name"})
@@ -165,6 +175,11 @@
     (is (= [{:id 1 :name "board" :group {:id 1 :name "group"}}
             {:id 2 :name "board2" :group {:id 2 :name "group2"}}]
            (find-users-boards (find-user "user@example.com"))))
+    )
+
+  (testing "Getting a board by ID"
+    (is (= {:id 1 :name "board" :group {:id 1 :name "group"}}
+           (find-board 1)))
     )
   )
 
