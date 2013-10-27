@@ -111,6 +111,22 @@
           )
         )
 
+      (testing "requires board belongs to group"
+        (insert-group {:name "group2" :owner "some_user@example.com"})
+        (insert-member {:id 2} {:email "some_user@example.com"})
+        
+        (insert-board {:name "board2" :group {:id 2}})
+
+        (let [response
+              (app
+               (->
+                (request :get "/api/v1/groups/1/boards/2")
+                (header "Cookie" (login-as "some_user@example.com"
+                                           "password"))))]
+          (is (= (:status response) 404))
+          )
+        )
+
       (testing "returns ratings"
         (let [response
               (app
@@ -119,6 +135,23 @@
                 (header "Cookie" (login-as "some_user@example.com"
                                            "password"))))]
           (is (= (:status response) 200))
+          (is (= {:id 1 :name "board"
+                  :stores [{:name "Store1"
+                            :id 1
+                            :rating 1.5
+                            :ratings [{:user_email "owner@example.com"
+                                       :rating 1}
+                                      {:user_email "some_user@example.com"
+                                       :rating 2}]}
+                           {:name "Store2"
+                            :id 2
+                            :rating 2
+                            :ratings [{:user_email "owner@example.com"
+                                       :rating 2}
+                                      {:user_email "some_user@example.com"
+                                       :rating nil}]
+                            }]}
+                 (json/read-str (:body response) :key-fn keyword)))
           )
         )
       )
@@ -173,13 +206,15 @@
                                            "password"))
                 (body (json/write-str {:name "New Store"}))))]
           (is (= (:status response) 201))
-          (is (= {:name "New Store" :id 1
+          (is (= {:name "New Store" :id 3
                   :board {:id 1 :name "Some Board"
                           :group {:id 1 :name "Group"}}}
                  (json/read-str (:body response)
                                 :key-fn keyword)))
-          (is (= {:name "New Store" :id 1 :board_id 1}
-                 (first (select stores))))
+          (is (= {:name "New Store" :id 3 :board_id 1}
+                 (first (select
+                         stores
+                         (where {:id 3})))))
           )
         )
       )

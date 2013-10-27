@@ -17,34 +17,46 @@
      )
    )
   )
-    
+
+(defn json-response [data status]
+  {:status status
+   :body (json/write-str data)}
+  )
 
 (defn get-users-boards [user request]
-  {:status 200
-   :body (json/write-str {:boards (find-users-boards user)})
-   }
+  (->
+   {:boards (find-users-boards user)}
+   (json-response 200)
+   )
   )
 
 (defn post-board [user group request]
   (let [name (:name (json/read-str (slurp (:body request))
                                    :key-fn keyword))]
-    {:status 201
-     :body (json/write-str (merge
-                            (insert-board (create-board name group))
-                            {:group (select-keys group [:id :name])}
-                            ))}
+    (->
+     (create-board name group)
+     (insert-board)
+     (merge {:group (select-keys group [:id :name])})
+     (json-response 201)
+     )
     )
   )
 
-(defn get-board [user group request]
-  {:status 200}
+(defn get-board [user group board request]
+  (->
+   {}
+   (json-response 200)
+   )
   )
 
 (defn post-store [user group board request]
   (let [name (:name (json/read-str (slurp (:body request))
                                    :key-fn keyword))]
-    {:status 201
-     :body (json/write-str (insert-store (create-store name board)))}
+    (->
+     (create-store name board)
+     (insert-store)
+     (json-response 201)
+     )
     )
   )
 
@@ -53,7 +65,7 @@
        (require-login request get-users-boards))
 
   (GET "/groups/:group-id/boards/:board-id" request
-       (require-membership request get-board))
+       (require-board request get-board))
   
   (POST "/groups/:group-id/boards" request
         (require-ownership request post-board))
