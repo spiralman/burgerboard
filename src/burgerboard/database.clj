@@ -241,3 +241,12 @@
      )
    )
   )
+
+(defn set-rating [store user rating]
+  (update
+   ratings
+   (set-fields {:rating rating})
+   (where {:store_id (:id store)
+           :user_email (:email user)})
+   )
+  )

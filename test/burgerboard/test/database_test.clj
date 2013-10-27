@@ -260,6 +260,25 @@
     (user-has-rating "other@example.com" "other board store" nil)
     )
   )
+
+(deftest test-ratings
+  (testing "Creating a new store"
+    (insert-group {:name "group" :owner "user@example.com"})
+    (insert-user {:email "user@example.com" :password "pass" :name "Name"
+                  :groups [{:id 1 :name "group"}]})
+    (insert-user {:email "other@example.com" :password "pass" :name "Other"
+                  :groups [{:id 1 :name "group"}]})
+    (insert-board {:name "board" :group {:id 1}})
+    (insert-store {:name "store" :board {:id 1 :group_id 1}})
+    
+    (set-rating {:id 1} {:email "user@example.com"} 1)
+    (user-has-rating "user@example.com" "store" 1)
+    (user-has-rating "other@example.com" "store" nil)
+
+    (set-rating {:id 1} {:email "other@example.com"} 0)
+    (user-has-rating "other@example.com" "store" 0)
+    )
+  )
     
 
 
