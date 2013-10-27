@@ -25,20 +25,22 @@
   )
 
 (defn nest-subentity [prefix splated]
-  (let [{member-keys false nested-keys true}
-        (group-by
-         (partial prefixed? prefix)
-         (keys splated))]
-    (->
-     (select-keys splated member-keys)
-     (assoc prefix (reduce-kv
-                    (fn [nested key value]
-                      (assoc nested
-                        (remove-prefix prefix key) value)
-                      )
-                    {} (select-keys splated nested-keys)
-                    ))
-     )
+  (if splated
+    (let [{member-keys false nested-keys true}
+          (group-by
+           (partial prefixed? prefix)
+           (keys splated))]
+      (->
+       (select-keys splated member-keys)
+       (assoc prefix (reduce-kv
+                      (fn [nested key value]
+                        (assoc nested
+                          (remove-prefix prefix key) value)
+                        )
+                      {} (select-keys splated nested-keys)
+                      ))
+       )
+      )
     )
   )
 
@@ -189,7 +191,7 @@
    )
   )
 
-(defn find-board [board-id]
+(defn find-group-board [group board-id]
   (nest-subentity
    :group
    (first
@@ -197,7 +199,7 @@
             (fields :id :name)
             (with groups
                   (fields [:id :group_id] [:name :group_name]))
-            (where {:id board-id}))))
+            (where {:id board-id :group_id (:id group)}))))
   )
 
 (defn find-users-boards [user]

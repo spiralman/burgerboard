@@ -147,6 +147,23 @@
           )
         )
 
+      (testing "board must belong to group"
+        (insert-group {:name "group2" :owner "some_user@example.com"})
+        (insert-member {:id 2} {:email "some_user@example.com"})
+        
+        (insert-board {:name "board2" :group {:id 2}})
+
+        (let [response
+              (app
+               (->
+                (request :post "/api/v1/groups/1/boards/2/stores")
+                (header "Cookie" (login-as "some_user@example.com"
+                                           "password"))
+                (body (json/write-str {:name "New Store"}))))]
+          (is (= (:status response) 404))
+          )
+        )
+
       (testing "Adds new store"
         (let [response
               (app

@@ -7,6 +7,18 @@
         )
   )
 
+(defn require-board [request handler]
+  (require-membership
+   request
+   (fn [user group request]
+     (if-let [board (find-group-board group (:board-id (:params request)))]
+       (handler user group board request)
+       )
+     )
+   )
+  )
+    
+
 (defn get-users-boards [user request]
   {:status 200
    :body (json/write-str {:boards (find-users-boards user)})
@@ -28,10 +40,9 @@
   {:status 200}
   )
 
-(defn post-store [user group request]
+(defn post-store [user group board request]
   (let [name (:name (json/read-str (slurp (:body request))
-                                   :key-fn keyword))
-        board (find-board (:board-id (:params request)))]
+                                   :key-fn keyword))]
     {:status 201
      :body (json/write-str (insert-store (create-store name board)))}
     )
@@ -48,5 +59,5 @@
         (require-ownership request post-board))
 
   (POST "/groups/:group-id/boards/:board-id/stores" request
-        (require-membership request post-store))
+        (require-board request post-store))
   )

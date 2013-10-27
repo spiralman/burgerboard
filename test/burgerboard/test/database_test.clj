@@ -106,6 +106,7 @@
             :nested
             {:key "value" :nested_key "value" :nested_other "something"})
            ))
+    (is (nil? (nest-subentity :foo nil)))
     )
   )
 
@@ -178,8 +179,13 @@
     )
 
   (testing "Getting a board by ID"
+    (insert-group {:name "group2" :owner "user@example.com"})
+    (insert-board {:name "board2" :group {:id 2}})
+    
     (is (= {:id 1 :name "board" :group {:id 1 :name "group"}}
-           (find-board 1)))
+           (find-group-board {:id 1} 1)))
+
+    (is (nil? (find-group-board {:id 2} 1)))
     )
   )
 
