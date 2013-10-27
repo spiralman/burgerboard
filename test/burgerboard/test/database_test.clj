@@ -5,7 +5,8 @@
         korma.core)
   (:require
    [clojure.java.jdbc :as jdbc]
-   clojure.pprint))
+   )
+  )
 
 (defn get-table [name tables]
   (first (filter (fn [table] (= name (:table_name table))) tables)))

@@ -10,3 +10,23 @@
   {:name name
    :board board}
   )
+
+(defn tally-board [stores board]
+  (assoc board
+    :stores
+    (map
+     (fn [store]
+       (let [provided-ratings (filter
+                               (fn [rating]
+                                 (not (nil? rating)))
+                               (map :rating (:ratings store)))
+             ratings-count (count provided-ratings)]
+         (if (> ratings-count 0)
+           (assoc store
+             :rating (double (/ (reduce + provided-ratings) ratings-count)))
+           )
+         )
+       )
+     stores)
+    )
+  )

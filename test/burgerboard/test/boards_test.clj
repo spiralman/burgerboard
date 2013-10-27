@@ -18,3 +18,40 @@
            (create-store "store" {:id 1 :group_id 1})))
     )
   )
+
+(deftest tallying
+  (testing "Tallies store ratings"
+    (is (= {:id 1 :name "board"
+            :stores [{:name "Store1"
+                      :id 1
+                      :rating 1.5
+                      :ratings [{:user_email "owner@example.com"
+                                 :rating 1}
+                                {:user_email "some_user@example.com"
+                                 :rating 2}]}
+                     {:name "Store2"
+                      :id 2
+                      :rating 2.0
+                      :ratings [{:user_email "owner@example.com"
+                                 :rating 2}
+                                {:user_email "some_user@example.com"
+                                 :rating nil}]
+                      }]}
+           (tally-board
+            [{:name "Store1"
+              :id 1
+              :ratings [{:user_email "owner@example.com"
+                         :rating 1}
+                        {:user_email "some_user@example.com"
+                         :rating 2}]}
+             {:name "Store2"
+              :id 2
+              :ratings [{:user_email "owner@example.com"
+                         :rating 2}
+                        {:user_email "some_user@example.com"
+                         :rating nil}]
+              }]
+            {:id 1 :name "board"})))
+    )
+  )
+         

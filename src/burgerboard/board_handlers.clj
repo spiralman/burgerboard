@@ -44,7 +44,8 @@
 
 (defn get-board [user group board request]
   (->
-   {}
+   (find-board-ratings board)
+   (tally-board board)
    (json-response 200)
    )
   )

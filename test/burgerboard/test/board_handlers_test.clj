@@ -134,18 +134,20 @@
                 (request :get "/api/v1/groups/1/boards/1")
                 (header "Cookie" (login-as "some_user@example.com"
                                            "password"))))]
+
           (is (= (:status response) 200))
-          (is (= {:id 1 :name "board"
-                  :stores [{:name "Store1"
+          (is (= {:id 1 :name "Some Board"
+                  :group {:name "Group" :id 1}
+                  :stores [{:name "Store 1"
                             :id 1
                             :rating 1.5
                             :ratings [{:user_email "owner@example.com"
                                        :rating 1}
                                       {:user_email "some_user@example.com"
                                        :rating 2}]}
-                           {:name "Store2"
+                           {:name "Store 2"
                             :id 2
-                            :rating 2
+                            :rating 2.0
                             :ratings [{:user_email "owner@example.com"
                                        :rating 2}
                                       {:user_email "some_user@example.com"
