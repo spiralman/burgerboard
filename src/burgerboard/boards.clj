@@ -11,22 +11,27 @@
    :board board}
   )
 
+(defn tally-store [store]
+  (let [provided-ratings (filter
+                          (fn [rating]
+                            (not (nil? rating)))
+                          (map :rating (:ratings store)))
+        ratings-count (count provided-ratings)]
+    (assoc store
+      :rating
+      (if (> ratings-count 0)
+        (double (/ (reduce + provided-ratings) ratings-count))
+        nil
+        )
+      )
+    )
+  )
+
 (defn tally-board [stores board]
   (assoc board
     :stores
     (map
-     (fn [store]
-       (let [provided-ratings (filter
-                               (fn [rating]
-                                 (not (nil? rating)))
-                               (map :rating (:ratings store)))
-             ratings-count (count provided-ratings)]
-         (if (> ratings-count 0)
-           (assoc store
-             :rating (double (/ (reduce + provided-ratings) ratings-count)))
-           )
-         )
-       )
+     tally-store
      stores)
     )
   )

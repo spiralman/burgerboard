@@ -209,6 +209,15 @@
              (select ratings (where {:store_id (:id new-store)}))))
       )
     )
+
+  (testing "Finding a store"
+    (insert-store {:name "other store" :board {:id 2 :group_id 1}})
+    
+    (is (= {:id 1 :name "store" :board {:id 1 :group_id 1}}
+           (find-board-store {:id 1 :group_id 1} 1)))
+
+    (is (nil? (find-board-store {:id 1 :group_id 1} 2)))
+    )
   )
 
 (defn user-has-rating [email store rating-value]
@@ -263,7 +272,7 @@
   )
 
 (deftest test-ratings
-  (testing "Creating a new store"
+  (testing "Setting ratings"
     (insert-group {:name "group" :owner "user@example.com"})
     (insert-user {:email "user@example.com" :password "pass" :name "Name"
                   :groups [{:id 1 :name "group"}]})
@@ -272,7 +281,12 @@
     (insert-board {:name "board" :group {:id 1}})
     (insert-store {:name "store" :board {:id 1 :group_id 1}})
     
-    (set-rating {:id 1} {:email "user@example.com"} 1)
+    (is (= {:id 1 :name "store"
+            :ratings [{:user_email "user@example.com"
+                       :rating 1}
+                      {:user_email "other@example.com"
+                       :rating nil}]}
+           (set-rating {:id 1} {:email "user@example.com"} 1)))
     (user-has-rating "user@example.com" "store" 1)
     (user-has-rating "other@example.com" "store" nil)
 

@@ -69,6 +69,8 @@
      (set-rating {:id 1} {:email "some_user@example.com"} 2)
 
      (set-rating {:id 2} {:email "owner@example.com"} 2)
+
+     (insert-store {:name "Other Store" :board {:id 2 :group_id 1}})
      (f)
      )
    )

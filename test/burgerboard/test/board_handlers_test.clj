@@ -208,15 +208,93 @@
                                            "password"))
                 (body (json/write-str {:name "New Store"}))))]
           (is (= (:status response) 201))
-          (is (= {:name "New Store" :id 3
+          (is (= {:name "New Store" :id 4
                   :board {:id 1 :name "Some Board"
                           :group {:id 1 :name "Group"}}}
                  (json/read-str (:body response)
                                 :key-fn keyword)))
-          (is (= {:name "New Store" :id 3 :board_id 1}
+          (is (= {:name "New Store" :id 4 :board_id 1}
                  (first (select
                          stores
-                         (where {:id 3})))))
+                         (where {:id 4})))))
+          )
+        )
+      )
+
+    (testing "PUT to rating"
+      (testing "requires login"
+        (let [response
+              (app
+               (->
+                (request :put "/api/v1/groups/1/boards/1/stores/1/rating")
+                (header :content-type "application/json")))]
+          (is (= (:status response) 401))
+          )
+        )
+
+      (testing "requires membership"
+        (let [response
+              (app
+               (->
+                (request :put "/api/v1/groups/1/boards/1/stores/1/rating")
+                (header "Cookie" (login-as "second_user@example.com"
+                                           "password"))))]
+          (is (= (:status response) 403))
+          )
+        )
+
+      (testing "board must belong to group"
+        (insert-group {:name "group2" :owner "some_user@example.com"})
+        (insert-member {:id 2} {:email "some_user@example.com"})
+        
+        (insert-board {:name "board2" :group {:id 2}})
+
+        (let [response
+              (app
+               (->
+                (request :put "/api/v1/groups/1/boards/2/stores/1/rating")
+                (header "Cookie" (login-as "some_user@example.com"
+                                           "password"))
+                (body (json/write-str {:rating 2}))))]
+          (is (= (:status response) 404))
+          )
+        )
+
+      (testing "store must belong to board"
+        (let [response
+              (app
+               (->
+                (request :put "/api/v1/groups/1/boards/1/stores/3/rating")
+                (header "Cookie" (login-as "some_user@example.com"
+                                           "password"))
+                (body (json/write-str {:rating 2}))))]
+          (is (= (:status response) 404))
+          )
+        )
+
+      (testing "store must belong to board"
+        (let [response
+              (app
+               (->
+                (request :put "/api/v1/groups/1/boards/1/stores/1/rating")
+                (header "Cookie" (login-as "some_user@example.com"
+                                           "password"))
+                (body (json/write-str {:rating 3}))))]
+          (is (= (:status response) 200))
+          (is (= {:name "Store 1"
+                  :id 1
+                  :rating 2.0
+                  :ratings [{:user_email "owner@example.com"
+                             :rating 1}
+                            {:user_email "some_user@example.com"
+                             :rating 3}]}
+                 (json/read-str (:body response) :key-fn keyword)))
+          (is (= {:rating 3}
+                 (first
+                  (select ratings
+                          (fields :rating)
+                          (where {:store_id 1
+                                  :user_email "some_user@example.com"})))))
           )
         )
       )

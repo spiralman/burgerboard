@@ -53,5 +53,41 @@
               }]
             {:id 1 :name "board"})))
     )
+  
+  (testing "Tallies single store"
+    (is (= {:name "Store1"
+            :id 1
+            :rating 1.5
+            :ratings [{:user_email "owner@example.com"
+                       :rating 1}
+                      {:user_email "some_user@example.com"
+                       :rating 2}]}
+           (tally-store
+            {:name "Store1"
+              :id 1
+              :ratings [{:user_email "owner@example.com"
+                         :rating 1}
+                        {:user_email "some_user@example.com"
+                         :rating 2}]}
+            )))
+    )
+
+  (testing "Tally handles all nil ratings"
+    (is (= {:name "Store1"
+            :id 1
+            :rating nil
+            :ratings [{:user_email "owner@example.com"
+                       :rating nil}
+                      {:user_email "some_user@example.com"
+                       :rating nil}]}
+           (tally-store
+            {:name "Store1"
+              :id 1
+              :ratings [{:user_email "owner@example.com"
+                         :rating nil}
+                        {:user_email "some_user@example.com"
+                         :rating nil}]}
+            )))
+    )
   )
          

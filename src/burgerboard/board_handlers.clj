@@ -18,6 +18,17 @@
    )
   )
 
+(defn require-store [request handler]
+  (require-board
+   request
+   (fn [user group board request]
+     (if-let [store (find-board-store board (:store-id (:params request)))]
+       (handler user group board store request)
+       )
+     )
+   )
+  )
+
 (defn json-response [data status]
   {:status status
    :body (json/write-str data)}
@@ -61,6 +72,17 @@
     )
   )
 
+(defn put-rating [user group board store request]
+  (let [rating (int (:rating (json/read-str (slurp (:body request))
+                                            :key-fn keyword)))]
+    (->
+     (set-rating store user rating)
+     (tally-store)
+     (json-response 200)
+     )
+    )
+  )
+
 (defroutes board-routes
   (GET "/boards" request
        (require-login request get-users-boards))
@@ -73,4 +95,7 @@
 
   (POST "/groups/:group-id/boards/:board-id/stores" request
         (require-board request post-store))
+
+  (PUT "/groups/:group-id/boards/:board-id/stores/:store-id/rating" request
+        (require-store request put-rating))
   )

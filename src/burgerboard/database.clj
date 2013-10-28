@@ -242,12 +242,34 @@
    )
   )
 
+(defn find-board-store [board store-id]
+  (nest-subentity
+   :board
+   (first
+    (select stores
+            (fields :id :name)
+            (with boards
+                  (fields [:id :board_id] [:group_id :board_group_id])
+            (where {:id store-id :board_id (:id board)})))
+    )
+   )
+  )
+
 (defn set-rating [store user rating]
-  (update
-   ratings
-   (set-fields {:rating rating})
-   (where {:store_id (:id store)
-           :user_email (:email user)})
+  (transaction
+   (update
+    ratings
+    (set-fields {:rating rating})
+    (where {:store_id (:id store)
+            :user_email (:email user)})
+    )
+   (first
+    (select stores
+            (fields :id :name)
+            (with ratings
+                  (fields :user_email :rating))
+            (where {:id (:id store)}))
+            )
    )
   )
 
