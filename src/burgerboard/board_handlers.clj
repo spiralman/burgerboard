@@ -97,5 +97,5 @@
         (require-board request post-store))
 
   (PUT "/groups/:group-id/boards/:board-id/stores/:store-id/rating" request
-        (require-store request put-rating))
+       (require-store request put-rating))
   )
