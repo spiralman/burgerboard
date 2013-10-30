@@ -143,6 +143,8 @@
                   :url "http://localhost/api/v1/groups/1/boards/1"
                   :stores [{:name "Store 1"
                             :id 1
+                            :rating_url
+                            "http://localhost/api/v1/groups/1/boards/1/stores/1/rating"
                             :rating 1.5
                             :ratings [{:user_email "owner@example.com"
                                        :rating 1}
@@ -150,6 +152,8 @@
                                        :rating 2}]}
                            {:name "Store 2"
                             :id 2
+                            :rating_url
+                            "http://localhost/api/v1/groups/1/boards/1/stores/2/rating"
                             :rating 2.0
                             :ratings [{:user_email "owner@example.com"
                                        :rating 2}
@@ -212,6 +216,8 @@
                 (body (json/write-str {:name "New Store"}))))]
           (is (= (:status response) 201))
           (is (= {:name "New Store" :id 4
+                  :rating_url
+                  "http://localhost/api/v1/groups/1/boards/1/stores/4/rating"
                   :board {:id 1 :name "Some Board"
                           :group {:id 1 :name "Group"}}}
                  (json/read-str (:body response)
@@ -286,6 +292,8 @@
           (is (= (:status response) 200))
           (is (= {:name "Store 1"
                   :id 1
+                  :rating_url
+                  "http://localhost/api/v1/groups/1/boards/1/stores/1/rating"
                   :rating 2.0
                   :ratings [{:user_email "owner@example.com"
                              :rating 1}

@@ -47,10 +47,26 @@
    :body (json/write-str data)}
   )
 
+(defn render-store [request group board store]
+  (assoc store
+    :rating_url (resolve-route request
+                               "groups" (:id group)
+                               "boards" (:id board)
+                               "stores" (:id store) "rating"))
+  )
+
 (defn render-board [request board]
-  (assoc board
-    :url (resolve-route request
-                        "groups" (:id (:group board)) "boards" (:id board)))
+  (->
+   (if (contains? board :stores)
+     (assoc board
+       :stores
+       (map (partial render-store request (:group board) board)
+            (:stores board)))
+     board)
+   (assoc
+     :url (resolve-route request
+                         "groups" (:id (:group board)) "boards" (:id board)))
+   )
   )
 
 (defn get-users-boards [user request]
@@ -91,6 +107,7 @@
     (->
      (create-store name board)
      (insert-store)
+     (->> (render-store request group board))
      (json-response 201)
      )
     )
@@ -102,6 +119,7 @@
     (->
      (set-rating store user rating)
      (tally-store)
+     (->> (render-store request group board))
      (json-response 200)
      )
     )
