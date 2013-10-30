@@ -65,7 +65,10 @@
      board)
    (assoc
      :url (resolve-route request
-                         "groups" (:id (:group board)) "boards" (:id board)))
+                         "groups" (:id (:group board)) "boards" (:id board))
+     :stores_url (resolve-route request
+                                "groups" (:id (:group board))
+                                "boards" (:id board) "stores"))
    )
   )
 

@@ -35,6 +35,7 @@
                   [{:name "Some Board"
                     :id 1
                     :url "http://localhost/api/v1/groups/1/boards/1"
+                    :stores_url "http://localhost/api/v1/groups/1/boards/1/stores"
                     :group {:id 1 :name "Group"}}]
                   }
                  (json/read-str (:body response)
@@ -82,6 +83,7 @@
           (is (= {:name "New Board"
                   :id 3
                   :url "http://localhost/api/v1/groups/1/boards/3"
+                  :stores_url "http://localhost/api/v1/groups/1/boards/3/stores"
                   :group {:id 1 :name "Group"}}
                  (json/read-str (:body response)
                                 :key-fn keyword)))
@@ -141,6 +143,7 @@
           (is (= {:id 1 :name "Some Board"
                   :group {:name "Group" :id 1}
                   :url "http://localhost/api/v1/groups/1/boards/1"
+                  :stores_url "http://localhost/api/v1/groups/1/boards/1/stores"
                   :stores [{:name "Store 1"
                             :id 1
                             :rating_url
