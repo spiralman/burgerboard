@@ -1,5 +1,6 @@
 (ns burgerboard.board-handlers
   (:use compojure.core
+        [clojure.string :only [join]]
         [clojure.data.json :as json :only [read-str write-str]]
         burgerboard.authentication
         burgerboard.database
@@ -29,6 +30,18 @@
    )
   )
 
+(defn resolve-route [request & route]
+  (join "/"
+        (concat
+         [(str (-> request :scheme name)
+               "://"
+               (get-in request [:headers "host"]))
+          "api"
+          "v1"]
+         route)
+        )
+  )
+
 (defn json-response [data status]
   {:status status
    :body (json/write-str data)}
@@ -36,7 +49,14 @@
 
 (defn get-users-boards [user request]
   (->
-   {:boards (find-users-boards user)}
+   {:boards
+    (map
+     (fn [board]
+       (assoc board
+         :url (resolve-route request
+                             "groups" (:id (:group board)) "boards" (:id board)))
+       )
+     (find-users-boards user))}
    (json-response 200)
    )
   )

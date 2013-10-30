@@ -34,6 +34,7 @@
           (is (= {:boards
                   [{:name "Some Board"
                     :id 1
+                    :url "http://localhost/api/v1/groups/1/boards/1"
                     :group {:id 1 :name "Group"}}]
                   }
                  (json/read-str (:body response)
