@@ -81,6 +81,7 @@
           (is (= (:status response) 201))
           (is (= {:name "New Board"
                   :id 3
+                  :url "http://localhost/api/v1/groups/1/boards/3"
                   :group {:id 1 :name "Group"}}
                  (json/read-str (:body response)
                                 :key-fn keyword)))
@@ -139,6 +140,7 @@
           (is (= (:status response) 200))
           (is (= {:id 1 :name "Some Board"
                   :group {:name "Group" :id 1}
+                  :url "http://localhost/api/v1/groups/1/boards/1"
                   :stores [{:name "Store 1"
                             :id 1
                             :rating 1.5

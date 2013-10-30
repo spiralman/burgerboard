@@ -47,15 +47,17 @@
    :body (json/write-str data)}
   )
 
+(defn render-board [request board]
+  (assoc board
+    :url (resolve-route request
+                        "groups" (:id (:group board)) "boards" (:id board)))
+  )
+
 (defn get-users-boards [user request]
   (->
    {:boards
     (map
-     (fn [board]
-       (assoc board
-         :url (resolve-route request
-                             "groups" (:id (:group board)) "boards" (:id board)))
-       )
+     (partial render-board request)
      (find-users-boards user))}
    (json-response 200)
    )
@@ -68,6 +70,7 @@
      (create-board name group)
      (insert-board)
      (merge {:group (select-keys group [:id :name])})
+     (->> (render-board request))
      (json-response 201)
      )
     )
@@ -77,6 +80,7 @@
   (->
    (find-board-ratings board)
    (tally-board board)
+   (->> (render-board request))
    (json-response 200)
    )
   )
