@@ -3,11 +3,43 @@
         burgerboard.boards)
   )
 
+(defn contains-same? [seq1 seq2]
+  (if (= (count seq1) (count seq2))
+    (every? (fn [elem1]
+              (some (fn [elem2]
+                      (= elem1 elem2))
+                    seq2))
+            seq1)
+    false
+    )
+  )
+
 (deftest boards
   (testing "Creating a board"
     (is (= {:name "board"
             :group {:id 1 :name "group"}}
            (create-board "board" {:id 1 :name "group"})))
+    )
+
+  (testing "Grouping boards by group"
+    (is (contains-same?
+         '({:name "group" :id 1
+            :boards ({:id 1
+                      :name "Board 1"}
+                     {:id 2
+                      :name "Board 2"})}
+           {:name "group2" :id 2
+            :boards ({:id 3
+                      :name "Board 3"})})
+         (group-boards [{:id 1
+                         :name "Board 1"
+                         :group {:id 1 :name "group"}}
+                        {:id 2
+                         :name "Board 2"
+                         :group {:id 1 :name "group"}}
+                        {:id 3
+                         :name "Board 3"
+                         :group {:id 2 :name "group2"}}])))
     )
   )
 

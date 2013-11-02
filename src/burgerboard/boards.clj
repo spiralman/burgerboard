@@ -6,6 +6,22 @@
    :group group}
   )
 
+(defn group-boards [boards]
+  (reduce
+   (fn [groups [group boards]]
+     (cons
+      (assoc group
+        :boards (map
+                 (fn [board]
+                   (dissoc board :group))
+                 boards))
+      groups))
+   []
+   (group-by :group
+             boards)
+   )
+  )
+
 (defn create-store [name board]
   {:name name
    :board board}
