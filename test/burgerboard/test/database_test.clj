@@ -151,6 +151,16 @@
                    (fn [user] (= (:email user) "other@example.com"))
                    (:users (find-group 1))))))
     )
+
+  (testing "Finding groups to which a member belongs"
+    (insert-group {:name "group2" :owner "user@example.com"})
+    (insert-member {:id 2} {:email "user@example.com"})
+
+    (insert-group {:name "other group" :owner "other@example.com"})
+
+    (is (= [{:id 1 :name "group"} {:id 2 :name "group2"}]
+           (find-users-groups {:email "user@example.com"})))
+    )
   )
 
 (deftest test-boards

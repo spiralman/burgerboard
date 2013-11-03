@@ -5,6 +5,7 @@
         burgerboard.authentication
         burgerboard.database
         burgerboard.boards
+        burgerboard.api
         )
   )
 
@@ -28,23 +29,6 @@
        )
      )
    )
-  )
-
-(defn resolve-route [request & route]
-  (join "/"
-        (concat
-         [(str (-> request :scheme name)
-               "://"
-               (get-in request [:headers "host"]))
-          "api"
-          "v1"]
-         route)
-        )
-  )
-
-(defn json-response [data status]
-  {:status status
-   :body (json/write-str data)}
   )
 
 (defn render-store [request group board store]
@@ -74,7 +58,7 @@
 
 (defn get-users-boards [user request]
   (->
-   {:boards
+   {:groups
     (map
      (partial render-board request)
      (find-users-boards user))}

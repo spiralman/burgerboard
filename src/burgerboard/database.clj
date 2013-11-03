@@ -182,6 +182,17 @@
     ))
   )
 
+(defn find-users-groups [user]
+  (select
+   groups
+   (fields :id :name)
+   (where {:id [in (subselect
+                    memberships
+                    (fields :group_id)
+                    (where {:user_email
+                            (:email user)}))]}))
+  )
+
 (defn insert-board [board]
   (assoc-id
    board
