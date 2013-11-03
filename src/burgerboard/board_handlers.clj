@@ -56,14 +56,8 @@
    )
   )
 
-(defn get-users-boards [user request]
-  (->
-   {:groups
-    (map
-     (partial render-board request)
-     (find-users-boards user))}
-   (json-response 200)
-   )
+(defn get-boards [user group request]
+  (json-response {} 200)
   )
 
 (defn post-board [user group request]
@@ -113,12 +107,12 @@
   )
 
 (defroutes board-routes
-  (GET "/boards" request
-       (require-login request get-users-boards))
-
   (GET "/groups/:group-id/boards/:board-id" request
        (require-board request get-board))
   
+  (GET "/groups/:group-id/boards" request
+       (require-membership request get-boards))
+
   (POST "/groups/:group-id/boards" request
         (require-ownership request post-board))
 

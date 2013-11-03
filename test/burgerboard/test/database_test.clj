@@ -176,17 +176,15 @@
       )
     )
 
-  (testing "Getting the boards for a user"
+  (testing "Getting the boards for a group"
+    (insert-board {:name "board2" :group {:id 1}})
     (insert-group {:name "group2" :owner "user@example.com"})
-    (insert-member {:id 2} {:email "user@example.com"})
 
-    (insert-board {:name "board2" :group {:id 2}})
+    (insert-board {:name "hidden" :group {:id 2}})
 
-    (insert-board {:name "hidden" :group {:id 3}})
-
-    (is (= [{:id 1 :name "board" :group {:id 1 :name "group"}}
-            {:id 2 :name "board2" :group {:id 2 :name "group2"}}]
-           (find-users-boards (find-user "user@example.com"))))
+    (is (= [{:id 1 :name "board"}
+            {:id 2 :name "board2"}]
+           (find-groups-boards {:id 1})))
     )
 
   (testing "Getting a board by ID"

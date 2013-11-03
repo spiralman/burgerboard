@@ -56,6 +56,44 @@
           )
         )
       )
+
+    (testing "GET"
+      (testing "requires login"
+        (let [response
+              (app
+               (->
+                (request :get "/api/v1/groups/1/boards")
+                (header :content-type "application/json")))]
+          (is (= (:status response) 401))
+          )
+        )
+
+      (testing "requires membership"
+        (let [response
+              (app
+               (->
+                (request :get "/api/v1/groups/1/boards")
+                (header :content-type "application/json")
+                (header "Cookie" (login-as "second_user@example.com"
+                                           "password"))))]
+          (is (= (:status response) 403))
+          )
+        )
+
+      (testing "gets all boards belong to a group"
+        (let [response
+              (app
+               (->
+                (request :get "/api/v1/groups/1/boards")
+                (header :content-type "application/json")
+                (header "Cookie" (login-as "some_user@example.com" "password"))))]
+          (is (= (:status response) 200))
+          (is (= {}
+                 (json/read-str (:body response)
+                                :key-fn keyword)))
+          )
+        )
+      )
     )
 
   (testing "Individual Board routes"

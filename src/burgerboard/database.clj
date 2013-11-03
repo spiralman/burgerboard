@@ -213,15 +213,10 @@
             (where {:id board-id :group_id (:id group)}))))
   )
 
-(defn find-users-boards [user]
-  (map
-   (partial nest-subentity :group)
-   (select boards
-           (fields :id :name)
-           (with groups
-                 (fields [:id :group_id] [:name :group_name]))
-           (where (in :group_id (map :id (:groups user)))))
-   )
+(defn find-groups-boards [group]
+  (select boards
+          (fields :id :name)
+          (where {:group_id (:id group)}))
   )
 
 (defn insert-store [store]
