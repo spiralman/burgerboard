@@ -11,40 +11,6 @@
 (use-fixtures :each basic-board-fixture)
 
 (deftest test-board-handlers
-  (testing "User's boards route"
-    (testing "GET"
-      (testing "requires login"
-        (let [response
-              (app
-               (request :get "/api/v1/boards"))
-              ]
-          (is (= (:status response) 401))
-          (is (= (:body response) "Login required"))
-          )
-        )
-
-      (testing "returns boards in users groups"
-        (let [response
-              (app
-               (->
-                (request :get "/api/v1/boards")
-                (header "Cookie" (login-as "some_user@example.com"
-                                           "password"))))]
-          (is (= (:status response) 200))
-          (is (= {:boards
-                  [{:name "Some Board"
-                    :id 1
-                    :url "http://localhost/api/v1/groups/1/boards/1"
-                    :stores_url "http://localhost/api/v1/groups/1/boards/1/stores"
-                    :group {:id 1 :name "Group"}}]
-                  }
-                 (json/read-str (:body response)
-                                :key-fn keyword)))
-          )
-        )
-      )
-    )
-
   (testing "Group's boards route"
     (testing "POST"
       (testing "requires login"

@@ -20,27 +20,6 @@
             :group {:id 1 :name "group"}}
            (create-board "board" {:id 1 :name "group"})))
     )
-
-  (testing "Grouping boards by group"
-    (is (contains-same?
-         '({:name "group" :id 1
-            :boards ({:id 1
-                      :name "Board 1"}
-                     {:id 2
-                      :name "Board 2"})}
-           {:name "group2" :id 2
-            :boards ({:id 3
-                      :name "Board 3"})})
-         (group-boards [{:id 1
-                         :name "Board 1"
-                         :group {:id 1 :name "group"}}
-                        {:id 2
-                         :name "Board 2"
-                         :group {:id 1 :name "group"}}
-                        {:id 3
-                         :name "Board 3"
-                         :group {:id 2 :name "group2"}}])))
-    )
   )
 
 (deftest stores
