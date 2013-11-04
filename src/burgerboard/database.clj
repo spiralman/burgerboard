@@ -214,9 +214,12 @@
   )
 
 (defn find-groups-boards [group]
-  (select boards
-          (fields :id :name)
-          (where {:group_id (:id group)}))
+  (map
+   (fn [board]
+     (assoc board :group group))
+   (select boards
+           (fields :id :name)
+           (where {:group_id (:id group)})))
   )
 
 (defn insert-store [store]

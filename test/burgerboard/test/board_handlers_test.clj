@@ -88,7 +88,19 @@
                 (header :content-type "application/json")
                 (header "Cookie" (login-as "some_user@example.com" "password"))))]
           (is (= (:status response) 200))
-          (is (= {}
+          (is (= {:boards [{:id 1
+                            :name "Some Board"
+                            :url "http://localhost/api/v1/groups/1/boards/1"
+                            :stores_url
+                            "http://localhost/api/v1/groups/1/boards/1/stores"
+                            :group {:id 1 :name "Group"}
+}
+                           {:id 3
+                            :name "New Board"
+                            :url "http://localhost/api/v1/groups/1/boards/3"
+                            :stores_url
+                            "http://localhost/api/v1/groups/1/boards/3/stores"
+                            :group {:id 1 :name "Group"}}]}
                  (json/read-str (:body response)
                                 :key-fn keyword)))
           )

@@ -182,8 +182,12 @@
 
     (insert-board {:name "hidden" :group {:id 2}})
 
-    (is (= [{:id 1 :name "board"}
-            {:id 2 :name "board2"}]
+    (is (= [{:id 1
+             :name "board"
+             :group {:id 1}}
+            {:id 2
+             :name "board2"
+             :group {:id 1}}]
            (find-groups-boards {:id 1})))
     )
 

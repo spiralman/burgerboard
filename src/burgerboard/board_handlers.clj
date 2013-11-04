@@ -39,14 +39,30 @@
                                "stores" (:id store) "rating"))
   )
 
+(defn if-contains-modify [map key modify-fn]
+  (if (contains? map key)
+    (assoc map
+      key
+      (modify-fn map))
+    map)
+  )
+
 (defn render-board [request board]
   (->
-   (if (contains? board :stores)
-     (assoc board
-       :stores
-       (map (partial render-store request (:group board) board)
-            (:stores board)))
-     board)
+   board
+   (if-contains-modify
+    :stores
+    (fn [_]
+      (map (partial render-store request (:group board) board)
+           (:stores board))
+      )
+    )
+   (if-contains-modify
+    :group
+    (fn [_]
+      (dissoc (:group board) :owner :users)
+      )
+    )
    (assoc
      :url (resolve-route request
                          "groups" (:id (:group board)) "boards" (:id board))
@@ -57,7 +73,10 @@
   )
 
 (defn get-boards [user group request]
-  (json-response {} 200)
+  (->
+   {:boards (map (partial render-board request)
+                 (find-groups-boards group))}
+   (json-response 200))
   )
 
 (defn post-board [user group request]
