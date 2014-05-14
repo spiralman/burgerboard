@@ -1,0 +1,57 @@
+---
+- hosts: all
+  tasks:
+    - name: ensure PIP installed
+      sudo: yes
+      apt: name=python-pip
+    - name: ensure Python dev installed
+      sudo: yes
+      apt: name=python-dev
+    - name: ensure PostgreSQL installed
+      sudo: yes
+      apt: name=postgresql
+    - name: ensure PostgreSQL dev installed
+      sudo: yes
+      apt: name=postgresql-server-dev-9.1
+    - name: ensure Python PostgreSQL driver installed
+      sudo: yes
+      pip: name=psycopg2 version=2.5.3
+    - name: ensure PostgreSQL DB created
+      sudo: yes
+      sudo_user: postgres
+      postgresql_db: name=burgerboard
+    - name: ensure PostgreSQL user created
+      sudo: yes
+      sudo_user: postgres
+      postgresql_user: db=burgerboard name=burgerboard password=burgerboard
+    - name: ensure OpenJDK 7 installed
+      sudo: yes
+      apt: name=openjdk-7-jdk
+    - name: ensure leiningen available
+      sudo: yes
+      get_url: url=https://raw.github.com/technomancy/leiningen/stable/bin/lein
+                dest=/usr/local/bin
+                mode=0777
+    - name: ensure leiningen installed
+      command: lein
+    - name: ensure NGINX installed
+      sudo: yes
+      apt: name=nginx-full
+    - name: ensure NGINX configured
+      sudo: yes
+      copy: src=files/nginx.conf dest=/etc/nginx/sites-available/api
+    - name: ensure NGINX default site disabled
+      sudo: yes
+      file: path=/etc/nginx/sites-enabled/default state=absent
+    - name: ensure API NGINX site enabled
+      sudo: yes
+      file: path=/etc/nginx/sites-enabled/api state=link src=/etc/nginx/sites-available/api
+      notify:
+        - restart nginx
+    - name: ensure NGINX started
+      sudo: yes
+      service: name=nginx state=started
+  handlers:
+    - name: restart nginx
+      sudo: yes
+      service: name=nginx state=restarted
