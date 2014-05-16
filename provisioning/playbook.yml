@@ -16,6 +16,11 @@
     - name: ensure Python PostgreSQL driver installed
       sudo: yes
       pip: name=psycopg2 version=2.5.3
+    - name: ensure PostgreSQL user configured
+      sudo: yes
+      copy: src=files/pg_hba.conf dest=/etc/postgresql/9.1/main/pg_hba.conf
+      notify:
+        - restart postgresql
     - name: ensure PostgreSQL DB created
       sudo: yes
       sudo_user: postgres
@@ -55,3 +60,6 @@
     - name: restart nginx
       sudo: yes
       service: name=nginx state=restarted
+    - name: restart postgresql
+      sudo: yes
+      service: name=postgresql state=restarted

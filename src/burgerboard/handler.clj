@@ -82,7 +82,7 @@
 
 (defroutes app-routes
   (context "/api/v1" [] api-routes)
-  (GET "/" [] "Hello World")
+  (GET "/" [] "Hello World!!")
   (route/resources "/")
   (route/not-found "Not Found"))
 
