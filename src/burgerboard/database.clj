@@ -46,37 +46,37 @@
 
 (defn create-schema []
   (jdbc/create-table
-   :users
+   "IF NOT EXISTS users"
    [:email "varchar" "PRIMARY KEY"]
    [:password "varchar"]
    [:name "varchar"]
    )
   (jdbc/create-table
-   :groups
+   "IF NOT EXISTS groups"
    [:id "INTEGER" "PRIMARY KEY"]
    [:name "varchar"]
    [:owner "varchar"]
    )
   (jdbc/create-table
-   :memberships
+   "IF NOT EXISTS memberships"
    [:id "INTEGER" "PRIMARY KEY"]
    [:user_email "VARCHAR"]
    [:group_id "INTEGER"]
    )
   (jdbc/create-table
-   :boards
+   "IF NOT EXISTS boards"
    [:id "INTEGER" "PRIMARY KEY"]
    [:group_id "INTEGER"]
    [:name "varchar"]
    )
   (jdbc/create-table
-   :stores
+   "IF NOT EXISTS stores"
    [:id "INTEGER" "PRIMARY KEY"]
    [:board_id "INTEGER"]
    [:name "VARCHAR"]
    )
   (jdbc/create-table
-   :ratings
+   "IF NOT EXISTS ratings"
    [:id "INTEGER" "PRIMARY KEY"]
    [:store_id "INTEGER"]
    [:user_email "VARCHAR"]
@@ -224,14 +224,14 @@
 
 (defn insert-store [store]
   (transaction
-   (let [inserted-store 
+   (let [inserted-store
          (assoc-id
           store
           (insert stores
                   (values {:name (:name store)
                            :board_id (:id (:board store))}))
           )
-         
+
          members
          (select memberships
                  (where {:group_id (:group_id (:board store))}))]

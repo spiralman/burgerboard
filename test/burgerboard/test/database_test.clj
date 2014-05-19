@@ -87,7 +87,7 @@
         (is (= "INTEGER" (:type_name (get-column "board_id" stores-cols))))
         (is (= "VARCHAR" (:type_name (get-column "name" stores-cols))))
         )
-      
+
       (is (not (nil? (get-table "ratings" tables))))
 
       (let [ratings-cols (get-columns "ratings")]
@@ -97,6 +97,10 @@
         (is (= "INTEGER" (:type_name (get-column "rating" ratings-cols))))
         )
       )
+    )
+
+  (testing "create-schema is idempotent"
+    (create-schema)
     )
   )
 
@@ -194,7 +198,7 @@
   (testing "Getting a board by ID"
     (insert-group {:name "group2" :owner "user@example.com"})
     (insert-board {:name "board2" :group {:id 2}})
-    
+
     (is (= {:id 1 :name "board" :group {:id 1 :name "group"}}
            (find-group-board {:id 1} 1)))
 
@@ -224,7 +228,7 @@
 
   (testing "Finding a store"
     (insert-store {:name "other store" :board {:id 2 :group_id 1}})
-    
+
     (is (= {:id 1 :name "store" :board {:id 1 :group_id 1}}
            (find-board-store {:id 1 :group_id 1} 1)))
 
@@ -266,10 +270,10 @@
 
     (insert-store {:name "other group store" :board {:id 3 :group_id 2}})
 
-    
+
     (insert-user {:email "user@example.com" :password "pass" :name "Name"
                   :groups [{:id 1 :name "group"} {:id 2 :name "other"}]})
-    
+
     (insert-member {:id 1} {:email "other@example.com"})
 
     (user-has-rating "user@example.com" "store" nil)
@@ -292,7 +296,7 @@
                   :groups [{:id 1 :name "group"}]})
     (insert-board {:name "board" :group {:id 1}})
     (insert-store {:name "store" :board {:id 1 :group_id 1}})
-    
+
     (is (= {:id 1 :name "store"
             :ratings [{:user_email "user@example.com"
                        :rating 1}
@@ -320,6 +324,3 @@
            (find-board-ratings {:id 1})))
     )
   )
-    
-
-
