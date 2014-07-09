@@ -82,8 +82,7 @@
 
 (defroutes app-routes
   (context "/api/v1" [] api-routes)
-  (GET "/" [] "Hello World!!")
-  (route/resources "/")
+  (route/resources "/static" {:root "public"})
   (route/not-found "Not Found"))
 
 (def app
