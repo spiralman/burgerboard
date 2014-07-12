@@ -6,7 +6,15 @@
   (reify
     om/IRender
     (render [this]
-      (dom/h1 nil (:text data)))))
+      (dom/h1 nil (:text data)
+              (dom/span (:text "test"))
+              (dom/span (:text "input"))
+              )
+      )
+    )
+  )
 
-(om/root app {:text "Hello world!"}
-  {:target (. js/document (getElementById "burgerboard"))})
+(defn main []
+  (om/root app {:text "Hello world!"}
+           {:target (. js/document (getElementById "burgerboard"))})
+  )
