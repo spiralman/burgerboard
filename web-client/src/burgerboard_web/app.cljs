@@ -7,8 +7,8 @@
     om/IRender
     (render [this]
       (dom/h1 nil (:text data)
-              (dom/span (:text "test"))
-              (dom/span (:text "input"))
+              (dom/span nil (:text "test"))
+              (dom/span nil (:text "input"))
               )
       )
     )

@@ -17,26 +17,36 @@
 
 (defn tag [tag-name & tests]
   (fn [component]
+    (println tag-name (.-tagName component))
     (and
      (= tag-name (.-tagName component))
-     ((apply every-pred tests) component)
+     (if (empty? tests)
+       true
+       ((apply every-pred tests) component)
+       )
      )
     )
   )
 
 (defn containing [& tests]
   (fn [component]
-    ((apply some-fn tests) (.. -component -props -children))
+    (println (js->clj (.. component -props -children)))
+    ((every-pred true?)
+     (map (fn [pred child] (pred child))
+          tests
+          (js->clj (.. component -props -children))
+          )
+     )
     )
   )
 
 (deftest hello-test
   (is (rendered
-       app/app {}
-       (tag "DIV"
+       app/app {:text "the text"}
+       (tag "H1"
             (containing
-             (tag "SPAN"))
-            (containing
+             (fn [t] (println t) true)
+             (tag "SPAN")
              (tag "SPAN"))
             )
        )
