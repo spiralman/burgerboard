@@ -6,7 +6,7 @@
   (reify
     om/IRender
     (render [this]
-      (dom/h1 nil (:text data)
+      (dom/h1 #js {:className "app"} (:text data)
               (dom/span nil (:text "test"))
               (dom/span nil (:text "input"))
               )

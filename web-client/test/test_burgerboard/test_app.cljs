@@ -6,6 +6,7 @@
             [burgerboard-web.app :as app]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
+            [clojure.string :refer [upper-case]]
             )
   )
 
@@ -18,7 +19,7 @@
 (defn tag [tag-name & tests]
   (fn [component]
     (and
-     (= tag-name (.-tagName component))
+     (= (upper-case tag-name) (.-tagName component))
      (if (empty? tests)
        true
        ((apply every-pred tests) component)
@@ -44,23 +45,22 @@
     )
   )
 
+(defn with-class [class-name]
+  (fn [component]
+    (= class-name (.. component -props -className))
+    )
+  )
+
 (deftest hello-test
   (is (rendered
        app/app {:text "the text"}
-       (tag "H1"
+       (tag "h1"
+            (with-class "app")
             (containing
              (text "the text")
-             (tag "SPAN")
-             (tag "SPAN"))
+             (tag "span")
+             (tag "span"))
             )
        )
       )
   )
-
-  ;;  (let [a (om/build app/app {} {})
-  ;;        rendered (.render a)
-  ;;        ]
-  ;;    (tag rendered "H1")
-  ;;    )
-  ;;  )
-  ;; )
