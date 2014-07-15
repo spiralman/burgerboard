@@ -70,13 +70,13 @@
 
 (deftest app-contains-sub-components
   (is (rendered
-       app/app {:text "the text"}
-       (tag "h1"
+       app/app {}
+       (tag "div"
+            (with-class "burgerboard")
             (containing
-             (text "the text")
-             (sub-component app/sub-component {})
-             (tag "span")
-             (tag "span"))
+             (sub-component app/group-nav {})
+             (sub-component app/board {})
+             )
             )
        )
       )

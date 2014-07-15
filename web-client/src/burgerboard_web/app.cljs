@@ -2,11 +2,20 @@
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]))
 
-(defn sub-component [data owner]
+(defn group-nav [data owner]
   (reify
     om/IRender
     (render [this]
-      (dom/div nil {:text "sub-component"})
+      (dom/div nil {})
+      )
+    )
+  )
+
+(defn board [data owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/div nil {})
       )
     )
   )
@@ -15,10 +24,9 @@
   (reify
     om/IRender
     (render [this]
-      (dom/h1 #js {:className "app"} (:text data)
-              (om/build sub-component {})
-              (dom/span nil (:text "test"))
-              (dom/span nil (:text "input"))
+      (dom/div #js {:className "burgerboard"}
+              (om/build group-nav {})
+              (om/build board {})
               )
       )
     )
