@@ -10,9 +10,17 @@
             )
   )
 
+(defn -instrument [sub-component cursor _]
+  {:sub-component sub-component
+   :cursor cursor
+   }
+  )
+
 (defn rendered [component state & tests]
-  (let [rendered-comp (.render (om/build component state {}))]
-    ((apply every-pred tests) rendered-comp)
+  (binding [om/*instrument* -instrument]
+    (let [rendered-comp (.render (om/build* component state {}))]
+      ((apply every-pred tests) rendered-comp)
+      )
     )
   )
 
@@ -45,19 +53,28 @@
     )
   )
 
+(defn sub-component [sub-component cursor]
+  (fn [component]
+    (= {:sub-component sub-component
+        :cursor cursor}
+       component
+       )
+    )
+  )
+
 (defn with-class [class-name]
   (fn [component]
     (= class-name (.. component -props -className))
     )
   )
 
-(deftest hello-test
+(deftest app-contains-sub-components
   (is (rendered
        app/app {:text "the text"}
        (tag "h1"
-            (with-class "app")
             (containing
              (text "the text")
+             (sub-component app/sub-component {})
              (tag "span")
              (tag "span"))
             )
