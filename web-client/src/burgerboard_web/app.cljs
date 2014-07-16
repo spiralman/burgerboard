@@ -10,11 +10,22 @@
    )
   )
 
-(defn group-nav [data owner]
+(defn group [data owner]
   (reify
     om/IRender
     (render [this]
       (dom/div nil {})
+      )
+    )
+  )
+
+(defn group-nav [data owner]
+  (reify
+    om/IRender
+    (render [this]
+      (apply dom/ul #js {:className "groups"}
+             (map (fn [group-data] (om/build group group-data)) data)
+             )
       )
     )
   )

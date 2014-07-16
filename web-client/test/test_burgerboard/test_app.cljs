@@ -1,6 +1,6 @@
 (ns burgerboard-test.test-app
   (:require-macros [cemerick.cljs.test
-                    :refer (is deftest with-test run-test testing test-var)]
+                    :refer (is deftest with-test testing test-var)]
                    )
   (:require [cemerick.cljs.test :as t]
             [burgerboard-web.app :as app]
@@ -38,12 +38,16 @@
 
 (defn containing [& tests]
   (fn [component]
-    (every? true?
-     (map (fn [pred child] (pred child))
-          tests
-          (js->clj (.. component -props -children))
-          )
-     )
+    (let [children (js->clj (.. component -props -children))]
+      (and
+       (= (count tests) (count children))
+       (every? true?
+               (map (fn [pred child] (pred child))
+                    tests children
+                    )
+               )
+       )
+      )
     )
   )
 
@@ -77,6 +81,21 @@
             (containing
              (sub-component app/group-nav [{:id 1}])
              (sub-component app/board [{:id 1}])
+             )
+            )
+       )
+      )
+  )
+
+(deftest group-nav-contains-groups
+  (is (rendered
+       app/group-nav [{:id 1}
+                      {:id 2}]
+       (tag "ul"
+            (with-class "groups")
+            (containing
+             (sub-component app/group {:id 1})
+             (sub-component app/group {:id 2})
              )
             )
        )
