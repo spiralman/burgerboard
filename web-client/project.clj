@@ -26,6 +26,7 @@
                         :compiler {:output-to "test-burgerboard.js"
                                    :optimizations :whitespace
                                    :pretty-print true
+                                   :source-map "test-burgerboard.js.map"
                                    }
                         }
                        {:id "repl"

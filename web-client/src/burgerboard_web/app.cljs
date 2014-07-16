@@ -14,7 +14,10 @@
   (reify
     om/IRender
     (render [this]
-      (dom/div nil {})
+      (dom/li #js {:className "group"}
+              (dom/span #js {:className "group-name"}
+                        (:name data))
+              )
       )
     )
   )

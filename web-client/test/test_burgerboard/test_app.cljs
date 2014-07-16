@@ -39,14 +39,20 @@
 (defn containing [& tests]
   (fn [component]
     (let [children (js->clj (.. component -props -children))]
-      (and
-       (= (count tests) (count children))
-       (every? true?
-               (map (fn [pred child] (pred child))
-                    tests children
-                    )
-               )
-       )
+      (if (sequential? children)
+        (and
+         (= (count tests) (count children))
+         (every? true?
+                 (map (fn [pred child] (pred child))
+                      tests children
+                      )
+                 )
+         )
+        (and
+         (= 1 (count tests))
+         ((nth tests 0) children) ;; Children is actually just one child
+         )
+        )
       )
     )
   )
@@ -96,6 +102,25 @@
             (containing
              (sub-component app/group {:id 1})
              (sub-component app/group {:id 2})
+             )
+            )
+       )
+      )
+  )
+
+(deftest group-contains-board-nav
+  (is (rendered
+       app/group {:id 1
+                  :name "Some Group"}
+       (tag "li"
+            (with-class "group")
+            (containing
+             (tag "span"
+                  (with-class "group-name")
+                  (containing
+                   (text "Some Group")
+                   )
+                  )
              )
             )
        )
