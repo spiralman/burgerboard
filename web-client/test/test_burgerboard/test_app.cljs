@@ -70,12 +70,13 @@
 
 (deftest app-contains-sub-components
   (is (rendered
-       app/app {}
+       app/app {:groups [{:id 1}]
+                :boards [{:id 1}]}
        (tag "div"
             (with-class "burgerboard")
             (containing
-             (sub-component app/group-nav {})
-             (sub-component app/board {})
+             (sub-component app/group-nav [{:id 1}])
+             (sub-component app/board [{:id 1}])
              )
             )
        )
