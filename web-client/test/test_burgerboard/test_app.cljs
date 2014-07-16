@@ -111,7 +111,9 @@
 (deftest group-contains-board-nav
   (is (rendered
        app/group {:id 1
-                  :name "Some Group"}
+                  :name "Some Group"
+                  :boards [{:id 1} {:id 2}]
+                  }
        (tag "li"
             (with-class "group")
             (containing
@@ -119,6 +121,13 @@
                   (with-class "group-name")
                   (containing
                    (text "Some Group")
+                   )
+                  )
+             (tag "ul"
+                  (with-class "boards")
+                  (containing
+                   (sub-component app/board-nav {:id 1})
+                   (sub-component app/board-nav {:id 2})
                    )
                   )
              )

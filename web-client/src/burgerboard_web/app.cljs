@@ -10,6 +10,15 @@
    )
   )
 
+(defn board-nav [data owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/div nil {})
+      )
+    )
+  )
+
 (defn group [data owner]
   (reify
     om/IRender
@@ -17,6 +26,10 @@
       (dom/li #js {:className "group"}
               (dom/span #js {:className "group-name"}
                         (:name data))
+              (apply dom/ul #js {:className "boards"}
+                     (map (fn [board-data] (om/build board-nav board-data))
+                          (:boards data))
+                     )
               )
       )
     )
