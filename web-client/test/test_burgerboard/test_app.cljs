@@ -45,7 +45,7 @@
                   :name "Some Group"
                   :boards [{:id 1} {:id 2}]
                   }
-       (tag "li"
+       (tag "span"
             (with-class "group")
             (containing
              (tag "span"
@@ -55,7 +55,7 @@
                    )
                   )
              (tag "ul"
-                  (with-class "boards-wrong")
+                  (with-class "boards")
                   (containing
                    (sub-component app/board-nav {:id 1})
                    (sub-component app/board-nav {:id 2})
