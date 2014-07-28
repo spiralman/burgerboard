@@ -6,6 +6,8 @@
   (:require
    [test-burgerboard.huh :refer [rendered, tag, containing, with-class, sub-component, text]]
    [burgerboard-web.app :as app]
+   [om.core :as om :include-macros true]
+   [om.dom :as dom :include-macros true]
    )
   )
 
@@ -45,7 +47,7 @@
                   :name "Some Group"
                   :boards [{:id 1} {:id 2}]
                   }
-       (tag "span"
+       (tag "li"
             (with-class "group")
             (containing
              (tag "span"
