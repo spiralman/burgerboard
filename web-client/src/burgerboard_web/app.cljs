@@ -5,7 +5,7 @@
 (def initial-state
   (atom
    {:groups []
-    :boards []
+    :board nil
     }
    )
   )
@@ -14,7 +14,9 @@
   (reify
     om/IRender
     (render [this]
-      (dom/div nil {})
+      (dom/li #js {:className "board-nav"}
+              (:name data)
+              )
       )
     )
   )
@@ -46,11 +48,33 @@
     )
   )
 
-(defn board [data owner]
+(defn leaderboard [data owner]
   (reify
     om/IRender
     (render [this]
       (dom/div nil {})
+      )
+    )
+  )
+
+(defn stores [data owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/div nil {})
+      )
+    )
+  )
+
+
+(defn board [data owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/div #js {:className "board"}
+               (om/build leaderboard data)
+               (om/build stores (:stores data))
+               )
       )
     )
   )
@@ -61,7 +85,7 @@
     (render [this]
       (dom/div #js {:className "burgerboard"}
               (om/build group-nav (:groups data))
-              (om/build board (:boards data))
+              (om/build board (:board data))
               )
       )
     )

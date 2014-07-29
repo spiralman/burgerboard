@@ -14,12 +14,12 @@
 (deftest app-contains-sub-components
   (is (rendered
        app/app {:groups [{:id 1}]
-                :boards [{:id 1}]}
+                :board {:id 1}}
        (tag "div"
             (with-class "burgerboard")
             (containing
              (sub-component app/group-nav [{:id 1}])
-             (sub-component app/board [{:id 1}])
+             (sub-component app/board {:id 1})
              )
             )
        )
@@ -63,6 +63,35 @@
                    (sub-component app/board-nav {:id 2})
                    )
                   )
+             )
+            )
+       )
+      )
+  )
+
+(deftest board-nav-links-to-board
+  (is (rendered
+       app/board-nav {:id 1 :name "Board Name"}
+       (tag "li"
+            (with-class "board-nav")
+            (containing
+             (text "Board Name")
+             )
+            )
+       )
+      )
+  )
+
+(deftest board-contains-leaderboard-and-store-list
+  (is (rendered
+       app/board {:id 1
+                  :stores [{:id 1} {:id 2}]}
+       (tag "div"
+            (with-class "board")
+            (containing
+             (sub-component app/leaderboard {:id 1
+                                             :stores [{:id 1} {:id 2}]})
+             (sub-component app/stores [{:id 1} {:id 2}])
              )
             )
        )
