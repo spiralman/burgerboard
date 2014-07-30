@@ -48,24 +48,50 @@
     )
   )
 
+(defn store [data owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/li #js {:className "store"}
+              (dom/span #js {:className "store-name"}
+                        (:name data))
+              (dom/span #js {:className "rating-graph"})
+              (dom/span #js {:className "rating"}
+                        (str (:rating data)))
+              )
+      )
+    )
+  )
+
 (defn leaderboard [data owner]
   (reify
     om/IRender
     (render [this]
-      (dom/div nil {})
+      (dom/div #js {:className "leaderboard"}
+               (dom/div #js {:className "board-title"}
+                        (:name data))
+               (om/build store
+                         (apply max-key :rating (:stores data)))
+               (om/build store
+                         (apply min-key :rating (:stores data)))
+               )
       )
     )
   )
+
+(def descending #(compare %2 %1))
 
 (defn stores [data owner]
   (reify
     om/IRender
     (render [this]
-      (dom/div nil {})
+      (apply dom/ul #js {:className "stores"}
+             (map (fn [store-data] (om/build store store-data))
+                  (sort-by :rating descending data))
+             )
       )
     )
   )
-
 
 (defn board [data owner]
   (reify

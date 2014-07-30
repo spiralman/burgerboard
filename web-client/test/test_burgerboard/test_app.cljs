@@ -97,3 +97,92 @@
        )
       )
   )
+
+(deftest leaderboard-contains-name-and-top-scores
+  (is (rendered
+      app/leaderboard {:id 1 :name "Board Name"
+                       :stores
+                       [{:id 1
+                         :name "Store 1"
+                         :rating 1}
+                        {:id 2
+                         :name "Top Store"
+                         :rating 5}
+                        {:id 3
+                         :name "Bottom Store"
+                         :rating 0.1}]}
+      (tag "div"
+           (with-class "leaderboard")
+           (containing
+            (tag "div"
+                 (with-class "board-title")
+                 (containing (text "Board Name"))
+                 )
+            (sub-component app/store {:id 2
+                                      :name "Top Store"
+                                      :rating 5})
+            (sub-component app/store {:id 3
+                                      :name "Bottom Store"
+                                      :rating 0.1})
+            )
+           )
+      )
+     )
+  )
+
+(deftest stores-lists-stores-in-descending-ranking
+  (is (rendered
+       app/stores [{:id 1
+                    :name "Store 1"
+                    :rating 1}
+                   {:id 2
+                    :name "Top Store"
+                    :rating 5}
+                   {:id 3
+                    :name "Bottom Store"
+                    :rating 0.1}]
+
+       (tag "ul"
+            (with-class "stores")
+            (containing
+             (sub-component app/store
+                            {:id 2
+                             :name "Top Store"
+                             :rating 5})
+             (sub-component app/store
+                            {:id 1
+                             :name "Store 1"
+                             :rating 1})
+             (sub-component app/store
+                            {:id 3
+                             :name "Bottom Store"
+                             :rating 0.1})
+             )
+            )
+       )
+      )
+  )
+
+(deftest store-renders-name-and-score
+  (is (rendered
+       app/store {:id 1
+                  :name "Store"
+                  :rating 2}
+       (tag "li"
+            (with-class "store")
+            (containing
+             (tag "span"
+                  (with-class "store-name")
+                  (containing (text "Store")))
+             (tag "span"
+                  ;; Placeholder for progress bar
+                  (with-class "rating-graph"))
+             (tag "span"
+                  (with-class "rating")
+                  (containing (text "2"))
+                  )
+             )
+            )
+       )
+      )
+  )
