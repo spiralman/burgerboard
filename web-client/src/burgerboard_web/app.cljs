@@ -71,8 +71,7 @@
               (dom/span #js {:className "group-name"}
                         (:name data))
               (apply dom/ul #js {:className "boards"}
-                     (map (fn [board-data] (om/build board-nav board-data))
-                          (:boards data))
+                     (om/build-all board-nav (:boards data))
                      )
               )
       )
@@ -84,7 +83,7 @@
     om/IRender
     (render [this]
       (apply dom/ul #js {:className "groups"}
-             (map (fn [group-data] (om/build group group-data)) data)
+             (om/build-all group data)
              )
       )
     )
@@ -128,8 +127,8 @@
     om/IRender
     (render [this]
       (apply dom/ul #js {:className "stores"}
-             (map (fn [store-data] (om/build store store-data))
-                  (sort-by :rating descending data))
+             (om/build-all store
+                           (sort-by :rating descending data))
              )
       )
     )
