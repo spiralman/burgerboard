@@ -4,7 +4,7 @@
                    [test-burgerboard.huh]
                    )
   (:require
-   [test-burgerboard.huh :refer [rendered, tag, containing, with-class, sub-component, text]]
+   [test-burgerboard.huh :refer [rendered tag containing with-class sub-component text nothing]]
    [burgerboard-web.app :as app]
    [om.core :as om :include-macros true]
    [om.dom :as dom :include-macros true]
@@ -35,6 +35,20 @@
             (containing
              (sub-component app/group {:id 1})
              (sub-component app/group {:id 2})
+             )
+            )
+       )
+      )
+  )
+
+(deftest group-nav-contains-loading-indicator-without-groups
+  (is (rendered
+       app/group-nav []
+       (tag "ul"
+            (with-class "groups")
+            (containing
+             (tag "div"
+                  (with-class "loading"))
              )
             )
        )
@@ -93,6 +107,17 @@
                                              :stores [{:id 1} {:id 2}]})
              (sub-component app/stores [{:id 1} {:id 2}])
              )
+            )
+       )
+      )
+  )
+
+(deftest board-empty-without-selected-board
+  (is (rendered
+       app/board {}
+       (tag "div"
+            (with-class "board")
+            (containing nothing)
             )
        )
       )

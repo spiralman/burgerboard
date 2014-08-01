@@ -52,6 +52,10 @@
    )
   )
 
+(defn loading []
+  (dom/div #js {:className "loading"})
+  )
+
 (defn board-nav [data owner]
   (reify
     om/IRender
@@ -83,7 +87,10 @@
     om/IRender
     (render [this]
       (apply dom/ul #js {:className "groups"}
-             (om/build-all group data)
+             (if (empty? data)
+               (list (loading))
+               (om/build-all group data)
+               )
              )
       )
     )
@@ -139,8 +146,11 @@
     om/IRender
     (render [this]
       (dom/div #js {:className "board"}
-               (om/build leaderboard data)
-               (om/build stores (:stores data))
+               (if (not (empty? data))
+                 (list
+                  (om/build leaderboard data)
+                  (om/build stores (:stores data)))
+                 )
                )
       )
     )
