@@ -123,6 +123,20 @@
       )
   )
 
+(deftest board-loading-when-selected-not-populated
+  (is (rendered
+       app/board {:id 1 :name "Board Name"}
+       (tag "div"
+            (with-class "board")
+            (containing
+             (tag "div"
+                  (with-class "loading"))
+             )
+            )
+       )
+      )
+  )
+
 (deftest leaderboard-contains-name-and-top-scores
   (is (rendered
       app/leaderboard {:id 1 :name "Board Name"

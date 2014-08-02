@@ -146,11 +146,13 @@
     om/IRender
     (render [this]
       (dom/div #js {:className "board"}
-               (if (not (empty? data))
-                 (list
-                  (om/build leaderboard data)
-                  (om/build stores (:stores data)))
-                 )
+               (cond
+                (empty? data) nil
+                (not (contains? data :stores)) (loading)
+                :else (list
+                       (om/build leaderboard data)
+                       (om/build stores (:stores data)))
+                )
                )
       )
     )
