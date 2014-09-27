@@ -41,7 +41,7 @@
       )
   )
 
-(deftest group-contains-board-nav
+(deftest group-contains-board-item
   (is (rendered
        group-nav/group {:id 1
                   :name "Some Group"
@@ -59,8 +59,8 @@
              (tag "ul"
                   (with-class "boards")
                   (containing
-                   (sub-component group-nav/board-nav {:id 1})
-                   (sub-component group-nav/board-nav {:id 2})
+                   (sub-component group-nav/board-item {:id 1})
+                   (sub-component group-nav/board-item {:id 2})
                    )
                   )
              )
@@ -106,14 +106,49 @@
       )
   )
 
-
-(deftest board-nav-links-to-board
+(deftest board-item-links-to-board
   (is (rendered
-       group-nav/board-nav {:id 1 :name "Board Name"}
+       group-nav/board-item {:id 1 :name "Board Name"}
        (tag "li"
-            (with-class "board-nav")
+            (with-class "board-item")
             (containing
              (text "Board Name")
+             )
+            )
+       )
+      )
+  )
+
+(deftest board-item-shows-board-editor-without-id
+  (is (rendered
+       group-nav/board-item {:name "Board Name"}
+       (tag "li"
+            (containing
+             (sub-component group-nav/board-editor {:name "Board Name"})
+             )
+            )
+       )
+      )
+  )
+
+(deftest board-editor-shows-board-editing-controls
+  (is (rendered
+       group-nav/board-editor {:name "Board Name"}
+       (tag "div"
+            (with-class "board-editor")
+            (containing
+             (tag "input"
+                  (with-class "board-name-editor")
+                  (with-attr "type" "text")
+                  (containing nothing)
+                  )
+             (tag "button"
+                  (with-class "save-board")
+                  (with-attr "type" "button")
+                  (containing
+                   (text "Save")
+                   )
+                  )
              )
             )
        )

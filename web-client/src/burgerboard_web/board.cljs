@@ -52,10 +52,10 @@
   (reify
     om/IRender
     (render [this]
-      (dom/div #js {:className "board"}
+      (apply dom/div #js {:className "board"}
                (cond
-                (empty? data) nil
-                (not (contains? data :stores)) (widgets/loading)
+                (empty? data) (list nil)
+                (not (contains? data :stores)) (list (widgets/loading))
                 :else (list
                        (om/build leaderboard data)
                        (om/build stores (:stores data)))
