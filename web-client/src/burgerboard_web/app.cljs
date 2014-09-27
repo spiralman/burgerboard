@@ -27,7 +27,8 @@
              {:id 2
               :name "Group2"
               :boards_url "http://localhost/api/v1/groups/2/boards"
-              :members_url "http://localhost/api/v1/groups/2/members"}]
+              :members_url "http://localhost/api/v1/groups/2/members"}
+             {:name "New Group"}]
     :board {:id 1 :name "Some Board"
             :group {:name "Group" :id 1}
             :url "http://localhost/api/v1/groups/1/boards/1"
