@@ -14,16 +14,36 @@
     )
   )
 
+(defn group-editor [group owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/span #js {:className "group-editor"}
+                (dom/input #js {:className "group-name-editor"
+                                :type "text"})
+                (dom/button #js {:className "save-group"
+                                 :type "button"}
+                            "Save")
+                )
+      )
+    )
+  )
+
 (defn group [data owner]
   (reify
     om/IRender
     (render [this]
       (dom/li #js {:className "group"}
-              (dom/span #js {:className "group-name"}
-                        (:name data))
-              (apply dom/ul #js {:className "boards"}
-                     (om/build-all board-nav (:boards data))
-                     )
+              (if-not (contains? data :id)
+                (om/build group-editor data)
+                (list
+                 (dom/span #js {:className "group-name"}
+                           (:name data))
+                 (apply dom/ul #js {:className "boards"}
+                        (om/build-all board-nav (:boards data))
+                        )
+                 )
+                )
               )
       )
     )
