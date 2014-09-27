@@ -23,6 +23,10 @@
                         }
                        {:id "test"
                         :source-paths ["src" "test"]
+                        :notify-command ["phantomjs" :cljs.test/runner
+                                         "contrib/es5-shim.js"
+                                         "contrib/react-0.9.0.js"
+                                         "test-burgerboard.js"]
                         :compiler {:output-to "test-burgerboard.js"
                                    :optimizations :whitespace
                                    :pretty-print true
