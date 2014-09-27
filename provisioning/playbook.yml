@@ -1,6 +1,9 @@
 ---
 - hosts: all
   tasks:
+    - name: ensure apt-get up to date
+      sudo: yes
+      apt: update_cache=yes
     - name: ensure PIP installed
       sudo: yes
       apt: name=python-pip
