@@ -38,9 +38,12 @@
     (render [this]
       (dom/span #js {:className "group-editor"}
                 (dom/input #js {:className "group-name-editor"
-                                :type "text"})
+                                :type "text"
+                                :value (:name group)
+                                :onChange #(om/transact! group :name (fn [_] (.. % -target -value)))})
                 (dom/button #js {:className "save-group"
-                                 :type "button"}
+                                 :type "button"
+                                 :onClick #(.log js/console (:name @group))}
                             "Save")
                 )
       )
