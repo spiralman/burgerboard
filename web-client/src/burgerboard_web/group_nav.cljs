@@ -9,7 +9,8 @@
     (render [this]
       (dom/div #js {:className "board-editor"}
                (dom/input #js {:className "board-name-editor"
-                               :type "text"})
+                               :type "text"
+                               :onChange (widgets/bind-value board :name)})
                (dom/button #js {:className "save-board"
                                 :type "button"}
                            "Save")
@@ -40,7 +41,7 @@
                 (dom/input #js {:className "group-name-editor"
                                 :type "text"
                                 :value (:name group)
-                                :onChange #(om/transact! group :name (fn [_] (.. % -target -value)))})
+                                :onChange (widgets/bind-value group :name)})
                 (dom/button #js {:className "save-group"
                                  :type "button"
                                  :onClick #(.log js/console (:name @group))}

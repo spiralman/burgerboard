@@ -5,7 +5,8 @@
                    )
   (:require
    [test-burgerboard.huh :refer [rendered tag containing with-class with-attr
-                                 sub-component text nothing]]
+                                 sub-component text nothing setup-state in
+                                 rendered-component after-event]]
    [burgerboard-web.group-nav :as group-nav]
    [om.core :as om :include-macros true]
    [om.dom :as dom :include-macros true]
@@ -106,6 +107,20 @@
       )
   )
 
+(deftest group-editor-binds-name-to-cursor
+  (let [state (setup-state {:name ""})]
+    (after-event
+     :onChange #js {:target #js {:value "New Name"}}
+     (in (rendered-component
+          group-nav/group-editor state)
+         0)
+     (fn [_]
+       (is (= "New Name" (:name @state)))
+       )
+     )
+    )
+  )
+
 (deftest board-item-links-to-board
   (is (rendered
        group-nav/board-item {:id 1 :name "Board Name"}
@@ -153,4 +168,18 @@
             )
        )
       )
+  )
+
+(deftest board-editor-binds-name-to-cursor
+  (let [state (setup-state {:name ""})]
+    (after-event
+     :onChange #js {:target #js {:value "New Name"}}
+     (in (rendered-component
+          group-nav/board-editor state)
+         0)
+     (fn [_]
+       (is (= "New Name" (:name @state)))
+       )
+     )
+    )
   )
