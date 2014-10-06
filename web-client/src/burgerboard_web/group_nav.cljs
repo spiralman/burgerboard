@@ -71,14 +71,32 @@
     )
   )
 
+(defn add-group [groups owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/li #js {:className "group"}
+              (dom/button #js {:className "add-group"
+                               :type "button"
+                               :onClick (fn [_] (om/transact!
+                                                 groups
+                                                 (fn [_] (conj @groups
+                                                               {:name ""}))))}
+                          "Add Group")
+              )
+      )
+    )
+  )
+
 (defn group-nav [data owner]
   (reify
     om/IRender
     (render [this]
       (apply dom/ul #js {:className "groups"}
-             (if (empty? data)
+             (if (nil? data)
                (list (widgets/loading))
-               (om/build-all group data)
+               (concat (om/build-all group data)
+                       [(om/build add-group data)])
                )
              )
       )

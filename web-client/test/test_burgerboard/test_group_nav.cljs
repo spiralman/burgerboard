@@ -16,12 +16,26 @@
 (deftest group-nav-contains-groups
   (is (rendered
        group-nav/group-nav [{:id 1}
-                      {:id 2}]
+                            {:id 2}]
        (tag "ul"
             (with-class "groups")
             (containing
              (sub-component group-nav/group {:id 1})
              (sub-component group-nav/group {:id 2})
+             (sub-component group-nav/add-group [{:id 1} {:id 2}])
+             )
+            )
+       )
+      )
+  )
+
+(deftest group-nav-contains-just-add-with-empty-group-list
+  (is (rendered
+       group-nav/group-nav []
+       (tag "ul"
+            (with-class "groups")
+            (containing
+             (sub-component group-nav/add-group [])
              )
             )
        )
@@ -30,7 +44,7 @@
 
 (deftest group-nav-contains-loading-indicator-without-groups
   (is (rendered
-       group-nav/group-nav []
+       group-nav/group-nav nil
        (tag "ul"
             (with-class "groups")
             (containing
@@ -40,6 +54,39 @@
             )
        )
       )
+  )
+
+(deftest add-group-displays-button-for-adding-group
+  (is (rendered
+       group-nav/add-group []
+       (tag "li"
+            (with-class "group")
+            (containing
+             (tag "button"
+                  (with-class "add-group")
+                  (with-attr "type" "button")
+                  (containing
+                   (text "Add Group")
+                   )
+                  )
+             )
+            )
+       )
+      )
+  )
+
+(deftest add-group-appends-new-group-to-groups
+  (let [state (setup-state [{:id 1 :name "first"}])]
+    (after-event
+     :onClick #js {:target #js {}}
+     (in (rendered-component
+          group-nav/add-group state)
+         0)
+     (fn [_]
+       (is (= [{:id 1 :name "first"} {:name ""}] @state))
+       )
+     )
+    )
   )
 
 (deftest group-contains-board-item
