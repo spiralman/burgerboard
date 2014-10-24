@@ -109,6 +109,31 @@
                   (containing
                    (sub-component group-nav/board-item {:id 1})
                    (sub-component group-nav/board-item {:id 2})
+                   (sub-component group-nav/add-board [{:id 1} {:id 2}])
+                   )
+                  )
+             )
+            )
+       )
+      )
+  )
+
+(deftest group-contains-just-add-with-empty-board-list
+  (is (rendered
+       group-nav/group {:id 1 :name "Some Group" :boards []}
+       (tag "li"
+            (with-class "group")
+            (containing
+             (tag "span"
+                  (with-class "group-name")
+                  (containing
+                   (text "Some Group")
+                   )
+                  )
+             (tag "ul"
+                  (with-class "boards")
+                  (containing
+                   (sub-component group-nav/add-board [])
                    )
                   )
              )
@@ -226,6 +251,39 @@
          0)
      (fn [_]
        (is (= "New Name" (:name @state)))
+       )
+     )
+    )
+  )
+
+(deftest add-board-displays-button-for-adding-board
+  (is (rendered
+       group-nav/add-board []
+       (tag "li"
+            (with-class "board")
+            (containing
+             (tag "button"
+                  (with-class "add-board")
+                  (with-attr "type" "button")
+                  (containing
+                   (text "Add Board")
+                   )
+                  )
+             )
+            )
+       )
+      )
+  )
+
+(deftest add-board-appends-new-board-to-boards
+  (let [state (setup-state [{:id 1 :name "first"}])]
+    (after-event
+     :onClick #js {:target #js {}}
+     (in (rendered-component
+          group-nav/add-board state)
+         0)
+     (fn [_]
+       (is (= [{:id 1 :name "first"} {:name ""}] @state))
        )
      )
     )

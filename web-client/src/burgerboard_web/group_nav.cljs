@@ -33,6 +33,23 @@
     )
   )
 
+(defn add-board [boards owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/li #js {:className "board"}
+              (dom/button #js {:className "add-board"
+                               :type "button"
+                               :onClick (fn [_] (om/transact!
+                                                 boards
+                                                 (fn [_] (conj @boards
+                                                               {:name ""}))))}
+                          "Add Board")
+              )
+      )
+    )
+  )
+
 (defn group-editor [group owner]
   (reify
     om/IRender
@@ -62,7 +79,8 @@
                  (dom/span #js {:className "group-name"}
                            (:name data))
                  (apply dom/ul #js {:className "boards"}
-                        (om/build-all board-item (:boards data))
+                        (concat (om/build-all board-item (:boards data))
+                                [(om/build add-board (:boards data))])
                         )
                  )
                 )
