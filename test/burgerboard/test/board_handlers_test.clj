@@ -134,7 +134,7 @@
       (testing "requires board belongs to group"
         (insert-group {:name "group2" :owner "some_user@example.com"})
         (insert-member {:id 2} {:email "some_user@example.com"})
-        
+
         (insert-board {:name "board2" :group {:id 2}})
 
         (let [response
@@ -211,7 +211,7 @@
       (testing "board must belong to group"
         (insert-group {:name "group2" :owner "some_user@example.com"})
         (insert-member {:id 2} {:email "some_user@example.com"})
-        
+
         (insert-board {:name "board2" :group {:id 2}})
 
         (let [response
@@ -274,7 +274,7 @@
       (testing "board must belong to group"
         (insert-group {:name "group2" :owner "some_user@example.com"})
         (insert-member {:id 2} {:email "some_user@example.com"})
-        
+
         (insert-board {:name "board2" :group {:id 2}})
 
         (let [response
@@ -300,7 +300,7 @@
           )
         )
 
-      (testing "store must belong to board"
+      (testing "updates rating and returns new tally"
         (let [response
               (app
                (->
