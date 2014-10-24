@@ -16,11 +16,6 @@
 (use-fixtures :each single-user-fixture)
 
 (deftest test-app
-  (testing "main route"
-    (let [response (app (request :get "/"))]
-      (is (= (:status response) 200))
-      (is (= (:body response) "Hello World!!"))))
-
   (testing "login route"
     (testing "valid email and password"
       (let [response
