@@ -3,16 +3,39 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]))
 
+(defn store-editor [data owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/span #js {:className "store-editor"}
+                (dom/input #js {:className "store-name-editor"
+                                :type "text"
+                                :value (:name data)
+                                :onChange (widgets/bind-value data :name)})
+                (dom/button #js {:className "save-store"
+                                 :type "button"
+                                 :onClick #(.log js/console (:name @data))}
+                            "Save")
+                )
+      )
+    )
+  )
+
 (defn store [data owner]
   (reify
     om/IRender
     (render [this]
-      (dom/li #js {:className "store"}
-              (dom/span #js {:className "store-name"}
-                        (:name data))
-              (dom/span #js {:className "rating-graph"})
-              (dom/span #js {:className "rating"}
-                        (str (:rating data)))
+      (apply dom/li #js {:className "store"}
+              (if-not (contains? data :id)
+                (list (om/build store-editor data))
+                (list
+                 (dom/span #js {:className "store-name"}
+                           (:name data))
+                 (dom/span #js {:className "rating-graph"})
+                 (dom/span #js {:className "rating"}
+                           (str (:rating data)))
+                 )
+                )
               )
       )
     )

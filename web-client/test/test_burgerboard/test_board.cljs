@@ -4,7 +4,7 @@
                    [test-burgerboard.huh]
                    )
   (:require
-   [test-burgerboard.huh :refer [rendered tag containing with-class sub-component text nothing]]
+   [test-burgerboard.huh :refer [rendered tag containing with-class sub-component text nothing with-attr after-event rendered-component in setup-state]]
    [burgerboard-web.board :as board]
    [om.core :as om :include-macros true]
    [om.dom :as dom :include-macros true]
@@ -14,7 +14,7 @@
 (deftest board-contains-leaderboard-and-store-list
   (is (rendered
        board/board {:id 1
-                  :stores [{:id 1} {:id 2}]}
+                    :stores [{:id 1} {:id 2}]}
        (tag "div"
             (with-class "board")
             (containing
@@ -120,8 +120,8 @@
 (deftest store-renders-name-and-score
   (is (rendered
        board/store {:id 1
-                  :name "Store"
-                  :rating 2}
+                    :name "Store"
+                    :rating 2}
        (tag "li"
             (with-class "store")
             (containing
@@ -139,4 +139,50 @@
             )
        )
       )
+  )
+
+(deftest store-renders-edit-store-without-id
+  (is (rendered
+       board/store {:name "Store"}
+       (tag "li"
+            (with-class "store")
+            (containing
+             (sub-component board/store-editor {:name "Store"})
+             )
+            )
+       )
+      )
+  )
+
+(deftest store-editor-renders-editing-controns
+  (is (rendered
+       board/store-editor {:name "Store"}
+       (tag "span"
+            (with-class "store-editor")
+            (containing
+             (tag "input"
+                  (with-class "store-name-editor")
+                  (with-attr "type" "text"))
+             (tag "button"
+                  (with-class "save-store")
+                  (with-attr "type" "button")
+                  (containing (text "Save")))
+             )
+            )
+       )
+      )
+  )
+
+(deftest store-editor-binds-name-to-cursor
+  (let [state (setup-state {:name ""})]
+    (after-event
+     :onChange #js {:target #js {:value "New Name"}}
+     (in (rendered-component
+          board/store-editor state)
+         0)
+     (fn [_]
+       (is (= "New Name" (:name @state)))
+       )
+     )
+    )
   )
