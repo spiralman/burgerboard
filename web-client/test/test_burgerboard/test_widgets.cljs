@@ -41,3 +41,31 @@
      )
     )
   )
+
+(deftest text-editor-renders-input-element-for-value
+  (is (rendered
+       widgets/text-editor {:value "Some Value"}
+       {:opts {:attr :value :class "some-editor"}}
+       (tag "input"
+            (with-attr "type" "text")
+            (with-class "some-editor")
+            (with-attr "value" "Some Value")
+            (containing nothing)
+            )
+       )
+      )
+  )
+
+(deftest text-editor-binds-name-to-cursor
+  (let [state (setup-state {:value ""})]
+    (after-event
+     :onChange #js {:target #js {:value "New Value"}}
+     (rendered-component
+      widgets/text-editor state
+      {:opts {:attr :value :class "some-class"}})
+     (fn [_]
+       (is (= "New Value" (:value @state)))
+       )
+     )
+    )
+  )

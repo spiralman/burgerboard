@@ -11,3 +11,13 @@
     (om/transact! cursor path (fn [_] (.. event -target -value)))
     )
   )
+
+(defn text-editor [data owner {:keys [attr class]}]
+  (reify
+    om/IRender
+    (render [_]
+      (dom/input #js {:type "text"
+                      :value (get data attr)
+                      :className class
+                      :onChange (bind-value data attr)}))
+    ))
