@@ -8,6 +8,7 @@
                                  sub-component text nothing setup-state in
                                  rendered-component after-event]]
    [burgerboard-web.group-nav :as group-nav]
+   [burgerboard-web.widgets :as widgets]
    [om.core :as om :include-macros true]
    [om.dom :as dom :include-macros true]
    )
@@ -161,11 +162,10 @@
        (tag "span"
             (with-class "group-editor")
             (containing
-             (tag "input"
-                  (with-class "group-name-editor")
-                  (with-attr "type" "text")
-                  (containing nothing)
-                  )
+             (sub-component widgets/text-editor
+                            {:name "Some Group"}
+                            {:opts {:attr :name
+                                    :className "group-name-editor"}})
              (tag "button"
                   (with-class "save-group")
                   (with-attr "type" "button")
@@ -177,20 +177,6 @@
             )
        )
       )
-  )
-
-(deftest group-editor-binds-name-to-cursor
-  (let [state (setup-state {:name ""})]
-    (after-event
-     :onChange #js {:target #js {:value "New Name"}}
-     (in (rendered-component
-          group-nav/group-editor state)
-         0)
-     (fn [_]
-       (is (= "New Name" (:name @state)))
-       )
-     )
-    )
   )
 
 (deftest board-item-links-to-board
@@ -224,11 +210,10 @@
        (tag "div"
             (with-class "board-editor")
             (containing
-             (tag "input"
-                  (with-class "board-name-editor")
-                  (with-attr "type" "text")
-                  (containing nothing)
-                  )
+             (sub-component widgets/text-editor
+                            {:name "Board Name"}
+                            {:opts {:attr :name
+                                    :className "board-name-editor"}})
              (tag "button"
                   (with-class "save-board")
                   (with-attr "type" "button")
@@ -240,20 +225,6 @@
             )
        )
       )
-  )
-
-(deftest board-editor-binds-name-to-cursor
-  (let [state (setup-state {:name ""})]
-    (after-event
-     :onChange #js {:target #js {:value "New Name"}}
-     (in (rendered-component
-          group-nav/board-editor state)
-         0)
-     (fn [_]
-       (is (= "New Name" (:name @state)))
-       )
-     )
-    )
   )
 
 (deftest add-board-displays-button-for-adding-board

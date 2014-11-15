@@ -8,9 +8,10 @@
     om/IRender
     (render [this]
       (dom/div #js {:className "board-editor"}
-               (dom/input #js {:className "board-name-editor"
-                               :type "text"
-                               :onChange (widgets/bind-value board :name)})
+               (om/build widgets/text-editor
+                         board
+                         {:opts {:attr :name
+                                 :className "board-name-editor"}})
                (dom/button #js {:className "save-board"
                                 :type "button"}
                            "Save")
@@ -55,10 +56,10 @@
     om/IRender
     (render [this]
       (dom/span #js {:className "group-editor"}
-                (dom/input #js {:className "group-name-editor"
-                                :type "text"
-                                :value (:name group)
-                                :onChange (widgets/bind-value group :name)})
+                (om/build widgets/text-editor
+                          group
+                          {:opts {:className "group-name-editor"
+                                  :attr :name}})
                 (dom/button #js {:className "save-group"
                                  :type "button"
                                  :onClick #(.log js/console (:name @group))}

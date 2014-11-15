@@ -6,6 +6,7 @@
   (:require
    [test-burgerboard.huh :refer [rendered tag containing with-class sub-component text nothing with-attr after-event rendered-component in setup-state]]
    [burgerboard-web.board :as board]
+   [burgerboard-web.widgets :as widgets]
    [om.core :as om :include-macros true]
    [om.dom :as dom :include-macros true]
    )
@@ -160,9 +161,10 @@
        (tag "span"
             (with-class "store-editor")
             (containing
-             (tag "input"
-                  (with-class "store-name-editor")
-                  (with-attr "type" "text"))
+             (sub-component widgets/text-editor
+                            {:name "Store"}
+                            {:opts {:attr :name
+                                    :className "store-name-editor"}})
              (tag "button"
                   (with-class "save-store")
                   (with-attr "type" "button")
@@ -171,18 +173,4 @@
             )
        )
       )
-  )
-
-(deftest store-editor-binds-name-to-cursor
-  (let [state (setup-state {:name ""})]
-    (after-event
-     :onChange #js {:target #js {:value "New Name"}}
-     (in (rendered-component
-          board/store-editor state)
-         0)
-     (fn [_]
-       (is (= "New Name" (:name @state)))
-       )
-     )
-    )
   )

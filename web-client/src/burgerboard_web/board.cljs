@@ -8,10 +8,10 @@
     om/IRender
     (render [this]
       (dom/span #js {:className "store-editor"}
-                (dom/input #js {:className "store-name-editor"
-                                :type "text"
-                                :value (:name data)
-                                :onChange (widgets/bind-value data :name)})
+                (om/build widgets/text-editor
+                          data
+                          {:opts {:attr :name
+                                  :className "store-name-editor"}})
                 (dom/button #js {:className "save-store"
                                  :type "button"
                                  :onClick #(.log js/console (:name @data))}
