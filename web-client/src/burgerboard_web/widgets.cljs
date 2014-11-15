@@ -12,12 +12,12 @@
     )
   )
 
-(defn text-editor [data owner {:keys [attr class]}]
+(defn text-editor [data owner {:keys [attr className]}]
   (reify
     om/IRender
     (render [_]
       (dom/input #js {:type "text"
                       :value (get data attr)
-                      :className class
+                      :className className
                       :onChange (bind-value data attr)}))
     ))

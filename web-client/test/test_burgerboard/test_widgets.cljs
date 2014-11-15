@@ -45,7 +45,7 @@
 (deftest text-editor-renders-input-element-for-value
   (is (rendered
        widgets/text-editor {:value "Some Value"}
-       {:opts {:attr :value :class "some-editor"}}
+       {:opts {:attr :value :className "some-editor"}}
        (tag "input"
             (with-attr "type" "text")
             (with-class "some-editor")
@@ -62,7 +62,7 @@
      :onChange #js {:target #js {:value "New Value"}}
      (rendered-component
       widgets/text-editor state
-      {:opts {:attr :value :class "some-class"}})
+      {:opts {:attr :value :className "some-class"}})
      (fn [_]
        (is (= "New Value" (:value @state)))
        )
