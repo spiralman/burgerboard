@@ -20,13 +20,20 @@
                                 "members"))
   )
 
-(defn login [session email password]
-  (if (login-valid (find-user email) email password)
-    {:status 200
-     :session (assoc session :email email)
-     :body "Login"}
-    {:status 403
-     :body "Invalid email or password"}
+(defn render-user [request user]
+  (->
+   (assoc user :groups_url (resolve-route request "groups"))
+   (dissoc :password)))
+
+(defn login [request email password]
+  (let [user (find-user email)]
+    (if (login-valid (find-user email) email password)
+      {:status 200
+       :session (assoc (:session request) :email email)
+       :body (write-str (render-user request user))}
+      {:status 403
+       :body "Invalid email or password"}
+      )
     )
   )
 
@@ -65,8 +72,8 @@
   )
 
 (defroutes api-routes
-  (POST "/login" [email password :as {session :session}]
-        (login session email password))
+  (POST "/login" [email password :as request]
+        (login request email password))
 
   (POST "/signups" [email password name :as {session :session}]
         (signup session email password name))

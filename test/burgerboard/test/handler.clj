@@ -27,6 +27,11 @@
               ))]
         (is (= (:status response) 200))
         (is (contains? (:headers response) "Set-Cookie"))
+        (is (= (json/read-str (:body response) :key-fn keyword)
+               {:email "some_user@example.com"
+                :name "Some User"
+                :groups_url "http://localhost/api/v1/groups"
+                :groups [{:name "Group" :id 1}]}))
         )
       )
 
