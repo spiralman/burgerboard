@@ -5,7 +5,7 @@
                    )
   (:require
    [test-burgerboard.huh :refer [rendered tag containing with-class with-attr
-                                 sub-component text nothing in
+                                 sub-component with-text in
                                  rendered-component setup-state after-event]]
    [burgerboard-web.widgets :as widgets]
    [om.core :as om :include-macros true]
@@ -15,8 +15,12 @@
 
 (defn test-editor [data owner]
   (reify
-    om/IRender
-    (render [this]
+    om/IInitState
+    (init-state [_]
+      (.log js/console "returning initial state")
+      {:changing-state "initial value"})
+    om/IRenderState
+    (render-state [this state]
       (dom/div #js {}
                (dom/input #js {:type "text"
                                :value (:changing-value data)
@@ -31,7 +35,7 @@
 (deftest bind-value-binds-to-cursor
   (let [state (setup-state {:changing-value "initial value"})]
     (after-event
-     :onChange #js {:target #js {:value "new value"}}
+     :change #js {:target #js {:value "new value"}}
      (in (rendered-component
           test-editor state)
          0)
@@ -50,7 +54,6 @@
             (with-attr "type" "text")
             (with-class "some-editor")
             (with-attr "value" "Some Value")
-            (containing nothing)
             )
        )
       )
@@ -59,7 +62,7 @@
 (deftest text-editor-binds-name-to-cursor
   (let [state (setup-state {:value ""})]
     (after-event
-     :onChange #js {:target #js {:value "New Value"}}
+     :change #js {:target #js {:value "New Value"}}
      (rendered-component
       widgets/text-editor state
       {:opts {:attr :value :className "some-class"}})

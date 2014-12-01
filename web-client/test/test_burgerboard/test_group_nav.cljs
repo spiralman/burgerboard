@@ -5,7 +5,7 @@
                    )
   (:require
    [test-burgerboard.huh :refer [rendered tag containing with-class with-attr
-                                 sub-component text nothing setup-state in
+                                 sub-component with-text setup-state in
                                  rendered-component after-event]]
    [burgerboard-web.group-nav :as group-nav]
    [burgerboard-web.widgets :as widgets]
@@ -66,9 +66,7 @@
              (tag "button"
                   (with-class "add-group")
                   (with-attr "type" "button")
-                  (containing
-                   (text "Add Group")
-                   )
+                  (with-text "Add Group")
                   )
              )
             )
@@ -79,7 +77,7 @@
 (deftest add-group-appends-new-group-to-groups
   (let [state (setup-state [{:id 1 :name "first"}])]
     (after-event
-     :onClick #js {:target #js {}}
+     :click #js {:target #js {}}
      (in (rendered-component
           group-nav/add-group state)
          0)
@@ -101,9 +99,7 @@
             (containing
              (tag "span"
                   (with-class "group-name")
-                  (containing
-                   (text "Some Group")
-                   )
+                  (with-text "Some Group")
                   )
              (tag "ul"
                   (with-class "boards")
@@ -127,9 +123,7 @@
             (containing
              (tag "span"
                   (with-class "group-name")
-                  (containing
-                   (text "Some Group")
-                   )
+                  (with-text "Some Group")
                   )
              (tag "ul"
                   (with-class "boards")
@@ -169,9 +163,7 @@
              (tag "button"
                   (with-class "save-group")
                   (with-attr "type" "button")
-                  (containing
-                   (text "Save")
-                   )
+                  (with-text "Save")
                   )
              )
             )
@@ -184,9 +176,7 @@
        group-nav/board-item {:id 1 :name "Board Name"}
        (tag "li"
             (with-class "board-item")
-            (containing
-             (text "Board Name")
-             )
+            (with-text "Board Name")
             )
        )
       )
@@ -217,9 +207,7 @@
              (tag "button"
                   (with-class "save-board")
                   (with-attr "type" "button")
-                  (containing
-                   (text "Save")
-                   )
+                  (with-text "Save")
                   )
              )
             )
@@ -236,9 +224,7 @@
              (tag "button"
                   (with-class "add-board")
                   (with-attr "type" "button")
-                  (containing
-                   (text "Add Board")
-                   )
+                  (with-text "Add Board")
                   )
              )
             )
@@ -249,7 +235,7 @@
 (deftest add-board-appends-new-board-to-boards
   (let [state (setup-state [{:id 1 :name "first"}])]
     (after-event
-     :onClick #js {:target #js {}}
+     :click #js {:target #js {}}
      (in (rendered-component
           group-nav/add-board state)
          0)

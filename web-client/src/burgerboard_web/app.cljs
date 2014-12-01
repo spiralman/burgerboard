@@ -56,14 +56,29 @@
    )
   )
 
+(defn login [data owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/div #js {})
+      )
+    )
+  )
+
 (defn app [data owner]
   (reify
     om/IRender
     (render [this]
-      (dom/div #js {:className "burgerboard"}
-              (om/build group-nav/group-nav (:groups data))
-              (om/build board/board (:board data))
-              )
+      (apply
+       dom/div #js {:className "burgerboard"}
+       (if (nil? (:user data))
+         (list (om/build login data))
+         (list
+          (om/build group-nav/group-nav (:groups data))
+          (om/build board/board (:board data))
+          )
+         )
+       )
       )
     )
   )

@@ -4,7 +4,7 @@
                    [test-burgerboard.huh]
                    )
   (:require
-   [test-burgerboard.huh :refer [rendered tag containing with-class sub-component text nothing with-attr after-event rendered-component in setup-state]]
+   [test-burgerboard.huh :refer [rendered tag containing with-class sub-component with-text with-attr after-event rendered-component in setup-state]]
    [burgerboard-web.board :as board]
    [burgerboard-web.widgets :as widgets]
    [om.core :as om :include-macros true]
@@ -33,7 +33,6 @@
        board/board {}
        (tag "div"
             (with-class "board")
-            (containing nothing)
             )
        )
       )
@@ -71,7 +70,7 @@
            (containing
             (tag "div"
                  (with-class "board-title")
-                 (containing (text "Board Name"))
+                 (with-text "Board Name")
                  )
             (sub-component board/store {:id 2
                                       :name "Top Store"
@@ -128,13 +127,13 @@
             (containing
              (tag "span"
                   (with-class "store-name")
-                  (containing (text "Store")))
+                  (with-text "Store"))
              (tag "span"
                   ;; Placeholder for progress bar
                   (with-class "rating-graph"))
              (tag "span"
                   (with-class "rating")
-                  (containing (text "2"))
+                  (with-text "2")
                   )
              )
             )
@@ -168,7 +167,7 @@
              (tag "button"
                   (with-class "save-store")
                   (with-attr "type" "button")
-                  (containing (text "Save")))
+                  (with-text "Save"))
              )
             )
        )
