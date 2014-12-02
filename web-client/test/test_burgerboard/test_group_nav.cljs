@@ -80,7 +80,7 @@
      :click #js {:target #js {}}
      (in (rendered-component
           group-nav/add-group state)
-         0)
+         "button")
      (fn [_]
        (is (= [{:id 1 :name "first"} {:name ""}] @state))
        )
@@ -238,7 +238,7 @@
      :click #js {:target #js {}}
      (in (rendered-component
           group-nav/add-board state)
-         0)
+         "button")
      (fn [_]
        (is (= [{:id 1 :name "first"} {:name ""}] @state))
        )

@@ -38,7 +38,7 @@
      :change #js {:target #js {:value "new value"}}
      (in (rendered-component
           test-editor state)
-         0)
+         "input")
      (fn [_]
        (is (= "new value" (:changing-value @state)))
        )
@@ -63,9 +63,10 @@
   (let [state (setup-state {:value ""})]
     (after-event
      :change #js {:target #js {:value "New Value"}}
-     (rendered-component
-      widgets/text-editor state
-      {:opts {:attr :value :className "some-class"}})
+     (in (rendered-component
+          widgets/text-editor state
+          {:opts {:attr :value :className "some-class"}})
+         "")
      (fn [_]
        (is (= "New Value" (:value @state)))
        )
