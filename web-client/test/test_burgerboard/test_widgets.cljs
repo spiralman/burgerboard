@@ -1,7 +1,7 @@
 (ns test-burgerboard.test-widgets
   (:require-macros [cemerick.cljs.test
                     :refer (is deftest with-test testing test-var)]
-                   [test-burgerboard.huh]
+                   [test-burgerboard.huh :refer (with-rendered)]
                    )
   (:require
    [test-burgerboard.huh :refer [rendered tag containing with-class with-attr
@@ -80,6 +80,42 @@
       )
   )
 
+(defn test-password-editor-parent [data owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:password "initial value"})
+    om/IRenderState
+    (render-state [this state]
+      (dom/div #js {}
+               ;; Skip instrumentation, so we get a real text-editor
+               ;; widget, not a stub
+               (om/build* widgets/text-editor {}
+                          {:opts {:state-k :password
+                                  :state-owner owner
+                                  :type "password"
+                                  :className "password-editor"}})
+               )
+      )
+    )
+  )
+
+(deftest text-editor-renders-input-password-element-for-value
+  (is (rendered
+       test-password-editor-parent {}
+       (tag "div"
+            (containing
+             (tag "input"
+                  (with-attr "type" "password")
+                  (with-class "password-editor")
+                  (with-attr "value" "initial value")
+                  )
+             )
+            )
+       )
+      )
+  )
+
 (deftest text-editor-binds-name-to-cursor
   (let [rendered (rendered-component
                   test-text-editor-parent (setup-state {}))]
@@ -99,20 +135,20 @@
        {:value "Initial Value"}
        {:opts {:className "value-editor"
                :k :value}}
-       (fn [component]
-         ((tag "div"
-               (with-class "value-editor")
-               (containing
-                (sub-component widgets/text-editor {}
-                               {:opts {:state-k :temp-value
-                                       :state-owner component
-                                       :className "value-editor-input"}})
-                (tag "button"
-                     (with-class "value-editor-save")
-                     (with-attr "type" "button")
-                     (with-text "Save"))
-                )
-               ) component)
+       (with-rendered [component]
+         (tag "div"
+              (with-class "value-editor")
+              (containing
+               (sub-component widgets/text-editor {}
+                              {:opts {:state-k :temp-value
+                                      :state-owner component
+                                      :className "value-editor-input"}})
+               (tag "button"
+                    (with-class "value-editor-save")
+                    (with-attr "type" "button")
+                    (with-text "Save"))
+               )
+              )
          )
        )
       )

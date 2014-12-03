@@ -12,11 +12,11 @@
     )
   )
 
-(defn text-editor [data owner {:keys [state-k state-owner className]}]
+(defn text-editor [data owner {:keys [state-k state-owner className type]}]
   (reify
     om/IRender
     (render [_]
-      (dom/input #js {:type "text"
+      (dom/input #js {:type (or type "text")
                       :value (om/get-state state-owner state-k)
                       :className className
                       :onChange (bind-value state-owner state-k)}))

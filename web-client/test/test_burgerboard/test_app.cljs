@@ -1,10 +1,11 @@
 (ns test-burgerboard.test-app
   (:require-macros [cemerick.cljs.test
                     :refer (is deftest with-test testing test-var)]
-                   [test-burgerboard.huh]
+                   [test-burgerboard.huh :refer (with-rendered)]
                    )
   (:require
    [test-burgerboard.huh :refer [rendered tag containing with-class sub-component with-text]]
+   [burgerboard-web.widgets :as widgets]
    [burgerboard-web.app :as app]
    [burgerboard-web.group-nav :as group-nav]
    [burgerboard-web.board :as board]
@@ -13,13 +14,28 @@
    )
   )
 
-;; (deftest login-contains-login-controls
-;;   (is (rendered
-;;        app/login {:user nil}
-;;        (tag "div"
-;;             (with-class "login")
-;;             (containing
-
+(deftest login-contains-login-controls
+  (is (rendered
+       app/login {:user nil}
+       (with-rendered [login]
+         (tag "div"
+              (with-class "login")
+              (containing
+               (sub-component widgets/text-editor {}
+                              {:opts {:state-owner login
+                                      :state-k :email
+                                      :className "login-email"}})
+               (sub-component widgets/text-editor {}
+                              {:opts {:state-owner login
+                                      :state-k :password
+                                      :type "password"
+                                      :className "login-password"}})
+               )
+              )
+         )
+       )
+      )
+  )
 
 (deftest app-contains-login-without-user
   (is (rendered

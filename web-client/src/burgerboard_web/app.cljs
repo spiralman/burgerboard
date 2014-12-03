@@ -58,9 +58,23 @@
 
 (defn login [data owner]
   (reify
-    om/IRender
-    (render [this]
-      (dom/div #js {})
+    om/IInitState
+    (init-state [this]
+      {:email ""
+       :password ""})
+    om/IRenderState
+    (render-state [this state]
+      (dom/div #js {:className "login"}
+               (om/build widgets/text-editor {}
+                         {:opts {:state-owner owner
+                                 :state-k :email
+                                 :className "login-email"}})
+               (om/build widgets/text-editor {}
+                         {:opts {:state-owner owner
+                                 :state-k :password
+                                 :type "password"
+                                 :className "login-password"}})
+               )
       )
     )
   )
