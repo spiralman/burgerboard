@@ -17,7 +17,6 @@
   (reify
     om/IInitState
     (init-state [_]
-      (.log js/console "returning initial state")
       {:changing-state "initial value"})
     om/IRenderState
     (render-state [this state]
@@ -25,50 +24,118 @@
                (dom/input #js {:type "text"
                                :value (:changing-value data)
                                :onChange (widgets/bind-value
-                                          data :changing-value)})
+                                          owner :changing-value)})
                )
       )
     )
   )
 
 
-(deftest bind-value-binds-to-cursor
-  (let [state (setup-state {:changing-value "initial value"})]
+(deftest bind-value-binds-to-state
+  (let [rendered-component (rendered-component
+                            test-editor (setup-state {}))]
     (after-event
      :change #js {:target #js {:value "new value"}}
-     (in (rendered-component
-          test-editor state)
+     (in rendered-component
          "input")
      (fn [_]
-       (is (= "new value" (:changing-value @state)))
+       (is (= "new value" (om/get-state rendered-component :changing-value)))
        )
      )
     )
   )
 
+(defn test-text-editor-parent [data owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:changing-state "initial value"})
+    om/IRenderState
+    (render-state [this state]
+      (dom/div #js {}
+               ;; Skip instrumentation, so we get a real text-editor
+               ;; widget, not a stub
+               (om/build* widgets/text-editor {}
+                          {:opts {:state-k :changing-state
+                                  :state-owner owner
+                                  :className "test-editor"}})
+               )
+      )
+    )
+  )
+
 (deftest text-editor-renders-input-element-for-value
   (is (rendered
-       widgets/text-editor {:value "Some Value"}
-       {:opts {:attr :value :className "some-editor"}}
-       (tag "input"
-            (with-attr "type" "text")
-            (with-class "some-editor")
-            (with-attr "value" "Some Value")
+       test-text-editor-parent {:value "Some Value"}
+       (tag "div"
+            (containing
+             (tag "input"
+                  (with-attr "type" "text")
+                  (with-class "test-editor")
+                  (with-attr "value" "initial value")
+                  )
+             )
             )
        )
       )
   )
 
 (deftest text-editor-binds-name-to-cursor
-  (let [state (setup-state {:value ""})]
+  (let [rendered (rendered-component
+                  test-text-editor-parent (setup-state {}))]
     (after-event
      :change #js {:target #js {:value "New Value"}}
-     (in (rendered-component
-          widgets/text-editor state
-          {:opts {:attr :value :className "some-class"}})
-         "")
+     (in rendered "input")
      (fn [_]
-       (is (= "New Value" (:value @state)))
+       (is (= "New Value" (om/get-state rendered :changing-state)))
+       )
+     )
+    )
+  )
+
+(deftest save-single-value-renders-controls
+  (is (rendered
+       widgets/save-single-value
+       {:value "Initial Value"}
+       {:opts {:className "value-editor"
+               :k :value}}
+       (fn [component]
+         ((tag "div"
+               (with-class "value-editor")
+               (containing
+                (sub-component widgets/text-editor {}
+                               {:opts {:state-k :temp-value
+                                       :state-owner component
+                                       :className "value-editor-input"}})
+                (tag "button"
+                     (with-class "value-editor-save")
+                     (with-attr "type" "button")
+                     (with-text "Save"))
+                )
+               ) component)
+         )
+       )
+      )
+  )
+
+(deftest save-single-value-updates-cursor-on-save
+  (let [app-state (setup-state {:value "Initial Value"})
+        rendered (rendered-component
+                  widgets/save-single-value
+                  app-state
+                  {:opts {:className "value-editor"
+                          :k :value}})]
+    (after-event
+     :change #js {:target #js {:value "Changed Value"}}
+     (in rendered "input")
+     (fn [_]
+       (after-event
+        :click #js {:target #js {}}
+        (in rendered "button")
+        (fn [_]
+          (is (= "Changed Value" (:value @app-state)))
+          )
+        )
        )
      )
     )

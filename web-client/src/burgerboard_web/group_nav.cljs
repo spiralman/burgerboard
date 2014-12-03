@@ -3,30 +3,16 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]))
 
-(defn board-editor [board owner]
-  (reify
-    om/IRender
-    (render [this]
-      (dom/div #js {:className "board-editor"}
-               (om/build widgets/text-editor
-                         board
-                         {:opts {:attr :name
-                                 :className "board-name-editor"}})
-               (dom/button #js {:className "save-board"
-                                :type "button"}
-                           "Save")
-               )
-      )
-    )
-  )
-
 (defn board-item [data owner]
   (reify
     om/IRender
     (render [this]
       (dom/li #js {:className "board-item"}
               (if-not (contains? data :id)
-                (om/build board-editor data)
+                (om/build widgets/save-single-value
+                          data
+                          {:opts {:className "board-editor"
+                                  :k :name}})
                 (:name data)
                 )
               )
@@ -51,31 +37,16 @@
     )
   )
 
-(defn group-editor [group owner]
-  (reify
-    om/IRender
-    (render [this]
-      (dom/span #js {:className "group-editor"}
-                (om/build widgets/text-editor
-                          group
-                          {:opts {:className "group-name-editor"
-                                  :attr :name}})
-                (dom/button #js {:className "save-group"
-                                 :type "button"
-                                 :onClick #(.log js/console (:name @group))}
-                            "Save")
-                )
-      )
-    )
-  )
-
 (defn group [data owner]
   (reify
     om/IRender
     (render [this]
       (apply dom/li #js {:className "group"}
               (if-not (contains? data :id)
-                (list (om/build group-editor data))
+                (list (om/build widgets/save-single-value
+                                data
+                                {:opts {:className "group-editor"
+                                        :k :name}}))
                 (list
                  (dom/span #js {:className "group-name"}
                            (:name data))

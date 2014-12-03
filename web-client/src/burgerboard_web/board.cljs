@@ -3,31 +3,16 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]))
 
-(defn store-editor [data owner]
-  (reify
-    om/IRender
-    (render [this]
-      (dom/span #js {:className "store-editor"}
-                (om/build widgets/text-editor
-                          data
-                          {:opts {:attr :name
-                                  :className "store-name-editor"}})
-                (dom/button #js {:className "save-store"
-                                 :type "button"
-                                 :onClick #(.log js/console (:name @data))}
-                            "Save")
-                )
-      )
-    )
-  )
-
 (defn store [data owner]
   (reify
     om/IRender
     (render [this]
       (apply dom/li #js {:className "store"}
               (if-not (contains? data :id)
-                (list (om/build store-editor data))
+                (list (om/build widgets/save-single-value
+                                data
+                                {:opts {:className "store-editor"
+                                        :k :name}}))
                 (list
                  (dom/span #js {:className "store-name"}
                            (:name data))

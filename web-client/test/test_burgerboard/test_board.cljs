@@ -147,27 +147,10 @@
        (tag "li"
             (with-class "store")
             (containing
-             (sub-component board/store-editor {:name "Store"})
-             )
-            )
-       )
-      )
-  )
-
-(deftest store-editor-renders-editing-controns
-  (is (rendered
-       board/store-editor {:name "Store"}
-       (tag "span"
-            (with-class "store-editor")
-            (containing
-             (sub-component widgets/text-editor
+             (sub-component widgets/save-single-value
                             {:name "Store"}
-                            {:opts {:attr :name
-                                    :className "store-name-editor"}})
-             (tag "button"
-                  (with-class "save-store")
-                  (with-attr "type" "button")
-                  (with-text "Save"))
+                            {:opts {:className "store-editor"
+                                    :k :name}})
              )
             )
        )

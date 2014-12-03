@@ -143,28 +143,10 @@
        (tag "li"
             (with-class "group")
             (containing
-             (sub-component group-nav/group-editor {:name "Some Group"})
-             )
-            )
-       )
-      )
-  )
-
-(deftest group-editor-contains-name-editor-and-save
-  (is (rendered
-       group-nav/group-editor {:name "Some Group"}
-       (tag "span"
-            (with-class "group-editor")
-            (containing
-             (sub-component widgets/text-editor
+             (sub-component widgets/save-single-value
                             {:name "Some Group"}
-                            {:opts {:attr :name
-                                    :className "group-name-editor"}})
-             (tag "button"
-                  (with-class "save-group")
-                  (with-attr "type" "button")
-                  (with-text "Save")
-                  )
+                            {:opts {:className "group-editor"
+                                    :k :name}})
              )
             )
        )
@@ -187,28 +169,10 @@
        group-nav/board-item {:name "Board Name"}
        (tag "li"
             (containing
-             (sub-component group-nav/board-editor {:name "Board Name"})
-             )
-            )
-       )
-      )
-  )
-
-(deftest board-editor-shows-board-editing-controls
-  (is (rendered
-       group-nav/board-editor {:name "Board Name"}
-       (tag "div"
-            (with-class "board-editor")
-            (containing
-             (sub-component widgets/text-editor
+             (sub-component widgets/save-single-value
                             {:name "Board Name"}
-                            {:opts {:attr :name
-                                    :className "board-name-editor"}})
-             (tag "button"
-                  (with-class "save-board")
-                  (with-attr "type" "button")
-                  (with-text "Save")
-                  )
+                            {:opts {:className "board-editor"
+                                    :k :name}})
              )
             )
        )
