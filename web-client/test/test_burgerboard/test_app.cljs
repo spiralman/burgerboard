@@ -4,7 +4,7 @@
                    [test-burgerboard.huh :refer (with-rendered)]
                    )
   (:require
-   [test-burgerboard.huh :refer [rendered tag containing with-class sub-component with-text]]
+   [test-burgerboard.huh :refer [rendered tag containing with-class sub-component with-attr with-text]]
    [burgerboard-web.widgets :as widgets]
    [burgerboard-web.app :as app]
    [burgerboard-web.group-nav :as group-nav]
@@ -30,6 +30,10 @@
                                       :state-k :password
                                       :type "password"
                                       :className "login-password"}})
+               (tag "button"
+                    (with-class "login-button")
+                    (with-attr "type" "button")
+                    (with-text "Login"))
                )
               )
          )

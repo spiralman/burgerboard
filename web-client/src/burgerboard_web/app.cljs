@@ -74,6 +74,9 @@
                                  :state-k :password
                                  :type "password"
                                  :className "login-password"}})
+               (dom/button #js {:className "login-button"
+                                :type "button"}
+                           "Login")
                )
       )
     )
