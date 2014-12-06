@@ -1,7 +1,6 @@
 (ns burgerboard.board-handlers
   (:use compojure.core
         [clojure.string :only [join]]
-        [clojure.data.json :as json :only [read-str write-str]]
         burgerboard.authentication
         burgerboard.database
         burgerboard.boards
@@ -80,8 +79,7 @@
   )
 
 (defn post-board [user group request]
-  (let [name (:name (json/read-str (slurp (:body request))
-                                   :key-fn keyword))]
+  (let [name (:name (body-json request))]
     (->
      (create-board name group)
      (insert-board)
@@ -102,8 +100,7 @@
   )
 
 (defn post-store [user group board request]
-  (let [name (:name (json/read-str (slurp (:body request))
-                                   :key-fn keyword))]
+  (let [name (:name (body-json request))]
     (->
      (create-store name board)
      (insert-store)
@@ -114,8 +111,7 @@
   )
 
 (defn put-rating [user group board store request]
-  (let [rating (int (:rating (json/read-str (slurp (:body request))
-                                            :key-fn keyword)))]
+  (let [rating (int (:rating (body-json request)))]
     (->
      (set-rating store user rating)
      (tally-store)
@@ -128,7 +124,7 @@
 (defroutes board-routes
   (GET "/groups/:group-id/boards/:board-id" request
        (require-board request get-board))
-  
+
   (GET "/groups/:group-id/boards" request
        (require-membership request get-boards))
 

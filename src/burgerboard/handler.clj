@@ -5,7 +5,7 @@
         burgerboard.authentication
         burgerboard.board-handlers
         burgerboard.api
-        [clojure.data.json :as json :only [read-str write-str]]
+        [clojure.data.json :as json :only [write-str]]
         )
   (:require [compojure.handler :as handler]
             [compojure.route :as route]))
@@ -26,8 +26,7 @@
    (dissoc :password)))
 
 (defn login [request]
-  (let [{:keys [email password]} (json/read-str (slurp (:body request))
-                                                :key-fn keyword)
+  (let [{:keys [email password]} (body-json request)
         user (find-user email)]
     (if (login-valid (find-user email) email password)
       {:status 200
@@ -46,8 +45,7 @@
 
 (defn signup [request]
   (let [session (:session request)
-        {:keys [email password name]} (json/read-str (slurp (:body request))
-                                                     :key-fn keyword)]
+        {:keys [email password name]} (body-json request)]
     (if (not (nil? (find-user email)))
       (invalid-user)
       (if-let [user (create-user email password name)]
@@ -65,8 +63,7 @@
   )
 
 (defn invite [user group request]
-  (let [{:keys [email name]} (json/read-str (slurp (:body request))
-                                                     :key-fn keyword)]
+  (let [{:keys [email name]} (body-json request)]
     (insert-member group (find-user email))
     {:status 201}
     )

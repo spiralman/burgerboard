@@ -21,3 +21,8 @@
   {:status status
    :body (json/write-str data)}
   )
+
+(defn body-json [request]
+  (json/read-str (slurp (:body request))
+                 :key-fn keyword)
+  )
