@@ -22,8 +22,9 @@
             (app
              (->
               (request :post "/api/v1/login")
-              (body {:email "some_user@example.com"
-                     :password "password"})
+              (header :content-type "application/json")
+              (body (json/write-str {:email "some_user@example.com"
+                                     :password "password"}))
               ))]
         (is (= (:status response) 200))
         (is (contains? (:headers response) "Set-Cookie"))
@@ -40,8 +41,8 @@
             (app
              (->
               (request :post "/api/v1/login")
-              (body {:email "bad_user@example.com"
-                     :password "password"})
+              (body (json/write-str {:email "bad_user@example.com"
+                                     :password "password"}))
               ))]
         (is (= (:status response) 403))
         (is (not (contains? (:headers response) "Set-Cookie")))
@@ -53,8 +54,8 @@
             (app
              (->
               (request :post "/api/v1/login")
-              (body {:email "some_user@example.com"
-                     :password "wrong_pass"})
+              (body (json/write-str {:email "some_user@example.com"
+                                     :password "wrong_pass"}))
               ))]
         (is (= (:status response) 403))
         (is (not (contains? (:headers response) "Set-Cookie")))
@@ -68,9 +69,9 @@
             (app
              (->
               (request :post "/api/v1/signups")
-              (body {:email "new_user@example.com"
-                     :password "password"
-                     :name "New User"})
+              (body (json/write-str {:email "new_user@example.com"
+                                     :password "password"
+                                     :name "New User"}))
               ))]
         (is (= (:status response) 201))
         (is (contains? (:headers response) "Set-Cookie"))
@@ -83,9 +84,9 @@
       (let [response
             (app (->
                   (request :post "/api/v1/signups")
-                  (body {:email "bad email"
-                         :password "password"
-                         :name "Bad user"})
+                  (body (json/write-str {:email "bad email"
+                                         :password "password"
+                                         :name "Bad user"}))
                   ))]
         (is (= (:status response) 400))
         )
@@ -94,9 +95,9 @@
       (let [response
             (app (->
                   (request :post "/api/v1/signups")
-                  (body {:email "some_user@example.com"
-                         :password "password"
-                         :name "Duplicate user"})
+                  (body (json/write-str {:email "some_user@example.com"
+                                         :password "password"
+                                         :name "Duplicate user"}))
                   ))]
         (is (= (:status response) 400))
         )
@@ -109,8 +110,8 @@
             (app
              (->
               (request :post "/api/v1/groups/1/members")
-              (body {:email "second_user@example.com"
-                     :name "Second User"})
+              (body (json/write-str {:email "second_user@example.com"
+                                     :name "Second User"}))
               ))]
         (is (= (:status response) 401))
         )
@@ -122,8 +123,8 @@
              (->
               (request :post "/api/v1/groups/1/members")
               (header "Cookie" (login-as "some_user@example.com" "password"))
-              (body {:email "second_user@example.com"
-                     :name "Second User"})
+              (body (json/write-str {:email "second_user@example.com"
+                                     :name "Second User"}))
               ))]
         (is (= (:status response) 403))
         )
@@ -135,8 +136,8 @@
              (->
               (request :post "/api/v1/groups/1/members")
               (header "Cookie" (login-as "owner@example.com" "password"))
-              (body {:email "second_user@example.com"
-                     :name "Second User"})
+              (body (json/write-str {:email "second_user@example.com"
+                                     :name "Second User"}))
               ))]
         (is (= (:status response) 201))
         (is (= {:email "second_user@example.com" :name "Second User"}

@@ -25,8 +25,10 @@
    (assoc user :groups_url (resolve-route request "groups"))
    (dissoc :password)))
 
-(defn login [request email password]
-  (let [user (find-user email)]
+(defn login [request]
+  (let [{:keys [email password]} (json/read-str (slurp (:body request))
+                                                :key-fn keyword)
+        user (find-user email)]
     (if (login-valid (find-user email) email password)
       {:status 200
        :session (assoc (:session request) :email email)
@@ -42,25 +44,32 @@
    :body "Invalid user"}
   )
 
-(defn signup [session email password name]
-  (if (not (nil? (find-user email)))
-   (invalid-user)
-   (if-let [user (create-user email password name)]
-     (do
-       (insert-user user)
-       {:status 201
-        :session (assoc session :email email)
-        :body (json/write-str (dissoc user :password))
-        }
-       )
+(defn signup [request]
+  (let [session (:session request)
+        {:keys [email password name]} (json/read-str (slurp (:body request))
+                                                     :key-fn keyword)]
+    (if (not (nil? (find-user email)))
       (invalid-user)
-     )
-   )
+      (if-let [user (create-user email password name)]
+        (do
+          (insert-user user)
+          {:status 201
+           :session (assoc session :email email)
+           :body (json/write-str (dissoc user :password))
+           }
+          )
+        (invalid-user)
+        )
+      )
+    )
   )
 
 (defn invite [user group request]
-  (insert-member group (find-user (:email (:params request))))
-  {:status 201}
+  (let [{:keys [email name]} (json/read-str (slurp (:body request))
+                                                     :key-fn keyword)]
+    (insert-member group (find-user email))
+    {:status 201}
+    )
   )
 
 (defn get-users-groups [user request]
@@ -72,11 +81,11 @@
   )
 
 (defroutes api-routes
-  (POST "/login" [email password :as request]
-        (login request email password))
+  (POST "/login" request
+        (login request))
 
-  (POST "/signups" [email password name :as {session :session}]
-        (signup session email password name))
+  (POST "/signups" request
+        (signup request))
 
   (GET "/groups" request
        (require-login request get-users-groups))

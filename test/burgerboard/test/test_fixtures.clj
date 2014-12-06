@@ -1,5 +1,6 @@
 (ns burgerboard.test.test-fixtures
-  (:use korma.db
+  (:use [clojure.data.json :as json :only [read-str write-str]]
+        korma.db
         korma.core
         ring.mock.request
         burgerboard.database
@@ -16,8 +17,8 @@
    (app
     (->
      (request :post "/api/v1/login")
-     (body {:email email
-            :password password})))
+     (body (json/write-str {:email email
+                            :password password}))))
    (:headers)
    (get "Set-Cookie")
    (first)
