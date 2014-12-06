@@ -23,6 +23,7 @@
 (defn render-user [request user]
   (->
    (assoc user :groups_url (resolve-route request "groups"))
+   (assoc :groups (map (partial render-group request) (:groups user)))
    (dissoc :password)))
 
 (defn login [request]

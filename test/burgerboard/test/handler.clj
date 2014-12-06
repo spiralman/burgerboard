@@ -32,7 +32,10 @@
                {:email "some_user@example.com"
                 :name "Some User"
                 :groups_url "http://localhost/api/v1/groups"
-                :groups [{:name "Group" :id 1}]}))
+                :groups [{:name "Group"
+                          :id 1
+                          :boards_url "http://localhost/api/v1/groups/1/boards"
+                          :members_url "http://localhost/api/v1/groups/1/members"}]}))
         )
       )
 
