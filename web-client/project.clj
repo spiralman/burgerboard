@@ -3,11 +3,14 @@
   :url "http://example.com/FIXME"
 
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2173"]
-                 [om "0.7.3"]]
+                 [org.clojure/core.async "0.1.346.0-17112a-alpha"]
+                 [org.clojure/clojurescript "0.0-2411"]
+                 [om "0.7.3"]
+                 [cljs-ajax "0.3.3"]]
 
-  :plugins [[lein-cljsbuild "1.0.2"]
-            [com.cemerick/clojurescript.test "0.3.1"]]
+  :plugins [[lein-cljsbuild "1.0.3"]
+            [com.cemerick/clojurescript.test "0.3.1"]
+            [com.cemerick/austin "0.1.5"]]
 
   :source-paths ["src"]
 
@@ -26,6 +29,7 @@
                         :notify-command ["phantomjs" :cljs.test/runner
                                          "contrib/es5-shim.js"
                                          "contrib/react-with-addons-0.9.0.js"
+                                         "contrib/sinon-server-1.12.1.js"
                                          "test-burgerboard.js"]
                         :compiler {:output-to "test-burgerboard.js"
                                    :optimizations :whitespace
@@ -51,7 +55,8 @@
               {
                "test-repl" ["phantomjs" "utilities/cljs-repl.js"
                             "contrib/es5-shim.js" "contrib/react-0.9.0.js"
-                            "test-burgerboard.js"]
+                            "test-burgerboard.js"
+                            "repl.js"]
                }
               }
   )
