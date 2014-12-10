@@ -1,10 +1,13 @@
 (ns test-burgerboard.test-app
-  (:require-macros [cemerick.cljs.test
-                    :refer (is deftest with-test testing test-var)]
+  (:require-macros [cljs.core.async.macros :refer [go]]
+                   [cemerick.cljs.test
+                    :refer (is deftest with-test testing test-var done)]
                    [test-burgerboard.huh :refer (with-rendered)]
                    )
   (:require
-   [test-burgerboard.huh :refer [rendered tag containing with-class sub-component with-attr with-text]]
+   [cljs.core.async :refer [<! chan put!]]
+   [test-burgerboard.huh :refer [rendered tag containing with-class sub-component with-attr with-text setup-state rendered-component after-event in]]
+   [test-burgerboard.fake-server :refer [expect-request json-response]]
    [burgerboard-web.widgets :as widgets]
    [burgerboard-web.app :as app]
    [burgerboard-web.group-nav :as group-nav]
@@ -39,6 +42,44 @@
          )
        )
       )
+  )
+
+(deftest ^:async login-logs-in-on-click
+  (let [state (setup-state {:user nil})
+        login (rendered-component
+               app/login state
+               {:init-state {:email "email"
+                             :password "password"}})
+        responded (expect-request
+                   -test-ctx
+                   {:method "POST"
+                    :url "/api/v1/login"
+                    :json-data {:email "email"
+                                :password "password"}}
+                   (json-response
+                    200
+                    {:email "some_user@example.com"
+                     :name "Some User"
+                     :groups_url "http://localhost/api/v1/groups"
+                     :groups [{:name "Group" :id 1}]})
+                   )]
+    (after-event
+     :click #js {}
+     (in login "button")
+     (fn [_]
+       (go
+        (<! responded)
+        (is (= {:user {:email "some_user@example.com"
+                       :groups_url "http://localhost/api/v1/groups"
+                       :name "Some User"}
+                :groups [{:name "Group" :id 1}]
+                :board nil}
+               @state))
+        (done)
+        )
+       )
+     )
+    )
   )
 
 (deftest app-contains-login-without-user
