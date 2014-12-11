@@ -28,10 +28,19 @@
               :builds [{:id "dev"
                         :source-paths ["web-client/src"]
                         :compiler {
-                                   :output-to "web-client/burgerboard.js"
-                                   :output-dir "web-client/out"
+                                   :output-to "web-client/dev-burgerboard.js"
+                                   :output-dir "web-client/dev-out"
                                    :optimizations :none
                                    :source-map true
+                                   }
+                        }
+                       {:id "prod"
+                        :source-paths ["web-client/src"]
+                        :compiler {
+                                   :output-to "web-client/burgerboard.js"
+                                   :output-dir "web-client/out"
+                                   :optimizations :whitespace
+                                   :source-map "web-client/burgerboard.js.map"
                                    }
                         }]
               })
