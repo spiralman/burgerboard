@@ -8,7 +8,10 @@
    [clojure.java.jdbc :as jdbc])
   )
 
-(defdb prod (System/getenv "DATABASE_URL"))
+(def production-db-spec
+   (System/getenv "DATABASE_URL"))
+
+(defdb prod production-db-spec)
 
 (defn init []
   (jdbc/with-connection production-db-spec
