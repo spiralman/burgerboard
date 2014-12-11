@@ -10,9 +10,7 @@
 
 (def production-db-spec
   (postgres
-   {:db "burgerboard"
-    :user "burgerboard"
-    :password "burgerboard"}))
+   (System/getenv "DATABASE_URL")))
 
 (defdb prod production-db-spec)
 
