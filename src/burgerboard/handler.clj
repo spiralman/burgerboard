@@ -94,9 +94,24 @@
   board-routes
   )
 
+(defn page [request]
+"<html>
+  <body>
+    <div id=\"burgerboard\"></div>
+    <script src=\"/static/contrib/react-0.9.0.js\"></script>
+    <script src=\"/static/out/goog/base.js\" type=\"text/javascript\"></script>
+    <script src=\"/static/burgerboard.js\" type=\"text/javascript\"></script>
+    <script type=\"/static/text/javascript\">goog.require(\"burgerboard_web.app\");</script>
+  </body>
+</html>
+"
+  )
+
 (defroutes app-routes
   (context "/api/v1" [] api-routes)
-  (route/resources "/static" {:root "public"})
+  (GET "/" request
+       (page request))
+  (route/files "/static" {:root "web-client"})
   (route/not-found "Not Found"))
 
 (def app
