@@ -10,9 +10,28 @@
                  [org.xerial/sqlite-jdbc "3.7.15-M1"]
                  [postgresql/postgresql "8.4-702.jdbc4"]
                  [javax.mail/mail "1.4.7"]
-                 [crypto-password "0.1.0"]]
-  :plugins [[lein-ring "0.8.5"]]
+                 [crypto-password "0.1.0"]
+                 [org.clojure/clojure "1.6.0"]
+                 [org.clojure/core.async "0.1.346.0-17112a-alpha"]
+                 [org.clojure/clojurescript "0.0-2411"]
+                 [om "0.7.3"]
+                 [cljs-ajax "0.3.3"]]
+  :plugins [[lein-ring "0.8.5"]
+            [lein-cljsbuild "1.0.3"]
+            [com.cemerick/clojurescript.test "0.3.1"]
+            [com.cemerick/austin "0.1.5"]]
   :ring {:handler burgerboard.server/prod-app
          :init burgerboard.server/init}
   :profiles
-  {:dev {:dependencies [[ring-mock "0.1.5"]]}})
+  {:dev {:dependencies [[ring-mock "0.1.5"]]}}
+  :cljsbuild {
+              :builds [{:id "dev"
+                        :source-paths ["web-client/src"]
+                        :compiler {
+                                   :output-to "web-client/burgerboard.js"
+                                   :output-dir "web-client/out"
+                                   :optimizations :none
+                                   :source-map true
+                                   }
+                        }]
+              })
