@@ -130,17 +130,19 @@
 
 (deftest test-groups
   (testing "User belonging to a group"
-    (insert-group {:name "group" :owner "user"})
-    (insert-user {:email "user@example.com" :password "pass" :name "Name"
-                  :groups [{:id 1 :name "group"}]})
+    (let [group (insert-group {:name "group" :owner "user"})]
+      (is (= 1 (:id group)))
+      (insert-user {:email "user@example.com" :password "pass" :name "Name"
+                    :groups [{:id 1 :name "group"}]})
 
-    (is (= {:email "user@example.com" :password "pass" :name "Name"
-            :groups [{:id 1 :name "group"}]}
-           (find-user "user@example.com")))
+      (is (= {:email "user@example.com" :password "pass" :name "Name"
+              :groups [{:id 1 :name "group"}]}
+             (find-user "user@example.com")))
 
-    (is (= {:id 1 :name "group" :owner "user"
-            :users [{:email "user@example.com" :name "Name"}]}
-           (find-group 1)))
+      (is (= {:id 1 :name "group" :owner "user"
+              :users [{:email "user@example.com" :name "Name"}]}
+             (find-group 1)))
+      )
     )
 
   (testing "Adding a user to a group"

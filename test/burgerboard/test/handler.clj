@@ -153,38 +153,74 @@
     )
 
   (testing "groups route"
-    (testing "requires login"
-      (let [response
-            (app
-             (->
-              (request :get "/api/v1/groups")
-              (header :content-type "application/json")))]
-        (is (= (:status response) 401))
+    (testing "GET"
+      (testing "requires login"
+        (let [response
+              (app
+               (->
+                (request :get "/api/v1/groups")
+                (header :content-type "application/json")))]
+          (is (= (:status response) 401))
+          )
+        )
+
+      (testing "Returns just user's groups"
+        (insert-group {:name "Group2" :owner "owner@example.com"})
+        (insert-member {:id 2} {:email "owner@example.com"})
+        (insert-member {:id 2} {:email "some_user@example.com"})
+
+        (insert-group {:name "Other Group" :owner "other-owner@example.com"})
+
+        (let [response
+              (app
+               (->
+                (request :get "/api/v1/groups")
+                (header "Cookie" (login-as "owner@example.com" "password"))))]
+          (is (= (:status response) 200))
+          (is (= {:groups [{:id 1
+                            :name "Group"
+                            :boards_url "http://localhost/api/v1/groups/1/boards"
+                            :members_url "http://localhost/api/v1/groups/1/members"}
+                           {:id 2
+                            :name "Group2"
+                            :boards_url "http://localhost/api/v1/groups/2/boards"
+                            :members_url "http://localhost/api/v1/groups/2/members"}]}
+                 (json/read-str (:body response) :key-fn keyword)))
+          )
         )
       )
 
-    (testing "Returns just user's groups"
-      (insert-group {:name "Group2" :owner "owner@example.com"})
-      (insert-member {:id 2} {:email "owner@example.com"})
-      (insert-member {:id 2} {:email "some_user@example.com"})
+    (testing "POST"
+      (testing "requires login"
+        (let [response
+              (app
+               (->
+                (request :get "/api/v1/groups")
+                (header :content-type "application/json")))]
+          (is (= (:status response) 401))
+          )
+        )
 
-      (insert-group {:name "Other Group" :owner "other-owner@example.com"})
-
-      (let [response
-            (app
-             (->
-              (request :get "/api/v1/groups")
-              (header "Cookie" (login-as "owner@example.com" "password"))))]
-        (is (= (:status response) 200))
-        (is (= {:groups [{:id 1
-                          :name "Group"
-                          :boards_url "http://localhost/api/v1/groups/1/boards"
-                          :members_url "http://localhost/api/v1/groups/1/members"}
-                         {:id 2
-                          :name "Group2"
-                          :boards_url "http://localhost/api/v1/groups/2/boards"
-                          :members_url "http://localhost/api/v1/groups/2/members"}]}
-               (json/read-str (:body response) :key-fn keyword)))
+      (testing "creates new group with user as owner"
+        (let [response
+              (app
+               (->
+                (request :post "/api/v1/groups")
+                (header :content-type "application/json")
+                (header "Cookie" (login-as "owner@example.com" "password"))
+                (body (json/write-str {:name "New Group"}))))]
+          (is (= (:status response) 201))
+          (is (= {:name "New Group"
+                  :id 4
+                  :boards_url "http://localhost/api/v1/groups/4/boards"
+                  :members_url "http://localhost/api/v1/groups/4/members"}
+                 (json/read-str (:body response)
+                                :key-fn keyword)))
+          (let [created-group (find-group 4)]
+            (is (= [{:email "owner@example.com" :name "Owner User"}]
+                   (:users created-group)))
+            )
+          )
         )
       )
     )

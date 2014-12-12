@@ -123,8 +123,11 @@
   )
 
 (defn insert-group [group]
-  (insert groups
-          (values group))
+  (assoc-id
+   group
+   (insert groups
+           (values group))
+   )
   )
 
 (defn insert-member [group user]
@@ -147,6 +150,7 @@
                                   :rating nil})
                      stores)))
        )
+     group
     )
    )
   )

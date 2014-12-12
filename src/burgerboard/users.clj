@@ -12,6 +12,11 @@
     )
   )
 
+(defn create-group [name owner]
+  {:name name
+   :owner (:email owner)}
+  )
+
 (defn login-valid [user email password]
   (if user
     (and (= email (:email user))

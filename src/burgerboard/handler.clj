@@ -11,13 +11,16 @@
             [compojure.route :as route]))
 
 (defn render-group [request group]
-  (assoc group
-    :boards_url (resolve-route request
-                               "groups" (:id group)
-                               "boards")
-    :members_url (resolve-route request
+  (->
+   (dissoc group :owner)
+   (assoc
+     :boards_url (resolve-route request
                                 "groups" (:id group)
-                                "members"))
+                                "boards")
+     :members_url (resolve-route request
+                                 "groups" (:id group)
+                                 "members"))
+   )
   )
 
 (defn render-user [request user]
@@ -78,6 +81,17 @@
    (json-response 200))
   )
 
+(defn post-group [user request]
+  (let [{:keys [name]} (body-json request)]
+    (-> (create-group name user)
+        (insert-group)
+        (insert-member user)
+        (->> (render-group request))
+        (json-response 201)
+     )
+    )
+  )
+
 (defroutes api-routes
   (POST "/login" request
         (login request))
@@ -87,6 +101,9 @@
 
   (GET "/groups" request
        (require-login request get-users-groups))
+
+  (POST "/groups" request
+       (require-login request post-group))
 
   (POST "/groups/:group-id/members" request
         (require-ownership request invite))
