@@ -7,8 +7,15 @@
 
 (defn body-of [request]
   (cond
-   (contains? request :json-data)
-   (.stringify js/JSON (clj->js (:json-data request)))
+   (contains? request :json-data) (:json-data request)
+   )
+  )
+
+(defn parsed-body [expected-request request]
+  (cond
+   (contains? expected-request :json-data)
+   (js->clj (.parse js/JSON (.-requestBody request))
+            :keywordize-keys true)
    )
   )
 
@@ -25,7 +32,8 @@
                     (fn [request]
                       (is (= expected-url (.-url request)))
                       (is (= expected-method (.-method request)))
-                      (is (= expected-body (.-requestBody request)))
+                      (is (= expected-body (parsed-body expected-request
+                                                        request)))
                       (.setTimeout js/window
                                    (fn [_]
                                      (.respond request
