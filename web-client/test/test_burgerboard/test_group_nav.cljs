@@ -43,20 +43,6 @@
       )
   )
 
-(deftest group-nav-contains-loading-indicator-without-groups
-  (is (rendered
-       group-nav/group-nav nil
-       (tag "ul"
-            (with-class "groups")
-            (containing
-             (tag "div"
-                  (with-class "loading"))
-             )
-            )
-       )
-      )
-  )
-
 (deftest add-group-displays-button-for-adding-group
   (is (rendered
        group-nav/add-group []

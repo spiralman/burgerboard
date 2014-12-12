@@ -83,11 +83,8 @@
     om/IRender
     (render [this]
       (apply dom/ul #js {:className "groups"}
-             (if (nil? data)
-               (list (widgets/loading))
-               (concat (om/build-all group data)
+             (concat (om/build-all group data)
                        [(om/build add-group data)])
-               )
              )
       )
     )
