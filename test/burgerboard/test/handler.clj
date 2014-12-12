@@ -78,7 +78,10 @@
               ))]
         (is (= (:status response) 201))
         (is (contains? (:headers response) "Set-Cookie"))
-        (is (= {:email "new_user@example.com" :name "New User"}
+        (is (= {:email "new_user@example.com"
+                :name "New User"
+                :groups_url "http://localhost/api/v1/groups"
+                :groups []}
                (json/read-str (:body response) :key-fn keyword)))
         (is (not (nil? (find-user "new_user@example.com"))))
         )

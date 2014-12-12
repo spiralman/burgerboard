@@ -54,7 +54,7 @@
           (insert-user user)
           {:status 201
            :session (assoc session :email email)
-           :body (json/write-str (dissoc user :password))
+           :body (write-str (render-user request user))
            }
           )
         (invalid-user)
