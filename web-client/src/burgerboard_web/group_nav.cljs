@@ -37,24 +37,32 @@
     )
   )
 
+(defn boards [data owner]
+  (reify
+    om/IRender
+    (render [this]
+      (apply dom/ul #js {:className "boards"}
+             (concat (om/build-all board-item data)
+                     [(om/build add-board data)])
+             )
+      )
+    )
+  )
+
 (defn group [data owner]
   (reify
     om/IRender
     (render [this]
-      (apply dom/li #js {:className "group"}
+      (dom/li #js {:className "group"}
               (if-not (contains? data :id)
-                (list (om/build widgets/save-single-value
-                                data
-                                {:opts {:className "group-editor"
-                                        :k :name}}))
-                (list
-                 (dom/span #js {:className "group-name"}
-                           (:name data))
-                 (apply dom/ul #js {:className "boards"}
-                        (concat (om/build-all board-item (:boards data))
-                                [(om/build add-board (:boards data))])
-                        )
-                 )
+                (om/build widgets/save-single-value
+                          data
+                          {:opts {:className "group-editor"
+                                  :k :name}})
+                (dom/div #js {:className "group-name"}
+                         (:name data)
+                         (om/build boards (:boards data))
+                         )
                 )
               )
       )

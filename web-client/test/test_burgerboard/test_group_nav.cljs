@@ -74,25 +74,20 @@
     )
   )
 
-(deftest group-contains-board-item
+(deftest group-contains-boards
   (is (rendered
        group-nav/group {:id 1
-                  :name "Some Group"
-                  :boards [{:id 1} {:id 2}]
-                  }
+                        :name "Some Group"
+                        :boards [{:id 1} {:id 2}]
+                        }
        (tag "li"
             (with-class "group")
             (containing
-             (tag "span"
+             (tag "div"
                   (with-class "group-name")
                   (with-text "Some Group")
-                  )
-             (tag "ul"
-                  (with-class "boards")
                   (containing
-                   (sub-component group-nav/board-item {:id 1})
-                   (sub-component group-nav/board-item {:id 2})
-                   (sub-component group-nav/add-board [{:id 1} {:id 2}])
+                   (sub-component group-nav/boards [{:id 1} {:id 2}])
                    )
                   )
              )
@@ -101,22 +96,28 @@
       )
   )
 
-(deftest group-contains-just-add-with-empty-board-list
+(deftest boards-contains-just-add-with-empty-board-list
   (is (rendered
-       group-nav/group {:id 1 :name "Some Group" :boards []}
-       (tag "li"
-            (with-class "group")
+       group-nav/boards []
+       (tag "ul"
+            (with-class "boards")
             (containing
-             (tag "span"
-                  (with-class "group-name")
-                  (with-text "Some Group")
-                  )
-             (tag "ul"
-                  (with-class "boards")
-                  (containing
-                   (sub-component group-nav/add-board [])
-                   )
-                  )
+             (sub-component group-nav/add-board [])
+             )
+            )
+       )
+      )
+  )
+
+(deftest boards-contains-boards-and-add-board
+  (is (rendered
+       group-nav/boards [{:id 1} {:id 2}]
+       (tag "ul"
+            (with-class "boards")
+            (containing
+             (sub-component group-nav/board-item {:id 1})
+             (sub-component group-nav/board-item {:id 2})
+             (sub-component group-nav/add-board [{:id 1} {:id 2}])
              )
             )
        )
