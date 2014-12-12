@@ -82,13 +82,97 @@
     )
   )
 
+(deftest signup-contains-signup-controls
+  (is (rendered
+       app/signup {:user nil}
+       (with-rendered [signup]
+         (tag "div"
+              (with-class "signup")
+              (containing
+               (sub-component widgets/text-editor {}
+                              {:opts {:state-owner signup
+                                      :state-k :name
+                                      :className "signup-name"}})
+               (sub-component widgets/text-editor {}
+                              {:opts {:state-owner signup
+                                      :state-k :email
+                                      :className "signup-email"}})
+               (sub-component widgets/text-editor {}
+                              {:opts {:state-owner signup
+                                      :state-k :password
+                                      :type "password"
+                                      :className "signup-password"}})
+               (tag "button"
+                    (with-class "signup-button")
+                    (with-attr "type" "button")
+                    (with-text "Signup"))
+               )
+              )
+         )
+       )
+      )
+  )
+
+(deftest ^:async signup-signs-up-on-click
+  (let [state (setup-state {:user nil})
+        signup (rendered-component
+                app/signup state
+                {:init-state {:name "New User"
+                              :email "some_user@example.com"
+                              :password "password"}})
+        responded (expect-request
+                   -test-ctx
+                   {:method "POST"
+                    :url "/api/v1/signups"
+                    :json-data {:name "New User"
+                                :email "some_user@example.com"
+                                :password "password"}}
+                   (json-response
+                    201
+                    {:email "some_user@example.com"
+                     :name "New User"
+                     :groups_url "http://localhost/api/v1/groups"
+                     :groups []})
+                   )]
+    (after-event
+     :click #js {}
+     (in signup "button")
+     (fn [_]
+       (go
+        (<! responded)
+        (is (= {:user {:email "some_user@example.com"
+                       :groups_url "http://localhost/api/v1/groups"
+                       :name "New User"}
+                :groups []
+                :board nil}
+               @state))
+        (done)
+        )
+       )
+     )
+    )
+  )
+
+(deftest connect-contains-login-and-signup
+  (is (rendered
+       app/connect {:user nil}
+       (tag "div"
+            (with-class "connect")
+            (containing
+             (sub-component app/signup {:user nil})
+             (sub-component app/login {:user nil}))
+            )
+       )
+      )
+  )
+
 (deftest app-contains-login-without-user
   (is (rendered
        app/app {:user nil}
        (tag "div"
             (with-class "burgerboard")
             (containing
-             (sub-component app/login {:user nil}))
+             (sub-component app/connect {:user nil}))
             )
        )
       )

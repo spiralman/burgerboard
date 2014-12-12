@@ -34,7 +34,14 @@
 
 (defn login! [resp {:keys [email password]}]
   (go (let [response (<! (json-post "/api/v1/login" {:email email
-                                                    :password password}))]
+                                                     :password password}))]
+        (put! resp response)))
+  )
+
+(defn signup! [resp {:keys [name email password]}]
+  (go (let [response (<! (json-post "/api/v1/signups" {:name name
+                                                       :email email
+                                                       :password password}))]
         (put! resp response)))
   )
 
@@ -79,6 +86,64 @@
     )
   )
 
+(defn signup [data owner]
+  (reify
+    om/IInitState
+    (init-state [this]
+      {:email ""
+       :name ""
+       :password ""
+       :on-signup (chan)})
+    om/IWillMount
+    (will-mount [this]
+      (let [on-signup (om/get-state owner :on-signup)]
+        (go (let [signup-response (<! on-signup)]
+              (om/transact! data (fn [_]
+                                   {:user (dissoc signup-response :groups)
+                                    :groups (:groups signup-response)
+                                    :board nil}))
+              ))
+        )
+      )
+    om/IRenderState
+    (render-state [this state]
+      (dom/div #js {:className "signup"}
+               (om/build widgets/text-editor {}
+                         {:opts {:state-owner owner
+                                 :state-k :name
+                                 :className "signup-name"}})
+               (om/build widgets/text-editor {}
+                         {:opts {:state-owner owner
+                                 :state-k :email
+                                 :className "signup-email"}})
+               (om/build widgets/text-editor {}
+                         {:opts {:state-owner owner
+                                 :state-k :password
+                                 :type "password"
+                                 :className "signup-password"}})
+               (dom/button #js {:className "signup-button"
+                                :type "button"
+                                :onClick (fn [] (signup!
+                                                 (om/get-state owner :on-signup)
+                                                 (om/get-state owner)))}
+                           "Signup")
+               )
+      )
+    )
+  )
+
+(defn connect [data owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/div #js {:className "connect"}
+               (om/build signup data)
+               (om/build login data)
+               )
+      )
+    )
+  )
+
 (defn app [data owner]
   (reify
     om/IRender
@@ -86,7 +151,7 @@
       (apply
        dom/div #js {:className "burgerboard"}
        (if (nil? (:user data))
-         (list (om/build login data))
+         (list (om/build connect data))
          (list
           (om/build group-nav/group-nav (:groups data))
           (om/build board/board (:board data))
