@@ -1,12 +1,14 @@
 (ns test-burgerboard.test-widgets
-  (:require-macros [cemerick.cljs.test
-                    :refer (is deftest with-test testing test-var)]
+  (:require-macros [cljs.core.async.macros :refer [go]]
+                   [cemerick.cljs.test
+                    :refer (is deftest with-test testing test-var done)]
                    [test-burgerboard.huh :refer (with-rendered)]
                    )
   (:require
    [test-burgerboard.huh :refer [rendered tag containing with-class with-attr
                                  sub-component with-text in
                                  rendered-component setup-state after-event]]
+   [test-burgerboard.fake-server :refer [expect-request json-response]]
    [burgerboard-web.widgets :as widgets]
    [om.core :as om :include-macros true]
    [om.dom :as dom :include-macros true]
@@ -173,6 +175,41 @@
           )
         )
        )
+     )
+    )
+  )
+
+(deftest loader-renders-loading-div
+  (is (rendered
+       widgets/loader
+       {:resource-url "http://resource"}
+       {:opts {:load-from :resource-url
+               :load-into :resource}}
+       (tag "div"
+            (with-class "loading"))
+       ))
+  )
+
+(deftest ^:async loader-fetches-data-and-inserts-into-state
+  (let [state (setup-state {:resource-url "http://resource"})
+        loader (rendered-component
+                widgets/loader state
+                {:opts {:load-from :resource-url
+                        :load-into :resource}})
+        responded (expect-request
+                   -test-ctx
+                   {:method "GET"
+                    :url "http://resource"}
+                   (json-response
+                    201
+                    {:some "data"})
+                   )]
+    (go
+     (<! responded)
+     (is (= {:resource-url "http://resource"
+             :resource {:some "data"}}
+            @state))
+     (done)
      )
     )
   )

@@ -4,9 +4,9 @@
             [burgerboard-web.widgets :as widgets]
             [burgerboard-web.group-nav :as group-nav]
             [burgerboard-web.board :as board]
+            [burgerboard-web.api :as api]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [ajax.core :as ajax]))
+            [om.dom :as dom :include-macros true]))
 
 (def initial-state
   (atom
@@ -17,29 +17,14 @@
    )
   )
 
-(defn json-post [url req]
-  (let [response (chan)]
-    (ajax/POST url
-             {:params req
-              :format :json
-              :response-format :json
-              :keywords? true
-              :handler (fn [resp] (put! response resp))
-              :error-handler (fn [err]
-                               (.log js/console (str "got error " err)))}
-             )
-    response
-    )
-  )
-
 (defn login! [resp {:keys [email password]}]
-  (go (let [response (<! (json-post "/api/v1/login" {:email email
-                                                     :password password}))]
+  (go (let [response (<! (api/json-post "/api/v1/login" {:email email
+                                                         :password password}))]
         (put! resp response)))
   )
 
 (defn signup! [resp {:keys [name email password]}]
-  (go (let [response (<! (json-post "/api/v1/signups" {:name name
+  (go (let [response (<! (api/json-post "/api/v1/signups" {:name name
                                                        :email email
                                                        :password password}))]
         (put! resp response)))

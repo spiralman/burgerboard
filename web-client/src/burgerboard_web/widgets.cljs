@@ -1,9 +1,25 @@
 (ns burgerboard-web.widgets
-  (:require [om.dom :as dom :include-macros true]
+  (:require-macros [cljs.core.async.macros :refer [go]])
+  (:require [burgerboard-web.api :as api]
+            [om.dom :as dom :include-macros true]
             [om.core :as om :include-macros true]))
 
 (defn loading []
   (dom/div #js {:className "loading"})
+  )
+
+(defn loader [data owner {:keys [load-from load-into]}]
+  (reify
+    om/IWillMount
+    (will-mount [this]
+      (go (let [response (<! (api/json-get (load-from @data)))]
+            (om/transact! data #(assoc % load-into response))
+            ))
+      )
+    om/IRenderState
+    (render-state [this state]
+      (loading))
+    )
   )
 
 (defn bind-value [owner k]
