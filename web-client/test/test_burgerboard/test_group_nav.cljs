@@ -74,6 +74,33 @@
     )
   )
 
+(deftest group-without-boards-contains-boards-loader
+  (is (rendered
+       group-nav/group {:id 1
+                        :name "Some Group"
+                        :boards_url "/api/v1/groups/1/boards"}
+       (tag "li"
+            (with-class "group")
+            (containing
+             (tag "div"
+                  (containing
+                   (tag "span"
+                        (with-class "group-name")
+                        (with-text "Some Group"))
+                   (sub-component widgets/loader
+                                  {:id 1
+                                   :name "Some Group"
+                                   :boards_url "/api/v1/groups/1/boards"}
+                                  {:opts {:load-from :boards_url
+                                          :load-into :boards}})
+                   )
+                  )
+             )
+            )
+       )
+      )
+  )
+
 (deftest group-contains-boards
   (is (rendered
        group-nav/group {:id 1
@@ -84,9 +111,10 @@
             (with-class "group")
             (containing
              (tag "div"
-                  (with-class "group-name")
-                  (with-text "Some Group")
                   (containing
+                   (tag "span"
+                        (with-class "group-name")
+                        (with-text "Some Group"))
                    (sub-component group-nav/boards [{:id 1} {:id 2}])
                    )
                   )

@@ -59,9 +59,16 @@
                           data
                           {:opts {:className "group-editor"
                                   :k :name}})
-                (dom/div #js {:className "group-name"}
-                         (:name data)
-                         (om/build boards (:boards data))
+                (dom/div #js {}
+                         (dom/span #js {:className "group-name"}
+                                   (:name data))
+                         (if-not (contains? data :boards)
+                           (om/build widgets/loader
+                                     data
+                                     {:opts {:load-from :boards_url
+                                             :load-into :boards}})
+                           (om/build boards (:boards data))
+                           )
                          )
                 )
               )
