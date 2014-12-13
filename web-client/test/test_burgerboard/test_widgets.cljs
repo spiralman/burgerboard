@@ -10,6 +10,7 @@
                                  rendered-component setup-state after-event]]
    [test-burgerboard.fake-server :refer [expect-request json-response]]
    [burgerboard-web.widgets :as widgets]
+   [cljs.core.async :refer [put! <! chan]]
    [om.core :as om :include-macros true]
    [om.dom :as dom :include-macros true]
    )
@@ -156,13 +157,15 @@
       )
   )
 
-(deftest save-single-value-updates-cursor-on-save
+(deftest ^:async save-single-value-updates-channel-on-save
   (let [app-state (setup-state {:value "Initial Value"})
+        value-saved (chan)
         rendered (rendered-component
                   widgets/save-single-value
                   app-state
                   {:opts {:className "value-editor"
-                          :k :value}})]
+                          :k :value
+                          :value-saved value-saved}})]
     (after-event
      :change #js {:target #js {:value "Changed Value"}}
      (in rendered "input")
@@ -171,7 +174,10 @@
         :click #js {:target #js {}}
         (in rendered "button")
         (fn [_]
-          (is (= "Changed Value" (:value @app-state)))
+          (go (let [new-value (<! value-saved)]
+                (is (= "Changed Value" new-value))
+                (done)
+                ))
           )
         )
        )

@@ -1,6 +1,7 @@
 (ns burgerboard-web.widgets
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [burgerboard-web.api :as api]
+            [cljs.core.async :refer [<! put! chan]]
             [om.dom :as dom :include-macros true]
             [om.core :as om :include-macros true]))
 
@@ -38,7 +39,7 @@
                       :onChange (bind-value state-owner state-k)}))
     ))
 
-(defn save-single-value [data owner {:keys [className k]}]
+(defn save-single-value [data owner {:keys [className k value-saved]}]
   (reify
     om/IInitState
     (init-state [this]
@@ -52,11 +53,9 @@
                                  :className (str className "-input")}})
                (dom/button #js {:className (str className "-save")
                                 :type "button"
-                                :onClick (fn [_] (om/transact!
-                                                  data k
-                                                  (fn [_]
-                                                    (om/get-state
-                                                     owner :temp-value))))}
+                                :onClick #(put! value-saved
+                                                (om/get-state owner
+                                                              :temp-value))}
                           "Save")
                )
       )
