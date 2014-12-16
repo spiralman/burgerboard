@@ -1,12 +1,15 @@
 (ns test-burgerboard.test-group-nav
-  (:require-macros [cemerick.cljs.test
-                    :refer (is deftest with-test testing test-var)]
-                   [test-burgerboard.huh]
+  (:require-macros [cljs.core.async.macros :refer [go]]
+                   [cemerick.cljs.test
+                    :refer (is deftest with-test testing test-var done)]
+                   [test-burgerboard.huh :refer [with-rendered]]
                    )
   (:require
+   [cljs.core.async :refer [<! chan put!]]
    [test-burgerboard.huh :refer [rendered tag containing with-class with-attr
                                  sub-component with-text setup-state in
                                  rendered-component after-event]]
+   [test-burgerboard.fake-server :refer [expect-request json-response]]
    [burgerboard-web.group-nav :as group-nav]
    [burgerboard-web.widgets :as widgets]
    [om.core :as om :include-macros true]
@@ -155,17 +158,51 @@
 (deftest group-contains-editor-without-id
   (is (rendered
        group-nav/group {:name "Some Group"}
-       (tag "li"
-            (with-class "group")
-            (containing
-             (sub-component widgets/save-single-value
-                            {:name "Some Group"}
-                            {:opts {:className "group-editor"
-                                    :k :name}})
-             )
-            )
+       (with-rendered [group]
+         (tag "li"
+              (with-class "group")
+              (containing
+               (sub-component widgets/save-single-value
+                              {:name "Some Group"}
+                              {:opts {:className "group-editor"
+                                      :k :name
+                                      :value-saved (om/get-state group
+                                                                 :new-value)}})
+               )
+              )
+         )
        )
       )
+  )
+
+(deftest ^:async group-posts-new-group-when-user-saves
+  (let [state (setup-state {:name ""})
+        group (rendered-component
+               group-nav/group state)
+        new-value (om/get-state group :new-value)
+        responded (expect-request
+                   -test-ctx
+                   {:method "POST"
+                    :url "/api/v1/groups"
+                    :json-data {:name "New Group"}}
+                   (json-response
+                    201
+                    {:id 1
+                     :name "New Group"
+                     :boards_url "http://localhost/api/v1/groups/1"
+                     :members_url "http://localhost/api/v1/groups/1/members"})
+                   )]
+    (put! new-value "New Group")
+    (go
+     (<! responded)
+     (is (= {:id 1
+             :name "New Group"
+             :boards_url "http://localhost/api/v1/groups/1"
+             :members_url "http://localhost/api/v1/groups/1/members"}
+            @state))
+     (done)
+     )
+    )
   )
 
 (deftest board-item-links-to-board

@@ -1,5 +1,8 @@
 (ns burgerboard-web.group-nav
-  (:require [burgerboard-web.widgets :as widgets]
+  (:require-macros [cljs.core.async.macros :refer [go]])
+  (:require [cljs.core.async :refer [put! <! chan]]
+            [burgerboard-web.widgets :as widgets]
+            [burgerboard-web.api :as api]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]))
 
@@ -51,14 +54,26 @@
 
 (defn group [data owner]
   (reify
-    om/IRender
-    (render [this]
+    om/IInitState
+    (init-state [this]
+      {:new-value (chan)})
+    om/IWillMount
+    (will-mount [this]
+      (go (let [new-value (<! (om/get-state owner :new-value))
+                new-group (<! (api/json-post "/api/v1/groups"
+                                             {:name new-value}))]
+            (om/transact! data (fn [_] new-group))
+            ))
+      )
+    om/IRenderState
+    (render-state [this state]
       (dom/li #js {:className "group"}
               (if-not (contains? data :id)
                 (om/build widgets/save-single-value
                           data
                           {:opts {:className "group-editor"
-                                  :k :name}})
+                                  :k :name
+                                  :value-saved (:new-value state)}})
                 (dom/div #js {}
                          (dom/span #js {:className "group-name"}
                                    (:name data))
