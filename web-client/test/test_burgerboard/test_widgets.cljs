@@ -185,15 +185,27 @@
     )
   )
 
-(deftest loader-renders-loading-div
-  (is (rendered
-       widgets/loader
-       {:resource-url "http://resource"}
-       {:opts {:load-from :resource-url
-               :load-into :resource}}
-       (tag "div"
-            (with-class "loading"))
-       ))
+(deftest ^:async loader-renders-loading-div
+  (let [responded (expect-request
+                   -test-ctx
+                   {:method "GET"
+                    :url "http://resource"}
+                   (json-response
+                    201
+                    {:some "data"})
+                   )]
+
+    (is (rendered
+         widgets/loader
+         {:resource-url "http://resource"}
+         {:opts {:load-from :resource-url
+                 :load-into :resource}}
+         (tag "div"
+              (with-class "loading"))
+         ))
+    (go (<! responded)
+        (done))
+    )
   )
 
 (deftest ^:async loader-fetches-data-and-inserts-into-state
