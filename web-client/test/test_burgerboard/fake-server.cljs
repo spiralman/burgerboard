@@ -41,7 +41,9 @@
                                                (:headers response)
                                                (:body response))
                                      (.setTimeout js/window
-                                                  #(put! responded "") 0)
+                                                  (fn [_]
+                                                    (.restore xhr)
+                                                    (put! responded "")) 0)
                                      ) 0)
                       )
                     )
