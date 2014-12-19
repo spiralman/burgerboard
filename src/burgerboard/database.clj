@@ -7,10 +7,14 @@
   )
 
 (defn assoc-id [entity insert-result]
-  (assoc entity
-    :id ((keyword "last_insert_rowid()")
-         insert-result))
-  )
+  (let [last-insert (keyword "last_insert_rowid()")]
+    (assoc entity
+      :id
+      (if (contains? insert-result last-insert)
+        (last-insert insert-result)
+        (:id insert-result))
+      )
+    ))
 
 (defn prefixed? [prefix key]
   (.startsWith (name key) (name prefix))
@@ -126,7 +130,8 @@
   (assoc-id
    group
    (insert groups
-           (values group))
+           (values group)
+           (raw "RETURNING id"))
    )
   )
 
@@ -141,7 +146,8 @@
                         )]
      (insert memberships
              (values {:user_email (:email user)
-                      :group_id (:id group)}))
+                      :group_id (:id group)})
+             (raw "RETURNING id"))
      (if (not-empty stores)
        (insert
         ratings
