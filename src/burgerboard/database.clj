@@ -7,7 +7,6 @@
   )
 
 (defn assoc-id [entity insert-result]
-  (println insert-result)
   (let [last-insert (keyword "last_insert_rowid()")]
     (assoc entity
       :id
