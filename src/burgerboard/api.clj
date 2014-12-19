@@ -5,10 +5,16 @@
   )
 
 
+(defn request-scheme [request]
+  (if-let [forwarded-proto (get (:headers request) "x-forwarded-proto")]
+    forwarded-proto
+    (-> request :scheme name)
+    ))
+
 (defn resolve-route [request & route]
   (join "/"
         (concat
-         [(str (-> request :scheme name)
+         [(str (request-scheme request)
                "://"
                (get-in request [:headers "host"]))
           "api"
