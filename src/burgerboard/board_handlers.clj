@@ -8,11 +8,17 @@
         )
   )
 
+(defn board-id [request]
+  (Integer. (:board-id (:params request))))
+
+(defn store-id [request]
+  (Integer. (:store-id (:params request))))
+
 (defn require-board [request handler]
   (require-membership
    request
    (fn [user group request]
-     (if-let [board (find-group-board group (:board-id (:params request)))]
+     (if-let [board (find-group-board group (board-id request))]
        (handler user group board request)
        )
      )
@@ -23,7 +29,7 @@
   (require-board
    request
    (fn [user group board request]
-     (if-let [store (find-board-store board (:store-id (:params request)))]
+     (if-let [store (find-board-store board (store-id request))]
        (handler user group board store request)
        )
      )
