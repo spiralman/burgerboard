@@ -7,6 +7,7 @@
   )
 
 (defn assoc-id [entity insert-result]
+  (println insert-results)
   (let [last-insert (keyword "last_insert_rowid()")]
     (assoc entity
       :id
@@ -130,8 +131,7 @@
   (assoc-id
    group
    (insert groups
-           (values group)
-           (raw "RETURNING id"))
+           (values group))
    )
   )
 
@@ -146,8 +146,7 @@
                         )]
      (insert memberships
              (values {:user_email (:email user)
-                      :group_id (:id group)})
-             (raw "RETURNING id"))
+                      :group_id (:id group)}))
      (if (not-empty stores)
        (insert
         ratings
