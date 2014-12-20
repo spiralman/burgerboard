@@ -6,16 +6,28 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]))
 
-(defn board-item [data owner]
+(defn board-item [data owner {:keys [boards_url]}]
   (reify
-    om/IRender
-    (render [this]
+    om/IInitState
+    (init-state [this]
+      {:new-value (chan)})
+    om/IWillMount
+    (will-mount [this]
+      (go (let [new-value (<! (om/get-state owner :new-value))
+                new-board (<! (api/json-post boards_url
+                                             {:name new-value}))]
+            (om/transact! data (fn [_] (dissoc new-board :group)))
+            ))
+      )
+    om/IRenderState
+    (render-state [this state]
       (dom/li #js {:className "board-item"}
               (if-not (contains? data :id)
                 (om/build widgets/save-single-value
                           data
                           {:opts {:className "board-editor"
-                                  :k :name}})
+                                  :k :name
+                                  :value-saved (:new-value state)}})
                 (:name data)
                 )
               )
@@ -40,12 +52,13 @@
     )
   )
 
-(defn boards [data owner]
+(defn boards [data owner {:keys [boards_url]}]
   (reify
     om/IRender
     (render [this]
       (apply dom/ul #js {:className "boards"}
-             (concat (om/build-all board-item data)
+             (concat (om/build-all board-item data
+                                   {:opts {:boards_url boards_url}})
                      [(om/build add-board data)])
              )
       )
@@ -82,7 +95,8 @@
                                      data
                                      {:opts {:load-from :boards_url
                                              :load-into :boards}})
-                           (om/build boards (:boards data))
+                           (om/build boards (:boards data)
+                                     {:opts {:boards_url (:boards_url data)}})
                            )
                          )
                 )

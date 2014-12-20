@@ -108,6 +108,7 @@
   (is (rendered
        group-nav/group {:id 1
                         :name "Some Group"
+                        :boards_url "http://boards_url"
                         :boards [{:id 1} {:id 2}]
                         }
        (tag "li"
@@ -118,7 +119,8 @@
                    (tag "span"
                         (with-class "group-name")
                         (with-text "Some Group"))
-                   (sub-component group-nav/boards [{:id 1} {:id 2}])
+                   (sub-component group-nav/boards [{:id 1} {:id 2}]
+                                  {:opts {:boards_url "http://boards_url"}})
                    )
                   )
              )
@@ -142,12 +144,18 @@
 
 (deftest boards-contains-boards-and-add-board
   (is (rendered
-       group-nav/boards [{:id 1} {:id 2}]
+       group-nav/boards
+       [{:id 1} {:id 2}]
+       {:opts {:boards_url "http://boards_url"}}
        (tag "ul"
             (with-class "boards")
             (containing
-             (sub-component group-nav/board-item {:id 1})
-             (sub-component group-nav/board-item {:id 2})
+             (sub-component group-nav/board-item {:id 1}
+                            {:opts {:boards_url "http://boards_url"}
+                                    :om.core/index 0})
+             (sub-component group-nav/board-item {:id 2}
+                            {:opts {:boards_url "http://boards_url"}
+                                    :om.core/index 1})
              (sub-component group-nav/add-board [{:id 1} {:id 2}])
              )
             )
@@ -219,16 +227,52 @@
 (deftest board-item-shows-board-editor-without-id
   (is (rendered
        group-nav/board-item {:name "Board Name"}
-       (tag "li"
-            (containing
-             (sub-component widgets/save-single-value
-                            {:name "Board Name"}
-                            {:opts {:className "board-editor"
-                                    :k :name}})
-             )
-            )
+       (with-rendered [board-item]
+         (tag "li"
+              (containing
+               (sub-component widgets/save-single-value
+                              {:name "Board Name"}
+                              {:opts {:className "board-editor"
+                                      :k :name
+                                      :value-saved (om/get-state board-item
+                                                                 :new-value)}})
+               )
+              )
+         )
        )
       )
+  )
+
+(deftest ^:async board-item-posts-new-group-when-user-saves
+  (let [state (setup-state {:name ""})
+        board-item (rendered-component
+                    group-nav/board-item state
+                    {:opts {:boards_url "/api/v1/groups/1/boards"}})
+        new-value (om/get-state board-item :new-value)
+        responded (expect-request
+                   -test-ctx
+                   {:method "POST"
+                    :url "/api/v1/groups/1/boards"
+                    :json-data {:name "New Board"}}
+                   (json-response
+                    201
+                    {:id 1
+                     :name "New Board"
+                     :url "http://localhost/api/v1/groups/1/boards/1"
+                     :stores_url "http://localhost/api/v1/groups/1/boards/1/stores"
+                     :group {:id 1 :name "Group"}})
+                   )]
+    (put! new-value "New Board")
+    (go
+     (<! responded)
+     (is (= {:id 1
+             :name "New Board"
+             :url "http://localhost/api/v1/groups/1/boards/1"
+             :stores_url "http://localhost/api/v1/groups/1/boards/1/stores"}
+            @state))
+     (done)
+     )
+    )
   )
 
 (deftest add-board-displays-button-for-adding-board
