@@ -5,6 +5,8 @@
         burgerboard.authentication
         burgerboard.board-handlers
         burgerboard.api
+        hiccup.core
+        hiccup.page
         [clojure.data.json :as json :only [write-str]]
         )
   (:require [compojure.handler :as handler]
@@ -112,15 +114,13 @@
   )
 
 (defn page [request]
-"<html>
-  <body>
-    <div id=\"burgerboard\"></div>
-    <script src=\"/static/contrib/react-0.9.0.js\"></script>
-    <script src=\"/static/burgerboard.js\" type=\"text/javascript\"></script>
-    <script type=\"/static/text/javascript\">goog.require(\"burgerboard_web.app\");</script>
-  </body>
-</html>
-"
+  (html5
+   [:body
+    [:div#burgerboard {}]
+    (include-js "/static/contrib/react-0.9.0.js"
+                "/static/burgerboard.js")
+    [:script {:type "text/javascript"} "goog.require(\"burgerboard_web.app\");"]]
+   )
   )
 
 (defroutes app-routes

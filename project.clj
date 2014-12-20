@@ -4,6 +4,7 @@
   :min-lein-version "2.0.0"
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [compojure "1.1.5"]
+                 [hiccup "1.0.5"]
                  [ring/ring-jetty-adapter "1.2.2"]
                  [org.clojure/data.json "0.2.3"]
                  [korma "0.3.0-RC5"]
