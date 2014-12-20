@@ -7,6 +7,7 @@
         burgerboard.api
         hiccup.core
         hiccup.page
+        hiccup.element
         [clojure.data.json :as json :only [write-str]]
         )
   (:require [compojure.handler :as handler]
@@ -125,11 +126,12 @@
     (html5
      [:body
       [:div#burgerboard {}]
-      [:script {:type "text/javascript"} (str "var burgerboard_init_state="
+      (javascript-tag (str "var burgerboard_init_state="
                                               user-data
-                                              ";")]
+                                              ";"))
       (include-js "/static/contrib/react-0.9.0.js"
                   "/static/burgerboard.js")
+      ]
      )
     )
   )
