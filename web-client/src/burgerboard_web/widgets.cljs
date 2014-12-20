@@ -9,12 +9,14 @@
   (dom/div #js {:className "loading"})
   )
 
-(defn loader [data owner {:keys [load-from load-into]}]
+(defn loader [data owner {:keys [load-from load-into load-keys]}]
   (reify
     om/IWillMount
     (will-mount [this]
-      (go (let [response (<! (api/json-get (load-from @data)))]
-            (om/transact! data #(assoc % load-into response))
+      (go (let [load-keys (or load-keys [])
+                response (<! (api/json-get (load-from @data)))]
+            (om/transact! data #(assoc % load-into
+                                       (get-in response load-keys)))
             ))
       )
     om/IRenderState

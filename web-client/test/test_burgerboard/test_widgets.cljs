@@ -231,3 +231,28 @@
      )
     )
   )
+
+(deftest ^:async loader-extracts-from-response
+  (let [state (setup-state {:resource-url "http://resource"})
+        loader (rendered-component
+                widgets/loader state
+                {:opts {:load-from :resource-url
+                        :load-into :resource
+                        :load-keys [:data]}})
+        responded (expect-request
+                   -test-ctx
+                   {:method "GET"
+                    :url "http://resource"}
+                   (json-response
+                    201
+                    {:data {:some "data"}})
+                   )]
+    (go
+     (<! responded)
+     (is (= {:resource-url "http://resource"
+             :resource {:some "data"}}
+            @state))
+     (done)
+     )
+    )
+  )
