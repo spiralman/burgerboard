@@ -153,7 +153,8 @@
 
 (defn main []
   (if-let [user-state (.-burgerboard_init_state js/window)]
-    (reset! initial-state (parse-login user-state))
+    (reset! initial-state (parse-login (js->clj user-state
+                                                :keywordize-keys true)))
     )
   (om/root app initial-state
            {:target (. js/document (getElementById "burgerboard"))})
