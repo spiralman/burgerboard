@@ -30,6 +30,12 @@
         (put! resp response)))
   )
 
+(defn parse-login [login-response]
+  {:user (dissoc login-response :groups)
+   :groups (:groups login-response)
+   :board nil}
+  )
+
 (defn login [data owner]
   (reify
     om/IInitState
@@ -42,9 +48,7 @@
       (let [on-login (om/get-state owner :on-login)]
         (go (let [login-response (<! on-login)]
               (om/transact! data (fn [_]
-                                   {:user (dissoc login-response :groups)
-                                    :groups (:groups login-response)
-                                    :board nil}))
+                                   (parse-login login-response)))
               ))
         )
       )
@@ -148,6 +152,9 @@
   )
 
 (defn main []
+  (if-let [user-state (.-burgerboard_init_state js/window)]
+    (reset! initial-state (parse-login user-state))
+    )
   (om/root app initial-state
            {:target (. js/document (getElementById "burgerboard"))})
   )
