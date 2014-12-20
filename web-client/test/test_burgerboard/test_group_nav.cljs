@@ -95,7 +95,8 @@
                                    :name "Some Group"
                                    :boards_url "/api/v1/groups/1/boards"}
                                   {:opts {:load-from :boards_url
-                                          :load-into :boards}})
+                                          :load-into :boards
+                                          :load-keys [:boards]}})
                    )
                   )
              )

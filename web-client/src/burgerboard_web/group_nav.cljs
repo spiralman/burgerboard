@@ -94,7 +94,8 @@
                            (om/build widgets/loader
                                      data
                                      {:opts {:load-from :boards_url
-                                             :load-into :boards}})
+                                             :load-into :boards
+                                             :load-keys [:boards]}})
                            (om/build boards (:boards data)
                                      {:opts {:boards_url (:boards_url data)}})
                            )
