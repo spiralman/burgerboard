@@ -125,12 +125,11 @@
     (html5
      [:body
       [:div#burgerboard {}]
-      (include-js "/static/contrib/react-0.9.0.js"
-                  "/static/burgerboard.js")
       [:script {:type "text/javascript"} (str "var burgerboard_init_state="
                                               user-data
                                               ";")]
-      [:script {:type "text/javascript"} "goog.require(\"burgerboard_web.app\");"]]
+      (include-js "/static/contrib/react-0.9.0.js"
+                  "/static/burgerboard.js")
      )
     )
   )
