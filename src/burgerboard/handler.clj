@@ -129,8 +129,8 @@
                   "/static/burgerboard.js")
       [:script {:type "text/javascript"} (str "var burgerboard_init_state=\""
                                               user-data
-                                              "\";")
-       [:script {:type "text/javascript"} "goog.require(\"burgerboard_web.app\");"]]]
+                                              "\";")]
+      [:script {:type "text/javascript"} "goog.require(\"burgerboard_web.app\");"]]
      )
     )
   )
