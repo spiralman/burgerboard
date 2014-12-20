@@ -116,7 +116,7 @@
 (defn fetch-user-data [request]
   (if-let [email (:email (:session request))]
     (write-str (render-user request (find-user email)))
-    ""
+    "undefined"
     )
   )
 
@@ -127,9 +127,9 @@
       [:div#burgerboard {}]
       (include-js "/static/contrib/react-0.9.0.js"
                   "/static/burgerboard.js")
-      [:script {:type "text/javascript"} (str "var burgerboard_init_state=\""
+      [:script {:type "text/javascript"} (str "var burgerboard_init_state="
                                               user-data
-                                              "\";")]
+                                              ";")]
       [:script {:type "text/javascript"} "goog.require(\"burgerboard_web.app\");"]]
      )
     )
