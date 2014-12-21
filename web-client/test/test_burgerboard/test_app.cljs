@@ -183,13 +183,18 @@
        app/app {:user {:id 1}
                 :groups [{:id 1}]
                 :board {:id 1}}
-       (tag "div"
-            (with-class "burgerboard")
-            (containing
-             (sub-component group-nav/group-nav [{:id 1}])
-             (sub-component board/board {:id 1})
-             )
-            )
+       (with-rendered [app-comp]
+         (tag "div"
+              (with-class "burgerboard")
+              (containing
+               (sub-component group-nav/group-nav [{:id 1}]
+                              {:opts
+                               {:select-board (om/get-state app-comp
+                                                            :select-board)}})
+               (sub-component board/board {:id 1})
+               )
+              )
+         )
        )
       )
   )

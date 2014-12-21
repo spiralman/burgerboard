@@ -145,14 +145,15 @@
               (om/transact! data :board (fn [_] new-board))
               )))
       )
-    om/IRender
-    (render [this]
+    om/IRenderState
+    (render-state [this state]
       (apply
        dom/div #js {:className "burgerboard"}
        (if (nil? (:user data))
          (list (om/build connect data))
          (list
-          (om/build group-nav/group-nav (:groups data))
+          (om/build group-nav/group-nav (:groups data)
+                    {:opts {:select-board (:select-board state)}})
           (om/build board/board (:board data))
           )
          )
