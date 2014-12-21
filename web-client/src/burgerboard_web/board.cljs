@@ -68,7 +68,7 @@
                   (list (om/build widgets/loader data
                                   {:opts {:load-from :url
                                           :load-into :stores
-                                          :load-keys :stores}}))
+                                          :load-keys [:stores]}}))
                   (list
                    (om/build leaderboard data)
                    (om/build stores (:stores data)))

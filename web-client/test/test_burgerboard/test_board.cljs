@@ -24,6 +24,7 @@
                   (with-class "board-title")
                   (with-text "Board Name"))
              (sub-component board/leaderboard {:id 1
+                                               :name "Board Name"
                                                :stores [{:id 1} {:id 2}]})
              (sub-component board/stores [{:id 1} {:id 2}])
              )
@@ -56,7 +57,7 @@
                              :stores_url "http://stores"}
                             {:opts {:load-from :url
                                     :load-into :stores
-                                    :load-keys :stores}}))
+                                    :load-keys [:stores]}}))
             )
        )
       )
