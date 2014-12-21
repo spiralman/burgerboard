@@ -61,18 +61,17 @@
     om/IRender
     (render [this]
       (apply dom/div #js {:className "board"}
-               (cond
-                (empty? data) (list nil)
-                (not (contains? data :stores))
-                (list (om/build widgets/loader data
-                                {:opts {:load-from :url
-                                        :load-into :stores
-                                        :load-keys :stores}}))
-                :else (list
-                       (om/build leaderboard data)
-                       (om/build stores (:stores data)))
-                )
-               )
-      )
-    )
-  )
+             (if-not (empty? data)
+               (concat
+                (list (dom/h1 #js {:className "board-title"} (:name data)))
+                (if-not (contains? data :stores)
+                  (list (om/build widgets/loader data
+                                  {:opts {:load-from :url
+                                          :load-into :stores
+                                          :load-keys :stores}}))
+                  (list
+                   (om/build leaderboard data)
+                   (om/build stores (:stores data)))
+                  )))
+             ))
+    ))

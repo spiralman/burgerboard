@@ -15,12 +15,16 @@
 (deftest board-contains-leaderboard-and-store-list
   (is (rendered
        board/board {:id 1
+                    :name "Board Name"
                     :stores [{:id 1} {:id 2}]}
        (tag "div"
             (with-class "board")
             (containing
+             (tag "h1"
+                  (with-class "board-title")
+                  (with-text "Board Name"))
              (sub-component board/leaderboard {:id 1
-                                             :stores [{:id 1} {:id 2}]})
+                                               :stores [{:id 1} {:id 2}]})
              (sub-component board/stores [{:id 1} {:id 2}])
              )
             )
@@ -44,6 +48,9 @@
        (tag "div"
             (with-class "board")
             (containing
+             (tag "h1"
+                  (with-class "board-title")
+                  (with-text "Board Name"))
              (sub-component widgets/loader
                             {:id 1 :name "Board Name"
                              :stores_url "http://stores"}
