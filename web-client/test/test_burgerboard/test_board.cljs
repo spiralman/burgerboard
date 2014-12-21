@@ -40,13 +40,16 @@
 
 (deftest board-loading-when-selected-not-populated
   (is (rendered
-       board/board {:id 1 :name "Board Name"}
+       board/board {:id 1 :name "Board Name" :stores_url "http://stores"}
        (tag "div"
             (with-class "board")
             (containing
-             (tag "div"
-                  (with-class "loading"))
-             )
+             (sub-component widgets/loader
+                            {:id 1 :name "Board Name"
+                             :stores_url "http://stores"}
+                            {:opts {:load-from :url
+                                    :load-into :stores
+                                    :load-keys :stores}}))
             )
        )
       )
