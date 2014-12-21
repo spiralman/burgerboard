@@ -21,11 +21,16 @@
   (is (rendered
        group-nav/group-nav [{:id 1}
                             {:id 2}]
+       {:opts {:select-board "select board channel"}}
        (tag "ul"
             (with-class "groups")
             (containing
-             (sub-component group-nav/group {:id 1})
-             (sub-component group-nav/group {:id 2})
+             (sub-component group-nav/group {:id 1}
+                            {:opts {:select-board "select board channel"}
+                             :om.core/index 0})
+             (sub-component group-nav/group {:id 2}
+                            {:opts {:select-board "select board channel"}
+                             :om.core/index 1})
              (sub-component group-nav/add-group [{:id 1} {:id 2}])
              )
             )
@@ -112,6 +117,7 @@
                         :boards_url "http://boards_url"
                         :boards [{:id 1} {:id 2}]
                         }
+       {:opts {:select-board "select board channel"}}
        (tag "li"
             (with-class "group")
             (containing
@@ -121,7 +127,8 @@
                         (with-class "group-name")
                         (with-text "Some Group"))
                    (sub-component group-nav/boards [{:id 1} {:id 2}]
-                                  {:opts {:boards_url "http://boards_url"}})
+                                  {:opts {:boards_url "http://boards_url"
+                                          :select-board "select board channel"}})
                    )
                   )
              )
@@ -147,15 +154,18 @@
   (is (rendered
        group-nav/boards
        [{:id 1} {:id 2}]
-       {:opts {:boards_url "http://boards_url"}}
+       {:opts {:boards_url "http://boards_url"
+               :select-board "select board channel"}}
        (tag "ul"
             (with-class "boards")
             (containing
              (sub-component group-nav/board-item {:id 1}
-                            {:opts {:boards_url "http://boards_url"}
+                            {:opts {:boards_url "http://boards_url"
+                                    :select-board "select board channel"}
                                     :om.core/index 0})
              (sub-component group-nav/board-item {:id 2}
-                            {:opts {:boards_url "http://boards_url"}
+                            {:opts {:boards_url "http://boards_url"
+                                    :select-board "select board channel"}
                                     :om.core/index 1})
              (sub-component group-nav/add-board [{:id 1} {:id 2}])
              )
@@ -219,10 +229,34 @@
        group-nav/board-item {:id 1 :name "Board Name"}
        (tag "li"
             (with-class "board-item")
-            (with-text "Board Name")
+            (containing
+             (tag "a"
+                  (with-class "board-link")
+                  (with-attr "href" "#")
+                  (with-text "Board Name")
+                  ))
             )
        )
       )
+  )
+
+(deftest ^:async clicking-board-item-selects-board
+  (let [state (setup-state {:id 1 :name "first"})
+        select-board (chan)]
+    (after-event
+     :click #js {:target #js {}}
+     (in (rendered-component
+          group-nav/board-item state
+          {:opts {:select-board select-board}})
+         "a.board-link")
+     (fn [_]
+       (go (let [selected (<! select-board)]
+             (is (= {:id 1 :name "first"} selected))
+             (done)
+             ))
+       )
+     )
+    )
   )
 
 (deftest board-item-shows-board-editor-without-id

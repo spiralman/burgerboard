@@ -135,6 +135,16 @@
 
 (defn app [data owner]
   (reify
+    om/IInitState
+    (init-state [this]
+      {:select-board (chan)})
+    om/IWillMount
+    (will-mount [this]
+      (go (while true
+            (let [new-board (<! (om/get-state owner :select-board))]
+              (om/transact! data :board (fn [_] new-board))
+              )))
+      )
     om/IRender
     (render [this]
       (apply

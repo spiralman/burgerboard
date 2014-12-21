@@ -193,3 +193,17 @@
        )
       )
   )
+
+(deftest ^:async app-updates-board-when-selected
+  (let [state (setup-state {:user {:id 1}
+                            :groups []
+                            :board nil})
+        app-comp (rendered-component app/app state)
+        select-board (om/get-state app-comp :select-board)]
+    (put! select-board {:id 1 :name "Selected Board"}
+          (fn [_]
+            (is (= {:id 1 :name "Selected Board"}
+                   (:board @state)))
+            (done)
+            ))
+    ))

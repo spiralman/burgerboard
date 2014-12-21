@@ -6,7 +6,7 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]))
 
-(defn board-item [data owner {:keys [boards_url]}]
+(defn board-item [data owner {:keys [boards_url select-board]}]
   (reify
     om/IInitState
     (init-state [this]
@@ -28,7 +28,12 @@
                           {:opts {:className "board-editor"
                                   :k :name
                                   :value-saved (:new-value state)}})
-                (:name data)
+                (dom/a #js {:className "board-link"
+                            :href "#"
+                            :onClick (fn [_]
+                                       (put! select-board @data)
+                                       false)}
+                       (:name data))
                 )
               )
       )
@@ -52,20 +57,21 @@
     )
   )
 
-(defn boards [data owner {:keys [boards_url]}]
+(defn boards [data owner {:keys [boards_url select-board]}]
   (reify
     om/IRender
     (render [this]
       (apply dom/ul #js {:className "boards"}
              (concat (om/build-all board-item data
-                                   {:opts {:boards_url boards_url}})
+                                   {:opts {:boards_url boards_url
+                                           :select-board select-board}})
                      [(om/build add-board data)])
              )
       )
     )
   )
 
-(defn group [data owner]
+(defn group [data owner {:keys [select-board]}]
   (reify
     om/IInitState
     (init-state [this]
@@ -97,7 +103,8 @@
                                              :load-into :boards
                                              :load-keys [:boards]}})
                            (om/build boards (:boards data)
-                                     {:opts {:boards_url (:boards_url data)}})
+                                     {:opts {:boards_url (:boards_url data)
+                                             :select-board select-board}})
                            )
                          )
                 )
@@ -123,12 +130,13 @@
     )
   )
 
-(defn group-nav [data owner]
+(defn group-nav [data owner {:keys [select-board]}]
   (reify
     om/IRender
     (render [this]
       (apply dom/ul #js {:className "groups"}
-             (concat (om/build-all group data)
+             (concat (om/build-all group data
+                                   {:opts {:select-board select-board}})
                        [(om/build add-group data)])
              )
       )
