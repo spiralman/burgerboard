@@ -1,10 +1,13 @@
 (ns test-burgerboard.test-board
-  (:require-macros [cemerick.cljs.test
-                    :refer (is deftest with-test testing test-var)]
-                   [test-burgerboard.huh]
+  (:require-macros [cljs.core.async.macros :refer [go]]
+                   [cemerick.cljs.test
+                    :refer (is deftest with-test testing test-var done)]
+                   [test-burgerboard.huh :refer [with-rendered]]
                    )
   (:require
+   [cljs.core.async :refer [<! put! chan]]
    [test-burgerboard.huh :refer [rendered tag containing with-class sub-component with-text with-attr after-event rendered-component in setup-state]]
+   [test-burgerboard.fake-server :refer [expect-request json-response]]
    [burgerboard-web.board :as board]
    [burgerboard-web.widgets :as widgets]
    [om.core :as om :include-macros true]
@@ -16,6 +19,7 @@
   (is (rendered
        board/board {:id 1
                     :name "Board Name"
+                    :stores_url "http://stores"
                     :stores [{:id 1} {:id 2}]}
        (tag "div"
             (with-class "board")
@@ -25,8 +29,10 @@
                   (with-text "Board Name"))
              (sub-component board/leaderboard {:id 1
                                                :name "Board Name"
+                                               :stores_url "http://stores"
                                                :stores [{:id 1} {:id 2}]})
-             (sub-component board/stores [{:id 1} {:id 2}])
+             (sub-component board/stores [{:id 1} {:id 2}]
+                            {:opts {:stores-url "http://stores"}})
              )
             )
        )
@@ -121,22 +127,28 @@
                    {:id 3
                     :name "Bottom Store"
                     :rating 0.1}]
-
+       {:opts {:stores-url "http://stores"}}
        (tag "ul"
             (with-class "stores")
             (containing
              (sub-component board/store
                             {:id 2
                              :name "Top Store"
-                             :rating 5})
+                             :rating 5}
+                            {:opts {:stores-url "http://stores"}
+                             :om.core/index 0})
              (sub-component board/store
                             {:id 1
                              :name "Store 1"
-                             :rating 1})
+                             :rating 1}
+                            {:opts {:stores-url "http://stores"}
+                             :om.core/index 1})
              (sub-component board/store
                             {:id 3
                              :name "Bottom Store"
-                             :rating 0.1})
+                             :rating 0.1}
+                            {:opts {:stores-url "http://stores"}
+                             :om.core/index 2})
              (sub-component board/add-store
                             [{:id 1
                               :name "Store 1"
@@ -224,15 +236,49 @@
 (deftest store-renders-edit-store-without-id
   (is (rendered
        board/store {:name "Store"}
-       (tag "li"
-            (with-class "store")
-            (containing
-             (sub-component widgets/save-single-value
-                            {:name "Store"}
-                            {:opts {:className "store-editor"
-                                    :k :name}})
-             )
-            )
+       (with-rendered [store]
+         (tag "li"
+              (with-class "store")
+              (containing
+               (sub-component widgets/save-single-value
+                              {:name "Store"}
+                              {:opts {:className "store-editor"
+                                      :k :name
+                                      :value-saved (om/get-state store
+                                                                 :new-value)}})
+               )
+              )
+         )
        )
       )
+  )
+
+(deftest ^:async store-posts-new-store-when-user-saves
+  (let [state (setup-state {:name ""})
+        store (rendered-component
+               board/store state
+               {:opts {:stores-url "/api/v1/groups/1/boards/1/stores"}})
+        new-value (om/get-state store :new-value)
+        responded (expect-request
+                   -test-ctx
+                   {:method "POST"
+                    :url "/api/v1/groups/1/boards/1/stores"
+                    :json-data {:name "New Store"}}
+                   (json-response
+                    201
+                    {:id 1
+                     :name "New Store"
+                     :rating_url "/api/v1/groups/1/boards/1/stores/1/rating"
+                     :board {:id 1 :name "Board"}})
+                   )]
+    (put! new-value "New Store")
+    (go
+     (<! responded)
+     (is (= {:id 1
+             :name "New Store"
+             :rating_url "/api/v1/groups/1/boards/1/stores/1/rating"}
+            @state))
+     (done)
+     )
+    )
   )

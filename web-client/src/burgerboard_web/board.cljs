@@ -1,18 +1,31 @@
 (ns burgerboard-web.board
-  (:require [burgerboard-web.widgets :as widgets]
+  (:require-macros [cljs.core.async.macros :refer [go]])
+  (:require [cljs.core.async :refer [<! put! chan]]
+            [burgerboard-web.widgets :as widgets]
+            [burgerboard-web.api :as api]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]))
 
-(defn store [data owner]
+(defn store [data owner {:keys [stores-url]}]
   (reify
-    om/IRender
-    (render [this]
+    om/IInitState
+    (init-state [this]
+      {:new-value (chan)})
+    om/IWillMount
+    (will-mount [this]
+      (go (let [new-value (<! (om/get-state owner :new-value))
+                new-store (<! (api/json-post stores-url {:name new-value}))]
+            (om/transact! data (fn [_] (dissoc new-store :board)))
+            )))
+    om/IRenderState
+    (render-state [this state]
       (apply dom/li #js {:className "store"}
               (if-not (contains? data :id)
                 (list (om/build widgets/save-single-value
                                 data
                                 {:opts {:className "store-editor"
-                                        :k :name}}))
+                                        :k :name
+                                        :value-saved (:new-value state)}}))
                 (list
                  (dom/span #js {:className "store-name"}
                            (:name data))
@@ -60,14 +73,15 @@
 
 (def descending #(compare %2 %1))
 
-(defn stores [data owner]
+(defn stores [data owner {:keys [stores-url]}]
   (reify
     om/IRender
     (render [this]
       (apply dom/ul #js {:className "stores"}
              (concat
               (om/build-all store
-                            (sort-by :rating descending data))
+                            (sort-by :rating descending data)
+                            {:opts {:stores-url stores-url}})
               (list (om/build add-store data))
              ))
       )
@@ -92,7 +106,8 @@
                                           :load-keys [:stores]}}))
                   (list
                    (om/build leaderboard data)
-                   (om/build stores (:stores data)))
+                   (om/build stores (:stores data)
+                             {:opts {:stores-url (:stores_url data)}}))
                   )))
              ))
     ))
