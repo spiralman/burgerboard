@@ -44,15 +44,17 @@
     om/IRender
     (render [this]
       (apply dom/div #js {:className "leaderboard"}
-             (if (< (count (filter #(contains? % :id) (:stores data))) 2)
-               (list (dom/div #js {:className "store-teaser"}
-                              "Add some more places!"))
-               (list
-                (om/build store
-                          (apply max-key :rating (:stores data)))
-                (om/build store
-                          (apply min-key :rating (:stores data)))
-                )))
+             (let [created-stores (filter #(contains? % :id) (:stores data))]
+               (if (< (count created-stores) 2)
+                 (list (dom/div #js {:className "store-teaser"}
+                                "Add some more places!"))
+                 (list
+                  (om/build store
+                            (apply max-key :rating created-stores))
+                  (om/build store
+                            (apply min-key :rating created-stores))
+                  ))
+               ))
       )
     ))
 

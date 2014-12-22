@@ -97,6 +97,33 @@
      )
   )
 
+(deftest leaderboard-skips-unsaved-stores
+  (is (rendered
+       board/leaderboard {:id 1 :name "Board Name"
+                          :stores
+                          [{:id 1
+                            :name "Store 1"
+                            :rating 1}
+                           {:name "Top Store"
+                            :rating 5}
+                           {:id 3
+                            :name "Bottom Store"
+                            :rating 0.1}]}
+      (tag "div"
+           (with-class "leaderboard")
+           (containing
+            (sub-component board/store {:id 1
+                                        :name "Store 1"
+                                        :rating 1})
+            (sub-component board/store {:id 3
+                                        :name "Bottom Store"
+                                        :rating 0.1})
+            )
+           )
+      )
+     )
+  )
+
 (deftest leaderboard-shows-placeholder-with-less-than-2-saved-stores
   (is (rendered
       board/leaderboard {:id 1 :name "Board Name"
