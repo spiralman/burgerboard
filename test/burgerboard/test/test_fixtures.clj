@@ -63,15 +63,15 @@
      (insert-board {:name "Some Board" :group {:id 1}})
      (insert-board {:name "Other Board" :group {:id 2}})
 
-     (insert-store {:name "Store 1" :board {:id 1 :group_id 1}})
-     (insert-store {:name "Store 2" :board {:id 1 :group_id 1}})
+     (insert-store {:name "Store 1" :board {:id 1 :group {:id 1}}})
+     (insert-store {:name "Store 2" :board {:id 1 :group {:id 1}}})
 
      (set-rating {:id 1} {:email "owner@example.com"} 1)
      (set-rating {:id 1} {:email "some_user@example.com"} 2)
 
      (set-rating {:id 2} {:email "owner@example.com"} 2)
 
-     (insert-store {:name "Other Store" :board {:id 2 :group_id 1}})
+     (insert-store {:name "Other Store" :board {:id 2 :group {:id 1}}})
      (f)
      )
    )

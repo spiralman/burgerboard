@@ -217,8 +217,8 @@
                   :groups [{:id 1 :name "group"}]})
     (insert-board {:name "board" :group {:id 1}})
 
-    (let [new-store (insert-store {:name "store" :board {:id 1 :group_id 1}})]
-      (is (= {:id 1 :name "store" :board {:id 1 :group_id 1}} new-store))
+    (let [new-store (insert-store {:name "store" :board {:id 1 :group {:id 1}}})]
+      (is (= {:id 1 :name "store" :board {:id 1 :group {:id 1}}} new-store))
       (is (= {:id 1 :name "store" :board_id 1}
              (first (select stores))))
 
@@ -229,7 +229,7 @@
     )
 
   (testing "Finding a store"
-    (insert-store {:name "other store" :board {:id 2 :group_id 1}})
+    (insert-store {:name "other store" :board {:id 2 :group {:id 1}}})
 
     (is (= {:id 1 :name "store" :board {:id 1 :group_id 1}}
            (find-board-store {:id 1 :group_id 1} 1)))
@@ -265,12 +265,12 @@
     (insert-board {:name "board2" :group {:id 1}})
     (insert-board {:name "other board" :group {:id 2}})
 
-    (insert-store {:name "store" :board {:id 1 :group_id 1}})
-    (insert-store {:name "store2" :board {:id 1 :group_id 1}})
+    (insert-store {:name "store" :board {:id 1 :group {:id 1}}})
+    (insert-store {:name "store2" :board {:id 1 :group {:id 1}}})
 
-    (insert-store {:name "other board store" :board {:id 2 :group_id 1}})
+    (insert-store {:name "other board store" :board {:id 2 :group {:id 1}}})
 
-    (insert-store {:name "other group store" :board {:id 3 :group_id 2}})
+    (insert-store {:name "other group store" :board {:id 3 :group {:id 2}}})
 
 
     (insert-user {:email "user@example.com" :password "pass" :name "Name"
@@ -297,7 +297,7 @@
     (insert-user {:email "other@example.com" :password "pass" :name "Other"
                   :groups [{:id 1 :name "group"}]})
     (insert-board {:name "board" :group {:id 1}})
-    (insert-store {:name "store" :board {:id 1 :group_id 1}})
+    (insert-store {:name "store" :board {:id 1 :group {:id 1}}})
 
     (is (= {:id 1 :name "store"
             :ratings [{:user_email "user@example.com"

@@ -242,7 +242,7 @@
 
          members
          (select memberships
-                 (where {:group_id (:group_id (:board store))}))]
+                 (where {:group_id (:id (:group (:board store)))}))]
      ;; TODO: assoc the new ratings into the new store (but we don't
      ;; know all their IDs without re-querying)
      (if (not (empty? members))
