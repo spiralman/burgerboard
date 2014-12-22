@@ -107,6 +107,7 @@
 
 (defn post-store [user group board request]
   (let [name (:name (body-json request))]
+    (println user group board)
     (->
      (create-store name board)
      (insert-store)
