@@ -79,10 +79,6 @@
       (tag "div"
            (with-class "leaderboard")
            (containing
-            (tag "div"
-                 (with-class "board-title")
-                 (with-text "Board Name")
-                 )
             (sub-component board/store {:id 2
                                       :name "Top Store"
                                       :rating 5})
@@ -91,6 +87,25 @@
                                       :rating 0.1})
             )
            )
+      )
+     )
+  )
+
+(deftest leaderboard-shows-placeholder-with-less-than-2-stores
+  (is (rendered
+      board/leaderboard {:id 1 :name "Board Name"
+                       :stores
+                       [{:id 1
+                         :name "Store 1"
+                         :rating 1}]}
+      (tag "div"
+           (with-class "leaderboard")
+           (containing
+            (tag "div"
+                 (with-class "store-teaser")
+                 (with-text "Add some more places!")
+                 )
+            ))
       )
      )
   )
@@ -122,10 +137,64 @@
                             {:id 3
                              :name "Bottom Store"
                              :rating 0.1})
+             (sub-component board/add-store
+                            [{:id 1
+                              :name "Store 1"
+                              :rating 1}
+                             {:id 2
+                              :name "Top Store"
+                              :rating 5}
+                             {:id 3
+                              :name "Bottom Store"
+                              :rating 0.1}])
              )
             )
        )
       )
+  )
+
+(deftest stores-contains-just-add-with-empty-list
+  (is (rendered
+       board/stores []
+       (tag "ul"
+            (with-class "stores")
+            (containing
+             (sub-component board/add-store [])
+             )
+            )
+       )
+      )
+  )
+
+(deftest add-store-displays-button-for-adding-store
+  (is (rendered
+       board/add-store []
+       (tag "li"
+            (with-class "store")
+            (containing
+             (tag "button"
+                  (with-class "add-store")
+                  (with-attr "type" "button")
+                  (with-text "Add Store")
+                  )
+             )
+            )
+       )
+      )
+  )
+
+(deftest add-store-appends-new-store-to-stores
+  (let [state (setup-state [{:id 1 :name "first"}])]
+    (after-event
+     :click #js {:target #js {}}
+     (in (rendered-component
+          board/add-store state)
+         "button")
+     (fn [_]
+       (is (= [{:id 1 :name "first"} {:name ""}] @state))
+       )
+     )
+    )
   )
 
 (deftest store-renders-name-and-score
