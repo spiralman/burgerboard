@@ -44,7 +44,7 @@
     om/IRender
     (render [this]
       (apply dom/div #js {:className "leaderboard"}
-             (if (< (count (:stores data)) 2)
+             (if (< (count (filter #(contains? % :id) (:stores data))) 2)
                (list (dom/div #js {:className "store-teaser"}
                               "Add some more places!"))
                (list
