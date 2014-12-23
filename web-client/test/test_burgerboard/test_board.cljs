@@ -6,7 +6,7 @@
                    )
   (:require
    [cljs.core.async :refer [<! put! chan]]
-   [test-burgerboard.huh :refer [rendered tag containing with-class sub-component with-text with-attr after-event rendered-component in setup-state]]
+   [test-burgerboard.huh :refer [rendered tag containing with-class sub-component with-text with-attr has-attr after-event rendered-component in setup-state]]
    [test-burgerboard.fake-server :refer [expect-request json-response]]
    [burgerboard-web.board :as board]
    [burgerboard-web.widgets :as widgets]
@@ -253,13 +253,81 @@
                   (with-class "rating-graph"))
              (tag "span"
                   (with-class "rating")
-                  (with-text "2")
-                  )
+                  (with-text "2"))
+             (tag "select"
+                  (with-class "rating-option")
+                  (containing
+                   (tag "option"
+                        (with-attr "value" "1")
+                        (with-text "1"))
+                   (tag "option"
+                        (with-attr "value" "2")
+                        (with-text "2"))
+                   (tag "option"
+                        (with-attr "value" "3")
+                        (with-text "3"))
+                   (tag "option"
+                        (with-attr "value" "4")
+                        (with-text "4"))
+                   (tag "option"
+                        (with-attr "value" "5")
+                        (with-text "5"))
+                   ))
              )
             )
        )
-      )
-  )
+      ))
+
+(deftest store-selects-users-rating
+  (is (rendered
+       board/store {:id 1
+                    :name "Store"
+                    :rating 2
+                    :ratings
+                    [{:user_email "user@email.com"
+                      :rating 3}
+                     {:user_email "other@email.com"
+                      :rating 1}]}
+       {:opts {:user-email "user@email.com"}}
+       (tag "li"
+            (with-class "store")
+            (containing
+             (tag "span"
+                  (with-class "store-name")
+                  (with-text "Store"))
+             (tag "span"
+                  ;; Placeholder for progress bar
+                  (with-class "rating-graph"))
+             (tag "span"
+                  (with-class "rating")
+                  (with-text "2"))
+             (tag "select"
+                  (with-class "rating-option")
+                  (containing
+                   (tag "option"
+                        (with-attr "value" "1")
+                        (with-text "1"))
+                   (tag "option"
+                        (with-attr "value" "2")
+                        (with-text "2"))
+                   (tag "option"
+                        (with-attr "value" "3")
+                        ;; Not sure how to test for this; react is
+                        ;; supposed to turn a "value=" attribute on
+                        ;; the select into a selected on the option.
+                        ;; (has-attr "selected")
+                        (with-text "3"))
+                   (tag "option"
+                        (with-attr "value" "4")
+                        (with-text "4"))
+                   (tag "option"
+                        (with-attr "value" "5")
+                        (with-text "5"))
+                   ))
+             )
+            )
+       )
+      ))
 
 (deftest store-renders-edit-store-without-id
   (is (rendered

@@ -6,7 +6,13 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]))
 
-(defn store [data owner {:keys [stores-url]}]
+(defn users-rating [user-email ratings]
+  (some (fn [r] (if (= user-email (:user_email r))
+                  (:rating r)
+                  nil))
+        ratings))
+
+(defn store [data owner {:keys [stores-url user-email]}]
   (reify
     om/IInitState
     (init-state [this]
@@ -32,6 +38,10 @@
                  (dom/span #js {:className "rating-graph"})
                  (dom/span #js {:className "rating"}
                            (str (:rating data)))
+                 (apply dom/select #js {:className "rating-option"
+                                        :value (users-rating user-email
+                                                             (:ratings data))}
+                        (map #(dom/option #js {:value %} %) (range 1 6)))
                  )
                 )
               )
