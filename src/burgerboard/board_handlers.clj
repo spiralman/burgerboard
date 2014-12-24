@@ -117,7 +117,9 @@
   )
 
 (defn put-rating [user group board store request]
-  (let [rating (int (:rating (body-json request)))]
+  (let [json-rating (:rating (body-json request))
+        rating (if-not (nil? json-rating)
+                 (int json-rating))]
     (->
      (set-rating store user rating)
      (tally-store)

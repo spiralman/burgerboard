@@ -327,6 +327,34 @@
                                   :user_email "some_user@example.com"})))))
           )
         )
+
+      (testing "clears rating on null value"
+        (let [response
+              (app
+               (->
+                (request :put "/api/v1/groups/1/boards/1/stores/1/rating")
+                (header "Cookie" (login-as "some_user@example.com"
+                                           "password"))
+                (body (json/write-str {:rating nil}))))]
+          (is (= (:status response) 200))
+          (is (= {:name "Store 1"
+                  :id 1
+                  :rating_url
+                  "http://localhost/api/v1/groups/1/boards/1/stores/1/rating"
+                  :rating 1.0
+                  :ratings [{:user_email "owner@example.com"
+                             :rating 1}
+                            {:user_email "some_user@example.com"
+                             :rating nil}]}
+                 (json/read-str (:body response) :key-fn keyword)))
+          (is (= {:rating nil}
+                 (first
+                  (select ratings
+                          (fields :rating)
+                          (where {:store_id 1
+                                  :user_email "some_user@example.com"})))))
+          )
+        )
       )
     )
   )
