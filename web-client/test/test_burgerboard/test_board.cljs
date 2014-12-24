@@ -415,7 +415,7 @@
         new-value (om/get-state store :new-value)
         responded (expect-request
                    -test-ctx
-                   {:method "POST"
+                   {:method "PUT"
                     :url "/api/v1/groups/1/boards/1/stores"
                     :json-data {:name "New Store"}}
                    (json-response

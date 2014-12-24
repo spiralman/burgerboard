@@ -14,7 +14,7 @@
     om/IWillMount
     (will-mount [this]
       (go (let [new-value (<! (om/get-state owner :new-value))
-                new-store (<! (api/json-post stores-url {:name new-value}))]
+                new-store (<! (api/json-put stores-url {:name new-value}))]
             (om/transact! data (fn [_] (dissoc new-store :board)))
             )))
     om/IRenderState

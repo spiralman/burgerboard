@@ -17,6 +17,21 @@
     )
   )
 
+(defn json-put [url req]
+  (let [response (chan)]
+    (ajax/PUT url
+             {:params req
+              :format :json
+              :response-format :json
+              :keywords? true
+              :handler (fn [resp] (put! response resp))
+              :error-handler (fn [err]
+                               (.log js/console (str "got error " err)))}
+             )
+    response
+    )
+  )
+
 (defn json-get [url]
   (let [response (chan)]
     (ajax/GET url
