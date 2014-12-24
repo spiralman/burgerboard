@@ -30,10 +30,7 @@
    request
    (fn [user group board request]
      (if-let [store (find-board-store board (store-id request))]
-       (do
-         (println store)
-         (handler user group board store request)
-         )
+       (handler user group board store request)
        )
      )
    )
