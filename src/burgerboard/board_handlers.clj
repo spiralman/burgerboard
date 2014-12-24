@@ -29,6 +29,7 @@
   (require-board
    request
    (fn [user group board request]
+     (println group board (store-id request))
      (if-let [store (find-board-store board (store-id request))]
        (handler user group board store request)
        )
