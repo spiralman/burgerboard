@@ -231,7 +231,7 @@
   (testing "Finding a store"
     (insert-store {:name "other store" :board {:id 2 :group {:id 1}}})
 
-    (is (= {:id 1 :name "store" :board {:id 1 :group_id 1}}
+    (is (= {:id 1 :name "store" :board {:id 1}}
            (find-board-store {:id 1 :group_id 1} 1)))
 
     (is (nil? (find-board-store {:id 1 :group_id 1} 2)))

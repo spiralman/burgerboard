@@ -266,7 +266,7 @@
     (select stores
             (fields :id :name)
             (with boards
-                  (fields [:id :board_id] [:group_id :board_group_id])
+                  (fields [:id :board_id])
             (where {:id store-id :board_id (:id board)})))
     )
    )
