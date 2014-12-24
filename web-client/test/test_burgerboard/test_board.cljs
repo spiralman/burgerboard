@@ -6,7 +6,7 @@
                    )
   (:require
    [cljs.core.async :refer [<! put! chan]]
-   [test-burgerboard.huh :refer [rendered tag containing with-class sub-component with-text with-attr has-attr after-event rendered-component in setup-state]]
+   [test-burgerboard.huh :refer [rendered tag containing with-class sub-component with-text with-attr with-prop has-attr after-event rendered-component in setup-state]]
    [test-burgerboard.fake-server :refer [expect-request json-response]]
    [burgerboard-web.board :as board]
    [burgerboard-web.widgets :as widgets]
@@ -254,7 +254,11 @@
   (is (rendered
        board/store {:id 1
                     :name "Store"
-                    :rating 2}
+                    :rating 2
+                    :ratings
+                    [{:user_email "user@email.com"
+                      :rating nil}]}
+       {:opts {:user-email "user@email.com"}}
        (tag "li"
             (with-class "store")
             (containing
@@ -269,6 +273,7 @@
                   (with-text "2"))
              (tag "select"
                   (with-class "rating-option")
+                  (with-prop "value" "?")
                   (containing
                    (tag "option"
                         (with-attr "value" "?")
@@ -294,9 +299,54 @@
        )
       ))
 
-;; TODO: test that the value is set to the user's rating, if
-;; present. Need to go after the DOM select component's props to get
-;; the value out of it.
+(deftest store-selects-value-when-set-by-user
+  (is (rendered
+       board/store {:id 1
+                    :name "Store"
+                    :rating 2
+                    :ratings
+                    [{:user_email "user@email.com"
+                      :rating 3}]}
+       {:opts {:user-email "user@email.com"}}
+       (tag "li"
+            (with-class "store")
+            (containing
+             (tag "span"
+                  (with-class "store-name")
+                  (with-text "Store"))
+             (tag "span"
+                  ;; Placeholder for progress bar
+                  (with-class "rating-graph"))
+             (tag "span"
+                  (with-class "rating")
+                  (with-text "2"))
+             (tag "select"
+                  (with-class "rating-option")
+                  (with-prop "value" 3)
+                  (containing
+                   (tag "option"
+                        (with-attr "value" "?")
+                        (with-text "?"))
+                   (tag "option"
+                        (with-attr "value" "1")
+                        (with-text "1"))
+                   (tag "option"
+                        (with-attr "value" "2")
+                        (with-text "2"))
+                   (tag "option"
+                        (with-attr "value" "3")
+                        (with-text "3"))
+                   (tag "option"
+                        (with-attr "value" "4")
+                        (with-text "4"))
+                   (tag "option"
+                        (with-attr "value" "5")
+                        (with-text "5"))
+                   ))
+             )
+            )
+       )
+      ))
 
 (deftest ^:async store-posts-new-rating-on-change
   (let [state (setup-state
