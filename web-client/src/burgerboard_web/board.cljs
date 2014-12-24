@@ -36,6 +36,12 @@
                   nil))
         ratings))
 
+(defn rating-value [selected-value]
+  (if (= "?" selected-value)
+    nil
+    (int selected-value)
+    ))
+
 (defn store [data owner {:keys [stores-url user-email]}]
   (reify
     om/IInitState
@@ -46,7 +52,8 @@
       (go (while true
             (let [new-value (<! (om/get-state owner :new-value))
                   new-store (<! (api/json-put (:rating_url @data)
-                                               {:rating (int new-value)}))]
+                                              {:rating (rating-value
+                                                        new-value)}))]
               (om/transact! data (fn [_] new-store))
               )))
       )
@@ -69,7 +76,9 @@
                                                          (.. %
                                                              -target
                                                              -value))}
-                        (map #(dom/option #js {:value %} %) (range 1 6)))
+                        (cons
+                         (dom/option #js {:value "?"} "?")
+                         (map #(dom/option #js {:value %} %) (range 1 6))))
                  )
                 )
               )
