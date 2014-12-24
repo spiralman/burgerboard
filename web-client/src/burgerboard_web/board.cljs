@@ -6,6 +6,30 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]))
 
+(defn store-editor [data owner {:keys [stores-url]}]
+  (reify
+    om/IInitState
+    (init-state [this]
+      {:new-value (chan)})
+    om/IWillMount
+    (will-mount [this]
+      (go (let [new-value (<! (om/get-state owner :new-value))
+                new-store (<! (api/json-post stores-url {:name new-value}))]
+            (om/transact! data (fn [_] (dissoc new-store :board)))
+            )))
+    om/IRenderState
+    (render-state [this state]
+      (dom/div #js {}
+               (om/build widgets/save-single-value
+                         data
+                         {:opts {:className "store-editor"
+                                 :k :name
+                                 :value-saved (:new-value state)}})
+               )
+      )
+    )
+  )
+
 (defn users-rating [user-email ratings]
   (some (fn [r] (if (= user-email (:user_email r))
                   (:rating r)
@@ -19,19 +43,19 @@
       {:new-value (chan)})
     om/IWillMount
     (will-mount [this]
-      (go (let [new-value (<! (om/get-state owner :new-value))
-                new-store (<! (api/json-post stores-url {:name new-value}))]
-            (om/transact! data (fn [_] (dissoc new-store :board)))
-            )))
+      (go (while true
+            (let [new-value (<! (om/get-state owner :new-value))
+                  new-store (<! (api/json-post (:rating_url @data)
+                                               {:rating (int new-value)}))]
+              (om/transact! data (fn [_] new-store))
+              )))
+      )
     om/IRenderState
     (render-state [this state]
       (apply dom/li #js {:className "store"}
               (if-not (contains? data :id)
-                (list (om/build widgets/save-single-value
-                                data
-                                {:opts {:className "store-editor"
-                                        :k :name
-                                        :value-saved (:new-value state)}}))
+                (list (om/build store-editor data
+                                {:opts {:stores-url stores-url}}))
                 (list
                  (dom/span #js {:className "store-name"}
                            (:name data))
@@ -40,7 +64,11 @@
                            (str (:rating data)))
                  (apply dom/select #js {:className "rating-option"
                                         :value (users-rating user-email
-                                                             (:ratings data))}
+                                                             (:ratings data))
+                                        :onChange #(put! (:new-value state)
+                                                         (.. %
+                                                             -target
+                                                             -value))}
                         (map #(dom/option #js {:value %} %) (range 1 6)))
                  )
                 )

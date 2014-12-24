@@ -329,12 +329,71 @@
        )
       ))
 
+(deftest ^:async store-posts-new-rating-on-change
+  (let [state (setup-state
+               {:id 1
+                :name "Store"
+                :rating_url "http://rating"
+                :rating 2
+                :ratings
+                [{:user_email "user@email.com"
+                  :rating nil}]})
+        store (rendered-component board/store state
+                                  {:opts {:user-email "user@email.com"}})
+        responded (expect-request
+                   -test-ctx
+                   {:method "POST"
+                    :url "http://rating"
+                    :json-data {:rating 3}}
+                   (json-response
+                    200
+                    {:id 1
+                     :name "Store"
+                     :rating_url "http://rating"
+                     :rating 2.5
+                     :ratings
+                     [{:user_email "user@email.com"
+                       :rating 3}]}))]
+    (after-event
+     :change #js {:target #js {:value "3"}}
+     (in store
+         "select")
+     (fn [_]
+       (go
+        (<! responded)
+        (is (= {:id 1
+                :name "Store"
+                :rating_url "http://rating"
+                :rating 2.5
+                :ratings
+                [{:user_email "user@email.com"
+                  :rating 3}]}
+               @state))
+        (done)
+        )))
+    ))
+
 (deftest store-renders-edit-store-without-id
   (is (rendered
        board/store {:name "Store"}
+       {:opts {:stores-url "http://stores"}}
+       (tag "li"
+            (with-class "store")
+            (containing
+             (sub-component board/store-editor
+                            {:name "Store"}
+                            {:opts {:stores-url "http://stores"}})
+             )
+            )
+       ))
+  )
+
+(deftest store-editor-renders-single-value-editor
+  (is (rendered
+       board/store-editor {:name "Store"}
+       {:opts {:stores-url "http://stores"}}
        (with-rendered [store]
-         (tag "li"
-              (with-class "store")
+         (tag "div"
               (containing
                (sub-component widgets/save-single-value
                               {:name "Store"}
@@ -342,8 +401,7 @@
                                       :k :name
                                       :value-saved (om/get-state store
                                                                  :new-value)}})
-               )
-              )
+               ))
          )
        )
       )
@@ -352,7 +410,7 @@
 (deftest ^:async store-posts-new-store-when-user-saves
   (let [state (setup-state {:name ""})
         store (rendered-component
-               board/store state
+               board/store-editor state
                {:opts {:stores-url "/api/v1/groups/1/boards/1/stores"}})
         new-value (om/get-state store :new-value)
         responded (expect-request
