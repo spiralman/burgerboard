@@ -263,11 +263,13 @@
   (nest-subentity
    :board
    (first
+    (sql-only
     (select stores
             (fields :id :name)
             (with boards
                   (fields [:id :board_id])
-            (where {:id store-id :board_id (:id board)})))
+                  (where {:id store-id :board_id (:id board)})))
+    )
     )
    )
   )
