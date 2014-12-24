@@ -342,7 +342,7 @@
                                   {:opts {:user-email "user@email.com"}})
         responded (expect-request
                    -test-ctx
-                   {:method "POST"
+                   {:method "PUT"
                     :url "http://rating"
                     :json-data {:rating 3}}
                    (json-response
@@ -415,7 +415,7 @@
         new-value (om/get-state store :new-value)
         responded (expect-request
                    -test-ctx
-                   {:method "PUT"
+                   {:method "POST"
                     :url "/api/v1/groups/1/boards/1/stores"
                     :json-data {:name "New Store"}}
                    (json-response
