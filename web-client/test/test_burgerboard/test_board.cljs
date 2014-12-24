@@ -21,6 +21,7 @@
                     :name "Board Name"
                     :stores_url "http://stores"
                     :stores [{:id 1} {:id 2}]}
+       {:opts {:user-email "user@email.com"}}
        (tag "div"
             (with-class "board")
             (containing
@@ -30,9 +31,11 @@
              (sub-component board/leaderboard {:id 1
                                                :name "Board Name"
                                                :stores_url "http://stores"
-                                               :stores [{:id 1} {:id 2}]})
+                                               :stores [{:id 1} {:id 2}]}
+                            {:opts {:user-email "user@email.com"}})
              (sub-component board/stores [{:id 1} {:id 2}]
-                            {:opts {:stores-url "http://stores"}})
+                            {:opts {:stores-url "http://stores"
+                                    :user-email "user@email.com"}})
              )
             )
        )
@@ -82,15 +85,18 @@
                         {:id 3
                          :name "Bottom Store"
                          :rating 0.1}]}
+      {:opts {:user-email "user@email.com"}}
       (tag "div"
            (with-class "leaderboard")
            (containing
             (sub-component board/store {:id 2
-                                      :name "Top Store"
-                                      :rating 5})
+                                        :name "Top Store"
+                                        :rating 5}
+                           {:opts {:user-email "user@email.com"}})
             (sub-component board/store {:id 3
-                                      :name "Bottom Store"
-                                      :rating 0.1})
+                                        :name "Bottom Store"
+                                        :rating 0.1}
+                           {:opts {:user-email "user@email.com"}})
             )
            )
       )
@@ -109,15 +115,18 @@
                            {:id 3
                             :name "Bottom Store"
                             :rating 0.1}]}
+       {:opts {:user-email "user@email.com"}}
       (tag "div"
            (with-class "leaderboard")
            (containing
             (sub-component board/store {:id 1
                                         :name "Store 1"
-                                        :rating 1})
+                                        :rating 1}
+                           {:opts {:user-email "user@email.com"}})
             (sub-component board/store {:id 3
                                         :name "Bottom Store"
-                                        :rating 0.1})
+                                        :rating 0.1}
+                           {:opts {:user-email "user@email.com"}})
             )
            )
       )
@@ -155,7 +164,8 @@
                    {:id 3
                     :name "Bottom Store"
                     :rating 0.1}]
-       {:opts {:stores-url "http://stores"}}
+       {:opts {:stores-url "http://stores"
+               :user-email "user@email.com"}}
        (tag "ul"
             (with-class "stores")
             (containing
@@ -163,19 +173,22 @@
                             {:id 2
                              :name "Top Store"
                              :rating 5}
-                            {:opts {:stores-url "http://stores"}
+                            {:opts {:stores-url "http://stores"
+                                    :user-email "user@email.com"}
                              :om.core/index 0})
              (sub-component board/store
                             {:id 1
                              :name "Store 1"
                              :rating 1}
-                            {:opts {:stores-url "http://stores"}
+                            {:opts {:stores-url "http://stores"
+                                    :user-email "user@email.com"}
                              :om.core/index 1})
              (sub-component board/store
                             {:id 3
                              :name "Bottom Store"
                              :rating 0.1}
-                            {:opts {:stores-url "http://stores"}
+                            {:opts {:stores-url "http://stores"
+                                    :user-email "user@email.com"}
                              :om.core/index 2})
              (sub-component board/add-store
                             [{:id 1

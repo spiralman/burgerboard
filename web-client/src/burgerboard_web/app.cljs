@@ -154,7 +154,8 @@
          (list
           (om/build group-nav/group-nav (:groups data)
                     {:opts {:select-board (:select-board state)}})
-          (om/build board/board (:board data))
+          (om/build board/board (:board data)
+                    {:opts {:user-email (:email (:user data))}})
           )
          )
        )

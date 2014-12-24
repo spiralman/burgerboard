@@ -77,7 +77,7 @@
     )
   )
 
-(defn leaderboard [data owner]
+(defn leaderboard [data owner {:keys [user-email]}]
   (reify
     om/IRender
     (render [this]
@@ -88,9 +88,11 @@
                                 "Add some more places!"))
                  (list
                   (om/build store
-                            (apply max-key :rating created-stores))
+                            (apply max-key :rating created-stores)
+                            {:opts {:user-email user-email}})
                   (om/build store
-                            (apply min-key :rating created-stores))
+                            (apply min-key :rating created-stores)
+                            {:opts {:user-email user-email}})
                   ))
                ))
       )
@@ -113,7 +115,7 @@
 
 (def descending #(compare %2 %1))
 
-(defn stores [data owner {:keys [stores-url]}]
+(defn stores [data owner {:keys [stores-url user-email]}]
   (reify
     om/IRender
     (render [this]
@@ -121,14 +123,15 @@
              (concat
               (om/build-all store
                             (sort-by :rating descending data)
-                            {:opts {:stores-url stores-url}})
+                            {:opts {:stores-url stores-url
+                                    :user-email user-email}})
               (list (om/build add-store data))
              ))
       )
     )
   )
 
-(defn board [data owner]
+(defn board [data owner {:keys [user-email]}]
   (reify
     om/IRender
     (render [this]
@@ -145,9 +148,11 @@
                                           :load-into :stores
                                           :load-keys [:stores]}}))
                   (list
-                   (om/build leaderboard data)
+                   (om/build leaderboard data
+                             {:opts {:user-email user-email}})
                    (om/build stores (:stores data)
-                             {:opts {:stores-url (:stores_url data)}}))
+                             {:opts {:stores-url (:stores_url data)
+                                     :user-email user-email}}))
                   )))
              ))
     ))

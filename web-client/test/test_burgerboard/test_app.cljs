@@ -180,7 +180,7 @@
 
 (deftest app-contains-sub-components
   (is (rendered
-       app/app {:user {:id 1}
+       app/app {:user {:id 1 :email "user@email.com"}
                 :groups [{:id 1}]
                 :board {:id 1}}
        (with-rendered [app-comp]
@@ -191,7 +191,8 @@
                               {:opts
                                {:select-board (om/get-state app-comp
                                                             :select-board)}})
-               (sub-component board/board {:id 1})
+               (sub-component board/board {:id 1}
+                              {:opts {:user-email "user@email.com"}})
                )
               )
          )
