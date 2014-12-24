@@ -27,10 +27,12 @@
                (sub-component widgets/text-editor {}
                               {:opts {:state-owner login
                                       :state-k :email
+                                      :label "Email"
                                       :className "login-email"}})
                (sub-component widgets/text-editor {}
                               {:opts {:state-owner login
                                       :state-k :password
+                                      :label "Password"
                                       :type "password"
                                       :className "login-password"}})
                (tag "button"
@@ -92,14 +94,17 @@
                (sub-component widgets/text-editor {}
                               {:opts {:state-owner signup
                                       :state-k :name
+                                      :label "Name"
                                       :className "signup-name"}})
                (sub-component widgets/text-editor {}
                               {:opts {:state-owner signup
                                       :state-k :email
+                                      :label "Email"
                                       :className "signup-email"}})
                (sub-component widgets/text-editor {}
                               {:opts {:state-owner signup
                                       :state-k :password
+                                      :label "Password"
                                       :type "password"
                                       :className "signup-password"}})
                (tag "button"

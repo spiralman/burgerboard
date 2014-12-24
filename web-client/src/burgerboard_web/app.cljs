@@ -58,10 +58,12 @@
                (om/build widgets/text-editor {}
                          {:opts {:state-owner owner
                                  :state-k :email
+                                 :label "Email"
                                  :className "login-email"}})
                (om/build widgets/text-editor {}
                          {:opts {:state-owner owner
                                  :state-k :password
+                                 :label "Password"
                                  :type "password"
                                  :className "login-password"}})
                (dom/button #js {:className "login-button"
@@ -100,14 +102,17 @@
                (om/build widgets/text-editor {}
                          {:opts {:state-owner owner
                                  :state-k :name
+                                 :label "Name"
                                  :className "signup-name"}})
                (om/build widgets/text-editor {}
                          {:opts {:state-owner owner
                                  :state-k :email
+                                 :label "Email"
                                  :className "signup-email"}})
                (om/build widgets/text-editor {}
                          {:opts {:state-owner owner
                                  :state-k :password
+                                 :label "Password"
                                  :type "password"
                                  :className "signup-password"}})
                (dom/button #js {:className "signup-button"
