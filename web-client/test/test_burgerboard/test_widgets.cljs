@@ -61,7 +61,8 @@
                (om/build* widgets/text-editor {}
                           {:opts {:state-k :changing-state
                                   :state-owner owner
-                                  :className "test-editor"}})
+                                  :className "test-editor"
+                                  :label "Label"}})
                )
       )
     )
@@ -72,11 +73,16 @@
        test-text-editor-parent {:value "Some Value"}
        (tag "div"
             (containing
-             (tag "input"
-                  (with-attr "type" "text")
-                  (with-class "test-editor")
-                  (with-attr "value" "initial value")
-                  )
+             (tag "label"
+                  (with-class "test-editor-label")
+                  (with-text "Label")
+                  (containing
+                   (tag "input"
+                        (with-attr "type" "text")
+                        (with-class "test-editor-input")
+                        (with-attr "value" "initial value")
+                        )
+                   ))
              )
             )
        )
@@ -97,6 +103,7 @@
                           {:opts {:state-k :password
                                   :state-owner owner
                                   :type "password"
+                                  :label "Label"
                                   :className "password-editor"}})
                )
       )
@@ -108,11 +115,16 @@
        test-password-editor-parent {}
        (tag "div"
             (containing
-             (tag "input"
-                  (with-attr "type" "password")
-                  (with-class "password-editor")
-                  (with-attr "value" "initial value")
-                  )
+             (tag "label"
+                  (with-class "password-editor-label")
+                  (with-text "Label")
+                  (containing
+                   (tag "input"
+                        (with-attr "type" "password")
+                        (with-class "password-editor-input")
+                        (with-attr "value" "initial value")
+                        )
+                   ))
              )
             )
        )
@@ -137,7 +149,8 @@
        widgets/save-single-value
        {:value "Initial Value"}
        {:opts {:className "value-editor"
-               :k :value}}
+               :k :value
+               :label "Label"}}
        (with-rendered [component]
          (tag "div"
               (with-class "value-editor")
@@ -145,7 +158,8 @@
                (sub-component widgets/text-editor {}
                               {:opts {:state-k :temp-value
                                       :state-owner component
-                                      :className "value-editor-input"}})
+                                      :label "Label"
+                                      :className "value-editor"}})
                (tag "button"
                     (with-class "value-editor-save")
                     (with-attr "type" "button")
