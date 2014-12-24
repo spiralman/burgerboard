@@ -32,7 +32,7 @@
 
 (defn users-rating [user-email ratings]
   (some (fn [r] (if (= user-email (:user_email r))
-                  (:rating r)
+                  (or (:rating r) "?")
                   nil))
         ratings))
 
