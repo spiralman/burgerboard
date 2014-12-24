@@ -55,6 +55,8 @@
     om/IRenderState
     (render-state [this state]
       (dom/div #js {:className "login"}
+               (dom/h2 #js {:className "login-title"}
+                       "Login")
                (om/build widgets/text-editor {}
                          {:opts {:state-owner owner
                                  :state-k :email
@@ -99,6 +101,8 @@
     om/IRenderState
     (render-state [this state]
       (dom/div #js {:className "signup"}
+               (dom/h2 #js {:className "signup-title"}
+                       "Signup")
                (om/build widgets/text-editor {}
                          {:opts {:state-owner owner
                                  :state-k :name

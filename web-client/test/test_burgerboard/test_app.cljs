@@ -24,6 +24,9 @@
          (tag "div"
               (with-class "login")
               (containing
+               (tag "h2"
+                    (with-class "login-title")
+                    (with-text "Login"))
                (sub-component widgets/text-editor {}
                               {:opts {:state-owner login
                                       :state-k :email
@@ -91,6 +94,9 @@
          (tag "div"
               (with-class "signup")
               (containing
+               (tag "h2"
+                    (with-class "signup-title")
+                    (with-text "Signup"))
                (sub-component widgets/text-editor {}
                               {:opts {:state-owner signup
                                       :state-k :name
