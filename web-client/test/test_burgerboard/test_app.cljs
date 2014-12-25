@@ -177,14 +177,32 @@
       )
   )
 
+(deftest header-contains=logo
+  (is (rendered
+       app/header {}
+       (tag "div"
+            (with-class "header")
+            (containing
+             (tag "h1"
+                  (with-class "logo")
+                  (with-text "Burgerboard"))
+             ))
+       ))
+  )
+
 (deftest app-contains-login-without-user
   (is (rendered
        app/app {:user nil}
        (tag "div"
             (with-class "burgerboard")
             (containing
-             (sub-component app/connect {:user nil}))
-            )
+             (sub-component app/header {})
+             (tag "div"
+                  (with-class "content")
+                  (containing
+                   (sub-component app/connect {:user nil}))
+                  )
+             ))
        )
       )
   )
@@ -198,12 +216,16 @@
          (tag "div"
               (with-class "burgerboard")
               (containing
-               (sub-component group-nav/group-nav [{:id 1}]
-                              {:opts
-                               {:select-board (om/get-state app-comp
-                                                            :select-board)}})
-               (sub-component board/board {:id 1}
-                              {:opts {:user-email "user@email.com"}})
+               (sub-component app/header {})
+               (tag "div"
+                    (with-class "content"
+                      (sub-component group-nav/group-nav [{:id 1}]
+                                     {:opts
+                                      {:select-board (om/get-state app-comp
+                                                                   :select-board)}})
+                      (sub-component board/board {:id 1}
+                                     {:opts {:user-email "user@email.com"}})
+                      ))
                )
               )
          )

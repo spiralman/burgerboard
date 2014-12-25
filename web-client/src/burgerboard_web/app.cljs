@@ -142,6 +142,16 @@
     )
   )
 
+(defn header [data owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/div #js {:className "header"}
+               (dom/h1 #js {:className "logo"} "Burgerboard")
+               )
+      )
+    ))
+
 (defn app [data owner]
   (reify
     om/IInitState
@@ -156,17 +166,20 @@
       )
     om/IRenderState
     (render-state [this state]
-      (apply
-       dom/div #js {:className "burgerboard"}
-       (if (nil? (:user data))
-         (list (om/build connect data))
-         (list
-          (om/build group-nav/group-nav (:groups data)
-                    {:opts {:select-board (:select-board state)}})
-          (om/build board/board (:board data)
-                    {:opts {:user-email (:email (:user data))}})
-          )
-         )
+      (dom/div
+       #js {:className "burgerboard"}
+       (om/build header {})
+       (apply dom/div #js {:className "content"}
+              (if (nil? (:user data))
+                (list (om/build connect data))
+                (list
+                 (om/build group-nav/group-nav (:groups data)
+                           {:opts {:select-board (:select-board state)}})
+                 (om/build board/board (:board data)
+                           {:opts {:user-email (:email (:user data))}})
+                 )
+                )
+              )
        )
       )
     )
