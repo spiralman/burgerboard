@@ -3,6 +3,7 @@
 @import "bourbon/bourbon";
 @import "neat/neat";
 
+@import "controls";
 @import "forms";
 @import "text";
 
@@ -34,6 +35,10 @@ $header-height: 64px;
 }
 
 .connect {
+    h2 {
+	text-align: center;
+    }
+
     label {
 	@include form-element;
 
@@ -55,6 +60,16 @@ $header-height: 64px;
 	display: block;
 	float: right;
 
+	font-size: $base-font-size;
+
 	margin: 8px;
     }
+}
+
+.groups {
+    @include span-columns(3);
+}
+
+.board {
+    @include span-columns(9);
 }
