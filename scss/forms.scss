@@ -1,0 +1,11 @@
+@import "text";
+
+@mixin form-element {
+    display: block;
+
+    font-size: $base-font-size;
+}
+
+@mixin form-padding {
+    margin-bottom: 6px;
+}

@@ -1,0 +1,60 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700,800);
+
+@import "bourbon/bourbon";
+@import "neat/neat";
+
+@import "forms";
+@import "text";
+
+$header-height: 64px;
+
+.header {
+    background-color: black;
+    color: white;
+
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    height: $header-height;
+    margin: auto;
+}
+
+.content {
+    margin-top: $header-height;
+    @include outer-container;
+}
+
+.signup {
+    @include span-columns(6);
+}
+
+.login {
+    @include span-columns(6);
+}
+
+.connect {
+    label {
+	@include form-element;
+
+	span {
+	    @include span-columns(3 of 6);
+	    @include form-padding;
+	    text-align: right;
+	}
+
+	input {
+	    @include span-columns(3 of 6);
+	    @include form-padding;
+	    font-size: $base-font-size;
+	    line-height: $base-font-size;
+	}
+    }
+
+    button {
+	display: block;
+	float: right;
+
+	margin: 8px;
+    }
+}
