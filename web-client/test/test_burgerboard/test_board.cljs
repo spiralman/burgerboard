@@ -86,7 +86,7 @@
                          :name "Bottom Store"
                          :rating 0.1}]}
       {:opts {:user-email "user@email.com"}}
-      (tag "div"
+      (tag "ol"
            (with-class "leaderboard")
            (containing
             (sub-component board/store {:id 2
@@ -116,7 +116,7 @@
                             :name "Bottom Store"
                             :rating 0.1}]}
        {:opts {:user-email "user@email.com"}}
-      (tag "div"
+      (tag "ol"
            (with-class "leaderboard")
            (containing
             (sub-component board/store {:id 1
@@ -141,7 +141,7 @@
                          :name "Store 1"
                          :rating 1}
                         {:name ""}]}
-      (tag "div"
+      (tag "ol"
            (with-class "leaderboard")
            (containing
             (tag "div"
@@ -166,7 +166,7 @@
                     :rating 0.1}]
        {:opts {:stores-url "http://stores"
                :user-email "user@email.com"}}
-       (tag "ul"
+       (tag "ol"
             (with-class "stores")
             (containing
              (sub-component board/store
@@ -209,7 +209,7 @@
 (deftest stores-contains-just-add-with-empty-list
   (is (rendered
        board/stores []
-       (tag "ul"
+       (tag "ol"
             (with-class "stores")
             (containing
              (sub-component board/add-store [])

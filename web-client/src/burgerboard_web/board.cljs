@@ -90,7 +90,7 @@
   (reify
     om/IRender
     (render [this]
-      (apply dom/div #js {:className "leaderboard"}
+      (apply dom/ol #js {:className "leaderboard"}
              (let [created-stores (filter #(contains? % :id) (:stores data))]
                (if (< (count created-stores) 2)
                  (list (dom/div #js {:className "store-teaser"}
@@ -128,7 +128,7 @@
   (reify
     om/IRender
     (render [this]
-      (apply dom/ul #js {:className "stores"}
+      (apply dom/ol #js {:className "stores"}
              (concat
               (om/build-all store
                             (sort-by :rating descending data)
