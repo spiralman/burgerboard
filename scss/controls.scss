@@ -1,15 +1,28 @@
-@mixin box($adjacent-side: none) {
-    @each $side in top, bottom, left, right {
-	@if $side != $adjacent-side {
-	    border-#{$side}: 2px solid black;
-	}
-    }
+@import "bourbon/bourbon";
+@import "colors";
 
-    @if $adjacent-side != none {
-	&:last-child {
-	    border-#{$adjacent_side}: 2px solid black;
-	}
+@mixin box {
+    border: 2px solid $primary-shadow;
+    margin-top: 0;
+}
+
+@mixin box-item($adjacent-side: none) {
+    padding: 6px;
+
+    color: $primary-shadow;
+    @include linear-gradient($primary-super-highlight, $primary-highlight);
+
+    border-#{$adjacent_side}: 2px solid $primary-shadow;
+
+    &:last-child {
+	border-#{$adjacent_side}: none;
     }
+}
+
+@mixin box-inner-item($adjacent-side: none) {
+    @include box-item($adjacent-side);
+
+    @include linear-gradient($secondary-ultra-highlight, $secondary-super-highlight);
 }
 
 @mixin nav-list {

@@ -6,23 +6,33 @@
 @import "controls";
 @import "forms";
 @import "text";
+@import "colors";
 
-$header-height: 64px;
+$header-height: 84px;
 
 .header {
-    background-color: black;
-    color: white;
+    background-color: $primary-shadow;
+    color: $secondary-ultra-highlight;
 
-    position: absolute;
-    left: 0;
-    top: 0;
+    /* position: fixed; */
+    /* left: 0; */
+    /* top: 0; */
 
-    height: $header-height;
-    margin: auto;
+    /* height: $header-height; */
+    /* width: 100%; */
+    /* margin: auto; */
+
+    @include outer-container;
+
+    .logo {
+	padding: 6px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+    }
 }
 
 .content {
-    margin-top: $header-height;
+    margin-top: 24px;
     @include outer-container;
 }
 
@@ -71,8 +81,10 @@ $header-height: 64px;
     @include nav-list;
     font-size: $base-font-size;
 
+    @include box;
+
     li {
-	@include box(bottom);
+	@include box-item(bottom);
     }
 }
 
@@ -80,13 +92,19 @@ $header-height: 64px;
     @include nav-list;
 
     li {
-	@include box(bottom);
+	@include box-inner-item(bottom);
     }
 }
 
 .board {
     @include span-columns(9);
     font-size: $base-font-size;
+    @include box;
+
+    .board-title {
+	margin-top: 0;
+	@include box-item(bottom);
+    }
 }
 
 .leaderboard {
@@ -95,12 +113,13 @@ $header-height: 64px;
 }
 
 .stores {
+    @include span-columns(9 of 9);
     @include board-list;
 }
 
 .store {
     @include span-columns(9 of 9);
-    @include box(bottom);
+    @include box-inner-item(bottom);
     .store-name {
 	@include span-columns(2 of 9);
     }
@@ -126,7 +145,7 @@ $header-height: 64px;
 	@include span-columns(1 of 9);
 	@include omega();
 
-	@include box;
+	@include box-item(right);
 
 	font-size: $large-font-size;
 	line-height: $large-font-size;
