@@ -68,8 +68,67 @@ $header-height: 64px;
 
 .groups {
     @include span-columns(3);
+    @include nav-list;
+    font-size: $base-font-size;
+
+    li {
+	@include box(bottom);
+    }
+}
+
+.boards {
+    @include nav-list;
+
+    li {
+	@include box(bottom);
+    }
 }
 
 .board {
     @include span-columns(9);
+    font-size: $base-font-size;
+}
+
+.leaderboard {
+    @include span-columns(9 of 9);
+    @include board-list;
+}
+
+.stores {
+    @include board-list;
+}
+
+.store {
+    @include span-columns(9 of 9);
+    @include box(bottom);
+    .store-name {
+	@include span-columns(2 of 9);
+    }
+
+    .rating-graph {
+	@include span-columns(3 of 9);
+	&:before {
+	    content: "Rating graph here";
+	}
+    }
+
+    .rating {
+	@include span-columns(1 of 9);
+
+	font-size: $large-font-size;
+
+	&:empty:before {
+	    content: "--";
+	}
+    }
+
+    .rating-option {
+	@include span-columns(1 of 9);
+	@include omega();
+
+	@include box;
+
+	font-size: $large-font-size;
+	line-height: $large-font-size;
+    }
 }

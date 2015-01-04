@@ -1,0 +1,24 @@
+@mixin box($adjacent-side: none) {
+    @each $side in top, bottom, left, right {
+	@if $side != $adjacent-side {
+	    border-#{$side}: 2px solid black;
+	}
+    }
+
+    @if $adjacent-side != none {
+	&:last-child {
+	    border-#{$adjacent_side}: 2px solid black;
+	}
+    }
+}
+
+@mixin nav-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+@mixin board-list {
+    list-style-type: none;
+    padding-left: 0px;
+    margin-bottom: 32px;
+}
