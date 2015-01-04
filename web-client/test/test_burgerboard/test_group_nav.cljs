@@ -314,7 +314,7 @@
   (is (rendered
        group-nav/add-board []
        (tag "li"
-            (with-class "board")
+            (with-class "board-item")
             (containing
              (tag "button"
                   (with-class "add-board")

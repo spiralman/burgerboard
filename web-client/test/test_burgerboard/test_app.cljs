@@ -218,7 +218,8 @@
               (containing
                (sub-component app/header {})
                (tag "div"
-                    (with-class "content"
+                    (with-class "content")
+                    (containing
                       (sub-component group-nav/group-nav [{:id 1}]
                                      {:opts
                                       {:select-board (om/get-state app-comp

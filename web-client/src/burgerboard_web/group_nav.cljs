@@ -44,7 +44,7 @@
   (reify
     om/IRender
     (render [this]
-      (dom/li #js {:className "board"}
+      (dom/li #js {:className "board-item"}
               (dom/button #js {:className "add-board"
                                :type "button"
                                :onClick (fn [_] (om/transact!
