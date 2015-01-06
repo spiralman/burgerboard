@@ -124,6 +124,9 @@
 (defn page [request]
   (let [user-data (fetch-user-data request)]
     (html5
+     [:head
+      (include-css "/static/burgerboard.css")
+      ]
      [:body
       [:div#burgerboard {}]
       (javascript-tag (str "var burgerboard_init_state="
