@@ -125,7 +125,7 @@
   (let [user-data (fetch-user-data request)]
     (html5
      [:head
-      (include-css "/static/burgerboard.css")
+      (include-css "/static/css/burgerboard.css")
       ]
      [:body
       [:div#burgerboard {}]
