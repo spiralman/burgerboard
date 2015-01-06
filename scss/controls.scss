@@ -2,27 +2,28 @@
 @import "colors";
 
 @mixin box {
-    border: 2px solid $primary-shadow;
+    /* border: 1.5px solid $primary-black; */
+    /* border-radius: 1px; */
     margin-top: 0;
+    box-shadow: 2px 2px 4px 2px $shadow;
+
+    @include linear-gradient('20deg to left', $light-texture, $dark-texture);
 }
 
 @mixin box-item($adjacent-side: none) {
-    padding: 6px;
+    color: $primary-black;
 
-    color: $primary-shadow;
-    @include linear-gradient($primary-super-highlight, $primary-highlight);
-
-    border-#{$adjacent_side}: 2px solid $primary-shadow;
+    border-#{$adjacent_side}: 1px solid $primary-tint;
 
     &:last-child {
 	border-#{$adjacent_side}: none;
     }
 }
 
-@mixin box-inner-item($adjacent-side: none) {
-    @include box-item($adjacent-side);
-
-    @include linear-gradient($secondary-ultra-highlight, $secondary-super-highlight);
+@mixin connect-item {
+    @include span-columns(6);
+    @include box-item(right);
+    padding: 12px 48px 24px 48px;
 }
 
 @mixin nav-list {

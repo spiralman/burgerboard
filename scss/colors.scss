@@ -1,10 +1,19 @@
-$primary: #7A60FF;
-$primary-highlight: #BAADFF;
-$primary-super-highlight: lighten($primary-highlight, 5%);
-$primary-shadow: #3D307F;
+$primary: #6F65FF;
+$primary-shade: #B7B1FF;
 
-$secondary: #FFEC60;
-$secondary-highlight: #FFF5AC;
-$secondary-super-highlight: lighten($secondary-highlight, 10%);
-$secondary-ultra-highlight: lighten($secondary-highlight, 15%);
+$primary-shadow: #37327F;
+$primary-black: darken($primary-shadow, 15%);
+$primary-tint: tint($primary-black, 90%);
+
+$dark-texture: lighten(#7F7B56, 58%);
+$light-texture: lighten($dark-texture, 1%);
+
+$secondary: #51CC3C;
+$secondary-highlight: #8BD47E;
+$secondary-h1: lighten($secondary-highlight, 28%);
+$secondary-h2: lighten($secondary-highlight, 30%);
+$secondary-h3: lighten($secondary-highlight, 32%);
+$secondary-h4: lighten($secondary-highlight, 34%);
 $secondary-shadow: #7F7630;
+
+$shadow: rgba(70, 70, 70, 0.3);

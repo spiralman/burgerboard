@@ -8,40 +8,35 @@
 @import "text";
 @import "colors";
 
-$header-height: 84px;
+$padding: 6px;
+
+body {
+    background-color: $primary-tint;
+    margin: 0 0 32px 0;
+}
+
+.burgerboard {
+    @include outer-container;
+    @include box;
+}
 
 .header {
     background-color: $primary-shadow;
-    color: $secondary-ultra-highlight;
-
-    /* position: fixed; */
-    /* left: 0; */
-    /* top: 0; */
-
-    /* height: $header-height; */
-    /* width: 100%; */
-    /* margin: auto; */
-
-    @include outer-container;
+    color: $secondary-h3;
 
     .logo {
-	padding: 6px;
-	margin-top: 10px;
-	margin-bottom: 10px;
+	padding: 18px $padding 18px $padding;
+	margin-top: 0;
+	margin-bottom: 0;
     }
 }
 
-.content {
-    margin-top: 24px;
-    @include outer-container;
-}
-
 .signup {
-    @include span-columns(6);
+    @include connect-item;
 }
 
 .login {
-    @include span-columns(6);
+    @include connect-item;
 }
 
 .connect {
@@ -81,47 +76,61 @@ $header-height: 84px;
     @include nav-list;
     font-size: $base-font-size;
 
-    @include box;
+    @include box-item(right);
 
-    li {
+    height: 100%;
+    margin-top: 0;
+
+    &> li {
 	@include box-item(bottom);
+	background-color: $primary-tint;
+	padding: $padding;
     }
 }
 
 .boards {
     @include nav-list;
+    background-color: white;
+    margin-left: -$padding;
+    margin-right: -$padding;
+    margin-top: $padding;
 
-    li {
-	@include box-inner-item(bottom);
+    &> li {
+	@include box-item(bottom);
+	padding: $padding $padding $padding ($padding * 3);
     }
 }
 
 .board {
     @include span-columns(9);
     font-size: $base-font-size;
-    @include box;
 
     .board-title {
-	margin-top: 0;
-	@include box-item(bottom);
+	color: $primary-shadow;
+	margin-top: 4px;
+	margin-bottom: 11px;
     }
 }
 
 .leaderboard {
-    @include span-columns(9 of 9);
+    @include span-columns(8 of 9);
     @include board-list;
+    @include box;
 }
 
 .stores {
-    @include span-columns(9 of 9);
+    @include span-columns(8 of 9);
     @include board-list;
+    @include box;
 }
 
 .store {
     @include span-columns(9 of 9);
-    @include box-inner-item(bottom);
+    @include box-item(bottom);
+    padding: $padding;
+
     .store-name {
-	@include span-columns(2 of 9);
+	@include span-columns(3 of 9);
     }
 
     .rating-graph {
