@@ -183,9 +183,13 @@
        (tag "div"
             (with-class "header")
             (containing
-             (tag "h1"
-                  (with-class "logo")
-                  (with-text "Burgerboard"))
+             (tag "div"
+                  (with-class "header-nav")
+                  (containing
+                   (tag "h1"
+                        (with-class "logo")
+                        (with-text "Burgerboard"))
+                   ))
              ))
        ))
   )

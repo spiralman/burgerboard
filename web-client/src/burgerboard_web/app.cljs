@@ -147,8 +147,9 @@
     om/IRender
     (render [this]
       (dom/div #js {:className "header"}
-               (dom/h1 #js {:className "logo"} "Burgerboard")
-               )
+               (dom/div #js {:className "header-nav"}
+                        (dom/h1 #js {:className "logo"} "Burgerboard")
+               ))
       )
     ))
 
