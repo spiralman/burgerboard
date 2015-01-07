@@ -2,6 +2,10 @@ $base-font-size: 24px;
 
 $large-font-size: $base-font-size + 8px;
 
-body {
+@mixin set-font {
     font-family: 'Open Sans', sans-serif;
+}
+
+body {
+    @include set-font;
 }

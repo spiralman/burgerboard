@@ -20,7 +20,7 @@ body {
     @include box($background: false);
 
     background-color: $primary-shadow;
-    color: $secondary-h3;
+    color: $dark-texture;
 
     position: fixed;
     top: 0;
@@ -75,10 +75,9 @@ body {
     }
 
     button {
+	@include control;
 	display: block;
 	float: right;
-
-	font-size: $base-font-size;
 
 	margin: 8px;
     }
@@ -98,6 +97,15 @@ body {
 	@include box-item(bottom);
 	background-color: $primary-tint;
 	padding: $padding;
+
+	.group-name {
+	    font-weight: bold;
+	}
+    }
+
+    button {
+	@include control;
+	margin-left: -$padding;
     }
 }
 
@@ -111,6 +119,9 @@ body {
     &> li {
 	@include box-item(bottom);
 	padding: $padding $padding $padding ($padding * 3);
+    }
+
+    button {
     }
 
     a {
@@ -137,12 +148,24 @@ body {
     @include span-columns(8 of 9);
     @include board-list;
     @include box;
+
+    .store-teaser {
+	padding: $padding;
+	margin-top: $padding;
+	margin-bottom: $padding;
+	color: darken($primary-tint, 35%);
+	text-align: center;
+    }
 }
 
 .stores {
     @include span-columns(8 of 9);
     @include board-list;
     @include box;
+}
+
+.add-store {
+    @include control;
 }
 
 .store {
@@ -175,7 +198,7 @@ body {
 	@include span-columns(1 of 9);
 	@include omega();
 
-	@include box-item(right);
+	@include control;
 
 	font-size: $large-font-size;
 	line-height: $large-font-size;

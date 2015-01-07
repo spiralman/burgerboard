@@ -1,5 +1,6 @@
 @import "bourbon/bourbon";
 @import "colors";
+@import "text";
 
 @mixin box($background: true) {
     margin-top: 0;
@@ -17,6 +18,25 @@
 
     &:last-child {
 	border-#{$adjacent_side}: none;
+    }
+}
+
+@mixin control {
+    background: none;
+    border: 1px solid $primary-tint;
+
+    box-shadow: inset -3px -3px 12px 0 rgba(200, 200, 200, 0.1);
+
+    @include set-font;
+    font-size: $base-font-size;
+    padding: $padding;
+
+    &:hover {
+	box-shadow: inset -3px -3px 12px 0 rgba(200, 200, 200, 0.2);
+    }
+
+    &:active {
+	box-shadow: inset -3px -3px 12px 0 rgba(200, 200, 200, 0.1);
     }
 }
 
