@@ -9,26 +9,39 @@
 @import "colors";
 
 $padding: 6px;
+$header-height: 79px;
 
 body {
     background-color: $primary-tint;
     margin: 0 0 32px 0;
 }
 
-.burgerboard {
-    @include outer-container;
-    @include box;
-}
-
 .header {
+    @include box($background: false);
+
     background-color: $primary-shadow;
     color: $secondary-h3;
 
-    .logo {
-	padding: 18px $padding 18px $padding;
-	margin-top: 0;
-	margin-bottom: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+
+    .header-nav {
+	@include outer-container;
+
+	.logo {
+	    padding: 18px $padding 18px $padding;
+	    margin-top: 0;
+	    margin-bottom: 0;
+	}
     }
+}
+
+.content {
+    @include outer-container;
+    @include box;
+    margin-top: $header-height;
 }
 
 .signup {
@@ -98,6 +111,14 @@ body {
     &> li {
 	@include box-item(bottom);
 	padding: $padding $padding $padding ($padding * 3);
+    }
+
+    a {
+	text-decoration: none;
+    }
+
+    a:visited {
+	color: $primary-black;
     }
 }
 

@@ -1,13 +1,13 @@
 @import "bourbon/bourbon";
 @import "colors";
 
-@mixin box {
-    /* border: 1.5px solid $primary-black; */
-    /* border-radius: 1px; */
+@mixin box($background: true) {
     margin-top: 0;
     box-shadow: 2px 2px 4px 2px $shadow;
 
-    @include linear-gradient('20deg to left', $light-texture, $dark-texture);
+    @if $background == true {
+	@include linear-gradient('20deg to left', $light-texture, $dark-texture);
+    }
 }
 
 @mixin box-item($adjacent-side: none) {
@@ -23,7 +23,7 @@
 @mixin connect-item {
     @include span-columns(6);
     @include box-item(right);
-    padding: 12px 48px 24px 48px;
+    padding: 0px 48px 24px 48px;
 }
 
 @mixin nav-list {
