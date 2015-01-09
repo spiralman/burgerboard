@@ -176,7 +176,7 @@ body {
   .groups .group-editor input {
     font-size: 22px; }
   .groups .group-editor input {
-    max-width: 157px; }
+    max-width: 154px; }
 
 .boards {
   list-style-type: none;
@@ -193,6 +193,7 @@ body {
     .boards > li:last-child {
       border-bottom: none; }
   .boards a {
+    color: #1f1c48;
     text-decoration: none; }
   .boards a:visited {
     color: #1f1c48; }
@@ -211,7 +212,7 @@ body {
   .boards .board-editor input {
     font-size: 22px; }
   .boards .board-editor input {
-    max-width: 156px;
+    max-width: 150px;
     margin-left: -6px; }
 
 .board {

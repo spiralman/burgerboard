@@ -111,7 +111,7 @@ body {
 	@include editor;
 
 	input {
-	    max-width: 157px;
+	    max-width: 154px;
 	}
     }
 }
@@ -130,6 +130,7 @@ body {
     }
 
     a {
+	color: $primary-black;
 	text-decoration: none;
     }
 
@@ -141,7 +142,7 @@ body {
 	@include editor;
 
 	input {
-	    max-width: 156px;
+	    max-width: 150px;
 	    margin-left: -$padding;
 	}
     }
