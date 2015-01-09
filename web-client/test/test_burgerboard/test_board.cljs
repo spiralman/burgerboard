@@ -133,13 +133,16 @@
      )
   )
 
-(deftest leaderboard-shows-placeholder-with-less-than-2-saved-stores
+(deftest leaderboard-shows-placeholder-with-less-than-2-saved-and-ranked-stores
   (is (rendered
       board/leaderboard {:id 1 :name "Board Name"
                        :stores
                        [{:id 1
                          :name "Store 1"
                          :rating 1}
+                        {:id 2
+                         :name "Store 2"
+                         :rating nil}
                         {:name ""}]}
       (tag "ol"
            (with-class "leaderboard")

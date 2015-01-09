@@ -91,7 +91,10 @@
     om/IRender
     (render [this]
       (apply dom/ol #js {:className "leaderboard"}
-             (let [created-stores (filter #(contains? % :id) (:stores data))]
+             (let [created-stores (filter #(and
+                                            (contains? % :id)
+                                            (not (nil? (:rating %))))
+                                          (:stores data))]
                (if (< (count created-stores) 2)
                  (list (dom/div #js {:className "store-teaser"}
                                 "Add some more places!"))
