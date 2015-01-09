@@ -2,6 +2,8 @@
 @import "colors";
 @import "text";
 
+$padding: 6px;
+
 @mixin box($background: true) {
     margin-top: 0;
     box-shadow: 2px 2px 4px 2px $shadow;
@@ -55,4 +57,15 @@
     list-style-type: none;
     padding-left: 0px;
     margin-bottom: 32px;
+}
+
+@mixin editor {
+    button {
+	@include control;
+	margin-left: $padding;
+    }
+
+    input {
+	font-size: $detail-font-size;
+    }
 }

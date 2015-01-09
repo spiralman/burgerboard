@@ -1,5 +1,6 @@
 $base-font-size: 24px;
 
+$detail-font-size: $base-font-size - 2px;
 $large-font-size: $base-font-size + 8px;
 
 @mixin set-font {

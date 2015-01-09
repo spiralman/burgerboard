@@ -8,7 +8,6 @@
 @import "text";
 @import "colors";
 
-$padding: 6px;
 $header-height: 79px;
 
 body {
@@ -107,6 +106,14 @@ body {
 	@include control;
 	margin-left: -$padding;
     }
+
+    .group-editor {
+	@include editor;
+
+	input {
+	    max-width: 157px;
+	}
+    }
 }
 
 .boards {
@@ -119,9 +126,7 @@ body {
     &> li {
 	@include box-item(bottom);
 	padding: $padding $padding $padding ($padding * 3);
-    }
-
-    button {
+	font-size: $detail-font-size;
     }
 
     a {
@@ -130,6 +135,15 @@ body {
 
     a:visited {
 	color: $primary-black;
+    }
+
+    .board-editor {
+	@include editor;
+
+	input {
+	    max-width: 156px;
+	    margin-left: -$padding;
+	}
     }
 }
 
@@ -175,6 +189,7 @@ body {
 
     .store-name {
 	@include span-columns(3 of 9);
+	font-size: $detail-font-size;
     }
 
     .rating-graph {
@@ -202,5 +217,9 @@ body {
 
 	font-size: $large-font-size;
 	line-height: $large-font-size;
+    }
+
+    .store-editor {
+	@include editor;
     }
 }
