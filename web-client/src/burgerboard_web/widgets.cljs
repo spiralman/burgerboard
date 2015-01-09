@@ -61,8 +61,7 @@
                                 :type "button"
                                 :onClick #(put! value-saved
                                                 (om/get-state owner
-                                                              :temp-value))}
-                          "Save")
+                                                              :temp-value))})
                )
       )
     )

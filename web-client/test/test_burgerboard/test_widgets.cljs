@@ -163,7 +163,7 @@
                (tag "button"
                     (with-class "value-editor-save")
                     (with-attr "type" "button")
-                    (with-text "Save"))
+                    (with-text ""))
                )
               )
          )

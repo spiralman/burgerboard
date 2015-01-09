@@ -63,6 +63,13 @@ $padding: 6px;
     button {
 	@include control;
 	margin-left: $padding;
+
+	vertical-align: middle;
+	width: 36px;
+	height: 36px;
+	background-image: url("/static/images/glyphicons-207-ok-2.svg");
+	background-repeat: no-repeat;
+	background-size: contain;
     }
 
     input {

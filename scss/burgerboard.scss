@@ -111,7 +111,7 @@ body {
 	@include editor;
 
 	input {
-	    max-width: 154px;
+	    max-width: 190px;
 	}
     }
 }
@@ -142,7 +142,7 @@ body {
 	@include editor;
 
 	input {
-	    max-width: 150px;
+	    max-width: 184px;
 	    margin-left: -$padding;
 	}
     }

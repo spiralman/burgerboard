@@ -168,7 +168,13 @@ body {
     font-family: 'Open Sans', sans-serif;
     font-size: 24px;
     padding: 6px;
-    margin-left: 6px; }
+    margin-left: 6px;
+    vertical-align: middle;
+    width: 36px;
+    height: 36px;
+    background-image: url("/static/images/glyphicons-207-ok-2.svg");
+    background-repeat: no-repeat;
+    background-size: contain; }
     .groups .group-editor button:hover {
       box-shadow: inset -3px -3px 12px 0 rgba(200, 200, 200, 0.2); }
     .groups .group-editor button:active {
@@ -176,7 +182,7 @@ body {
   .groups .group-editor input {
     font-size: 22px; }
   .groups .group-editor input {
-    max-width: 154px; }
+    max-width: 190px; }
 
 .boards {
   list-style-type: none;
@@ -204,7 +210,13 @@ body {
     font-family: 'Open Sans', sans-serif;
     font-size: 24px;
     padding: 6px;
-    margin-left: 6px; }
+    margin-left: 6px;
+    vertical-align: middle;
+    width: 36px;
+    height: 36px;
+    background-image: url("/static/images/glyphicons-207-ok-2.svg");
+    background-repeat: no-repeat;
+    background-size: contain; }
     .boards .board-editor button:hover {
       box-shadow: inset -3px -3px 12px 0 rgba(200, 200, 200, 0.2); }
     .boards .board-editor button:active {
@@ -212,7 +224,7 @@ body {
   .boards .board-editor input {
     font-size: 22px; }
   .boards .board-editor input {
-    max-width: 150px;
+    max-width: 184px;
     margin-left: -6px; }
 
 .board {
@@ -346,7 +358,13 @@ body {
     font-family: 'Open Sans', sans-serif;
     font-size: 24px;
     padding: 6px;
-    margin-left: 6px; }
+    margin-left: 6px;
+    vertical-align: middle;
+    width: 36px;
+    height: 36px;
+    background-image: url("/static/images/glyphicons-207-ok-2.svg");
+    background-repeat: no-repeat;
+    background-size: contain; }
     .store .store-editor button:hover {
       box-shadow: inset -3px -3px 12px 0 rgba(200, 200, 200, 0.2); }
     .store .store-editor button:active {
