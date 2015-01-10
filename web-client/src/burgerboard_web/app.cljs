@@ -33,12 +33,16 @@
          ))
     ))
 
-(defn signup! [resp {:keys [name email password]}]
-  (go (let [response (<! (api/json-post "/api/v1/signups" {:name name
-                                                       :email email
-                                                       :password password}))]
-        (put! resp response)))
-  )
+(defn signup! [resp err {:keys [name email password]}]
+  (let [[post-response post-error] (api/json-post "/api/v1/signups"
+                                                 {:name name
+                                                  :email email
+                                                  :password password})]
+    (go (alt!
+         post-response ([response] (put! resp response))
+         post-error (put! err "Could not sign up")
+         ))
+    ))
 
 (defn login [data owner]
   (reify
@@ -96,23 +100,30 @@
       {:email ""
        :name ""
        :password ""
-       :on-signup (chan)})
+       :on-signup (chan)
+       :on-error (chan)})
     om/IWillMount
     (will-mount [this]
-      (let [on-signup (om/get-state owner :on-signup)]
-        (go (let [signup-response (<! on-signup)]
-              (om/transact! data (fn [_]
-                                   {:user (dissoc signup-response :groups)
-                                    :groups (:groups signup-response)
-                                    :board nil}))
-              ))
-        )
-      )
+      (let [on-signup (om/get-state owner :on-signup)
+            on-error (om/get-state owner :on-error)]
+        (go (alt!
+         on-signup ([signup-response]
+                      (om/transact! data (fn [_]
+                                           {:user (dissoc signup-response
+                                                          :groups)
+                                            :groups (:groups signup-response)
+                                            :board nil})))
+         on-error ([error] (om/set-state! owner :error error))
+         ))
+        ))
     om/IRenderState
     (render-state [this state]
       (dom/div #js {:className "signup"}
                (dom/h2 #js {:className "signup-title"}
                        "Signup")
+               (if (contains? (om/get-state owner) :error)
+                 (dom/div #js {:className "signup-error"}
+                          (om/get-state owner :error)))
                (om/build widgets/text-editor {}
                          {:opts {:state-owner owner
                                  :state-k :name
@@ -133,6 +144,7 @@
                                 :type "button"
                                 :onClick (fn [] (signup!
                                                  (om/get-state owner :on-signup)
+                                                 (om/get-state owner :on-error)
                                                  (om/get-state owner)))}
                            "Signup")
                )

@@ -191,6 +191,47 @@
       )
   )
 
+(deftest signup-displays-error
+  (is (rendered
+       app/signup {:user nil}
+       {:init-state {:error "Error message"}}
+       (with-rendered [signup]
+         (tag "div"
+              (with-class "signup")
+              (containing
+               (tag "h2"
+                    (with-class "signup-title")
+                    (with-text "Signup"))
+               (tag "div"
+                    (with-class "signup-error")
+                    (with-text "Error message"))
+               (sub-component widgets/text-editor {}
+                              {:opts {:state-owner signup
+                                      :state-k :name
+                                      :label "Name"
+                                      :className "signup-name"}})
+               (sub-component widgets/text-editor {}
+                              {:opts {:state-owner signup
+                                      :state-k :email
+                                      :label "Email"
+                                      :className "signup-email"}})
+               (sub-component widgets/text-editor {}
+                              {:opts {:state-owner signup
+                                      :state-k :password
+                                      :label "Password"
+                                      :type "password"
+                                      :className "signup-password"}})
+               (tag "button"
+                    (with-class "signup-button")
+                    (with-attr "type" "button")
+                    (with-text "Signup"))
+               )
+              )
+         )
+       )
+      )
+  )
+
 (deftest ^:async signup-signs-up-on-click
   (let [state (setup-state {:user nil})
         signup (rendered-component
@@ -224,6 +265,40 @@
                 :groups []
                 :board nil}
                @state))
+        (done)
+        )
+       )
+     )
+    )
+  )
+
+(deftest ^:async signup-notifies-user-on-error
+  (let [state (setup-state {:user nil})
+        signup (rendered-component
+                app/signup state
+                {:init-state {:name "New User"
+                              :email "some_user@example.com"
+                              :password "password"}})
+        responded (expect-request
+                   -test-ctx
+                   {:method "POST"
+                    :url "/api/v1/signups"
+                    :json-data {:name "New User"
+                                :email "some_user@example.com"
+                                :password "password"}}
+                   {:status 400
+                    :body "Invalid user"}
+                   )]
+    (after-event
+     :click #js {}
+     (in signup "button")
+     (fn [_]
+       (go
+        (<! responded)
+        (is (= {:user nil}
+               @state))
+        (is (= "Could not sign up"
+               (om/get-state signup :error)))
         (done)
         )
        )
