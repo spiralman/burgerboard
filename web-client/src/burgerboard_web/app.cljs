@@ -1,5 +1,5 @@
 (ns burgerboard-web.app
-  (:require-macros [cljs.core.async.macros :refer [go alt!]])
+  (:require-macros [cljs.core.async.macros :refer [go go-loop alt!]])
   (:require [cljs.core.async :refer [put! <! chan]]
             [burgerboard-web.widgets :as widgets]
             [burgerboard-web.group-nav :as group-nav]
@@ -56,10 +56,13 @@
     (will-mount [this]
       (let [on-login (om/get-state owner :on-login)
             on-error (om/get-state owner :on-error)]
-        (go (alt!
-             on-login ([login-response] (om/transact!
-                                         data (fn [_] login-response)))
-             on-error ([error] (om/set-state! owner :error error))
+        (go-loop []
+                 (alt!
+                  on-login ([login-response] (om/transact!
+                                              data (fn [_] login-response)))
+                  on-error ([error] (do
+                                      (om/set-state! owner :error error)
+                                      (recur)))
              ))
         ))
     om/IRenderState
@@ -106,15 +109,18 @@
     (will-mount [this]
       (let [on-signup (om/get-state owner :on-signup)
             on-error (om/get-state owner :on-error)]
-        (go (alt!
-         on-signup ([signup-response]
-                      (om/transact! data (fn [_]
-                                           {:user (dissoc signup-response
-                                                          :groups)
-                                            :groups (:groups signup-response)
-                                            :board nil})))
-         on-error ([error] (om/set-state! owner :error error))
-         ))
+        (go-loop []
+                 (alt!
+                  on-signup ([signup-response]
+                               (om/transact! data (fn [_]
+                                                    {:user (dissoc signup-response
+                                                                   :groups)
+                                                     :groups (:groups signup-response)
+                                                     :board nil})))
+                  on-error ([error] (do
+                                      (om/set-state! owner :error error)
+                                      (recur)))
+                  ))
         ))
     om/IRenderState
     (render-state [this state]

@@ -154,6 +154,60 @@
     )
   )
 
+(deftest ^:async login-logs-in-after-error
+  (let [state (setup-state {:user nil})
+        login (rendered-component
+               app/login state
+               {:init-state {:email "email"
+                             :password "password"}})
+        responded (expect-request
+                   -test-ctx
+                   {:method "POST"
+                    :url "/api/v1/login"
+                    :json-data {:email "email"
+                                :password "password"}}
+                   {:status 403
+                    :body "Invalid username or password"}
+                   )]
+    (after-event
+     :click #js {}
+     (in login "button")
+     (fn [_]
+       (go
+        (<! responded)
+        (let [second-response (expect-request
+                               -test-ctx
+                               {:method "POST"
+                                :url "/api/v1/login"
+                                :json-data {:email "email"
+                                            :password "password"}}
+                               (json-response
+                                200
+                                {:email "some_user@example.com"
+                                 :name "Some User"
+                                 :groups_url "http://localhost/api/v1/groups"
+                                 :groups [{:name "Group" :id 1}]})
+                               )]
+          (after-event
+           :click #js {}
+           (in login "button")
+           (fn [_]
+             (go
+              (<! second-response)
+              (is (= {:user {:email "some_user@example.com"
+                             :groups_url "http://localhost/api/v1/groups"
+                             :name "Some User"}
+                      :groups [{:name "Group" :id 1}]
+                      :board nil}
+                     @state))
+              (done)
+              )))
+          )
+        )
+       ))
+    )
+  )
+
 (deftest signup-contains-signup-controls
   (is (rendered
        app/signup {:user nil}
@@ -303,6 +357,63 @@
         )
        )
      )
+    )
+  )
+
+(deftest ^:async signup-signs-up-after-error
+  (let [state (setup-state {:user nil})
+        signup (rendered-component
+                app/signup state
+                {:init-state {:name "New User"
+                              :email "some_user@example.com"
+                              :password "password"}})
+        responded (expect-request
+                   -test-ctx
+                   {:method "POST"
+                    :url "/api/v1/signups"
+                    :json-data {:name "New User"
+                                :email "some_user@example.com"
+                                :password "password"}}
+                   {:status 400
+                    :body "Invalid user"}
+                   )]
+    (after-event
+     :click #js {}
+     (in signup "button")
+     (fn [_]
+       (go
+        (<! responded)
+        (let [second-response (expect-request
+                               -test-ctx
+                               {:method "POST"
+                                :url "/api/v1/signups"
+                                :json-data {:name "New User"
+                                            :email "some_user@example.com"
+                                            :password "password"}}
+                               (json-response
+                                201
+                                {:email "some_user@example.com"
+                                 :name "New User"
+                                 :groups_url "http://localhost/api/v1/groups"
+                                 :groups []})
+                               )]
+          (after-event
+           :click #js {}
+           (in signup "button")
+           (fn [_]
+             (go
+              (<! second-response)
+              (is (= {:user {:email "some_user@example.com"
+                             :groups_url "http://localhost/api/v1/groups"
+                             :name "New User"}
+                      :groups []
+                      :board nil}
+                     @state))
+              (done)
+              )))
+          )
+        )
+       ))
     )
   )
 
