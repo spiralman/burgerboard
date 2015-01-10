@@ -33,6 +33,7 @@
                                    :output-dir "web-client/dev-out"
                                    :optimizations :none
                                    :source-map true
+                                   :externs ["externs/burgerboard.js"]
                                    }
                         }
                        {:id "prod"
@@ -41,7 +42,10 @@
                                    :output-to "web-client/burgerboard.js"
                                    :output-dir "web-client/out"
                                    :optimizations :advanced
+                                   :pretty-print false
+                                   :preamble ["react/react.min.js"]
                                    :source-map "web-client/burgerboard.js.map"
+                                   :externs ["web-client/externs/burgerboard.js"]
                                    }
                         }]
               })

@@ -132,8 +132,7 @@
       (javascript-tag (str "var burgerboard_init_state="
                                               user-data
                                               ";"))
-      (include-js "/static/contrib/react-0.9.0.js"
-                  "/static/burgerboard.js")
+      (include-js "/static/burgerboard.js")
       ]
      )
     )
