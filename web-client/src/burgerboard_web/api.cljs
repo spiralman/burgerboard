@@ -3,17 +3,17 @@
             [ajax.core :as ajax]))
 
 (defn json-post [url req]
-  (let [response (chan)]
+  (let [response (chan)
+        error (chan)]
     (ajax/POST url
              {:params req
               :format :json
               :response-format :json
               :keywords? true
               :handler (fn [resp] (put! response resp))
-              :error-handler (fn [err]
-                               (.log js/console (str "got error " err)))}
+              :error-handler (fn [err] (put! error err))}
              )
-    response
+    (list response error)
     )
   )
 

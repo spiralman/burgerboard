@@ -49,6 +49,42 @@
       )
   )
 
+(deftest login-renders-error
+  (is (rendered
+       app/login {:user nil}
+       {:init-state {:error "Some error"}}
+       (with-rendered [login]
+         (tag "div"
+              (with-class "login")
+              (containing
+               (tag "h2"
+                    (with-class "login-title")
+                    (with-text "Login"))
+               (tag "div"
+                    (with-class "login-error")
+                    (with-text "Some error"))
+               (sub-component widgets/text-editor {}
+                              {:opts {:state-owner login
+                                      :state-k :email
+                                      :label "Email"
+                                      :className "login-email"}})
+               (sub-component widgets/text-editor {}
+                              {:opts {:state-owner login
+                                      :state-k :password
+                                      :label "Password"
+                                      :type "password"
+                                      :className "login-password"}})
+               (tag "button"
+                    (with-class "login-button")
+                    (with-attr "type" "button")
+                    (with-text "Login"))
+               )
+              )
+         )
+       )
+      )
+  )
+
 (deftest ^:async login-logs-in-on-click
   (let [state (setup-state {:user nil})
         login (rendered-component
@@ -80,6 +116,37 @@
                 :groups [{:name "Group" :id 1}]
                 :board nil}
                @state))
+        (done)
+        )
+       )
+     )
+    )
+  )
+
+(deftest ^:async login-tells-user-on-error
+  (let [state (setup-state {:user nil})
+        login (rendered-component
+               app/login state
+               {:init-state {:email "email"
+                             :password "password"}})
+        responded (expect-request
+                   -test-ctx
+                   {:method "POST"
+                    :url "/api/v1/login"
+                    :json-data {:email "email"
+                                :password "password"}}
+                   {:status 403
+                    :body "Invalid username or password"}
+                   )]
+    (after-event
+     :click #js {}
+     (in login "button")
+     (fn [_]
+       (go
+        (<! responded)
+        (is (= {:user nil}
+               @state))
+        (is (= "Could not log in" (om/get-state login :error)))
         (done)
         )
        )

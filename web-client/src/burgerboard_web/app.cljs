@@ -1,5 +1,5 @@
 (ns burgerboard-web.app
-  (:require-macros [cljs.core.async.macros :refer [go]])
+  (:require-macros [cljs.core.async.macros :refer [go alt!]])
   (:require [cljs.core.async :refer [put! <! chan]]
             [burgerboard-web.widgets :as widgets]
             [burgerboard-web.group-nav :as group-nav]
@@ -17,11 +17,21 @@
    )
   )
 
-(defn login! [resp {:keys [email password]}]
-  (go (let [response (<! (api/json-post "/api/v1/login" {:email email
-                                                         :password password}))]
-        (put! resp response)))
+(defn parse-login [login-response]
+  {:user (dissoc login-response :groups)
+   :groups (:groups login-response)
+   :board nil}
   )
+
+(defn login! [resp err {:keys [email password]}]
+  (let [[post-response post-error] (api/json-post "/api/v1/login"
+                                                  {:email email
+                                                   :password password})]
+    (go (alt!
+         post-response ([response] (put! resp (parse-login response)))
+         post-error (put! err "Could not log in")
+         ))
+    ))
 
 (defn signup! [resp {:keys [name email password]}]
   (go (let [response (<! (api/json-post "/api/v1/signups" {:name name
@@ -30,33 +40,32 @@
         (put! resp response)))
   )
 
-(defn parse-login [login-response]
-  {:user (dissoc login-response :groups)
-   :groups (:groups login-response)
-   :board nil}
-  )
-
 (defn login [data owner]
   (reify
     om/IInitState
     (init-state [this]
       {:email ""
        :password ""
-       :on-login (chan)})
+       :on-login (chan)
+       :on-error (chan)})
     om/IWillMount
     (will-mount [this]
-      (let [on-login (om/get-state owner :on-login)]
-        (go (let [login-response (<! on-login)]
-              (om/transact! data (fn [_]
-                                   (parse-login login-response)))
-              ))
-        )
-      )
+      (let [on-login (om/get-state owner :on-login)
+            on-error (om/get-state owner :on-error)]
+        (go (alt!
+             on-login ([login-response] (om/transact!
+                                         data (fn [_] login-response)))
+             on-error ([error] (om/set-state! owner :error error))
+             ))
+        ))
     om/IRenderState
     (render-state [this state]
       (dom/div #js {:className "login"}
                (dom/h2 #js {:className "login-title"}
                        "Login")
+               (if (contains? (om/get-state owner) :error)
+                 (dom/div #js {:className "login-error"}
+                          (om/get-state owner :error)))
                (om/build widgets/text-editor {}
                          {:opts {:state-owner owner
                                  :state-k :email
@@ -72,6 +81,7 @@
                                 :type "button"
                                 :onClick (fn [] (login!
                                                  (om/get-state owner :on-login)
+                                                 (om/get-state owner :on-error)
                                                  (om/get-state owner)))}
                            "Login")
                )
