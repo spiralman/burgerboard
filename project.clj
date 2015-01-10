@@ -40,7 +40,7 @@
                         :compiler {
                                    :output-to "web-client/burgerboard.js"
                                    :output-dir "web-client/out"
-                                   :optimizations :whitespace
+                                   :optimizations :advanced
                                    :source-map "web-client/burgerboard.js.map"
                                    }
                         }]
