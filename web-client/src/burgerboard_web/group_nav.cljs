@@ -13,9 +13,7 @@
       {:new-value (chan)})
     om/IWillMount
     (will-mount [this]
-      (go (let [new-value (<! (om/get-state owner :new-value))
-                new-board (<! (api/json-post boards_url
-                                             {:name new-value}))]
+      (go (let [new-board (<! (om/get-state owner :new-value))]
             (om/transact! data (fn [_] (dissoc new-board :group)))
             ))
       )
@@ -27,6 +25,7 @@
                           data
                           {:opts {:className "board-editor"
                                   :k :name
+                                  :url boards_url
                                   :value-saved (:new-value state)}})
                 (dom/a #js {:className "board-link"
                             :href "#"
@@ -78,9 +77,7 @@
       {:new-value (chan)})
     om/IWillMount
     (will-mount [this]
-      (go (let [new-value (<! (om/get-state owner :new-value))
-                new-group (<! (api/json-post "/api/v1/groups"
-                                             {:name new-value}))]
+      (go (let [new-group (<! (om/get-state owner :new-value))]
             (om/transact! data (fn [_] new-group))
             ))
       )
@@ -92,6 +89,7 @@
                           data
                           {:opts {:className "group-editor"
                                   :k :name
+                                  :url "/api/v1/groups"
                                   :value-saved (:new-value state)}})
                 (dom/div #js {}
                          (dom/span #js {:className "group-name"}

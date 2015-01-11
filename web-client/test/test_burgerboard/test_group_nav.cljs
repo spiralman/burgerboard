@@ -185,6 +185,7 @@
                               {:name "Some Group"}
                               {:opts {:className "group-editor"
                                       :k :name
+                                      :url "/api/v1/groups"
                                       :value-saved (om/get-state group
                                                                  :new-value)}})
                )
@@ -194,32 +195,26 @@
       )
   )
 
-(deftest ^:async group-posts-new-group-when-user-saves
+(deftest ^:async group-updates-new-group-when-user-saves
   (let [state (setup-state {:name ""})
         group (rendered-component
                group-nav/group state)
-        new-value (om/get-state group :new-value)
-        responded (expect-request
-                   -test-ctx
-                   {:method "POST"
-                    :url "/api/v1/groups"
-                    :json-data {:name "New Group"}}
-                   (json-response
-                    201
-                    {:id 1
-                     :name "New Group"
-                     :boards_url "http://localhost/api/v1/groups/1"
-                     :members_url "http://localhost/api/v1/groups/1/members"})
-                   )]
-    (put! new-value "New Group")
+        new-value (om/get-state group :new-value)]
     (go
-     (<! responded)
-     (is (= {:id 1
-             :name "New Group"
-             :boards_url "http://localhost/api/v1/groups/1"
-             :members_url "http://localhost/api/v1/groups/1/members"}
-            @state))
-     (done)
+     (put! new-value {:id 1
+                      :name "New Group"
+                      :boards_url "http://localhost/api/v1/groups/1"
+                      :members_url "http://localhost/api/v1/groups/1/members"})
+     (.setTimeout
+      js/window
+      (fn []
+        (is (= {:id 1
+                :name "New Group"
+                :boards_url "http://localhost/api/v1/groups/1"
+                :members_url "http://localhost/api/v1/groups/1/members"}
+               @state))
+        (done))
+      0)
      )
     )
   )
@@ -262,6 +257,7 @@
 (deftest board-item-shows-board-editor-without-id
   (is (rendered
        group-nav/board-item {:name "Board Name"}
+       {:opts {:boards_url "/api/v1/groups/1/boards"}}
        (with-rendered [board-item]
          (tag "li"
               (containing
@@ -269,6 +265,7 @@
                               {:name "Board Name"}
                               {:opts {:className "board-editor"
                                       :k :name
+                                      :url "/api/v1/groups/1/boards"
                                       :value-saved (om/get-state board-item
                                                                  :new-value)}})
                )
@@ -278,34 +275,28 @@
       )
   )
 
-(deftest ^:async board-item-posts-new-group-when-user-saves
+(deftest ^:async board-item-updatesnew-board-when-user-saves
   (let [state (setup-state {:name ""})
         board-item (rendered-component
                     group-nav/board-item state
                     {:opts {:boards_url "/api/v1/groups/1/boards"}})
-        new-value (om/get-state board-item :new-value)
-        responded (expect-request
-                   -test-ctx
-                   {:method "POST"
-                    :url "/api/v1/groups/1/boards"
-                    :json-data {:name "New Board"}}
-                   (json-response
-                    201
-                    {:id 1
-                     :name "New Board"
-                     :url "http://localhost/api/v1/groups/1/boards/1"
-                     :stores_url "http://localhost/api/v1/groups/1/boards/1/stores"
-                     :group {:id 1 :name "Group"}})
-                   )]
-    (put! new-value "New Board")
+        new-value (om/get-state board-item :new-value)]
     (go
-     (<! responded)
-     (is (= {:id 1
-             :name "New Board"
-             :url "http://localhost/api/v1/groups/1/boards/1"
-             :stores_url "http://localhost/api/v1/groups/1/boards/1/stores"}
-            @state))
-     (done)
+     (put! new-value {:id 1
+                      :name "New Board"
+                      :url "http://localhost/api/v1/groups/1/boards/1"
+                      :stores_url "http://localhost/api/v1/groups/1/boards/1/stores"
+                      :group {:id 1 :name "Group"}})
+     (.setTimeout
+      js/window
+      (fn []
+        (is (= {:id 1
+                :name "New Board"
+                :url "http://localhost/api/v1/groups/1/boards/1"
+                :stores_url "http://localhost/api/v1/groups/1/boards/1/stores"}
+               @state))
+        (done))
+      0)
      )
     )
   )
