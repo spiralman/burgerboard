@@ -465,6 +465,7 @@
                               {:name "Store"}
                               {:opts {:className "store-editor"
                                       :k :name
+                                      :url "http://stores"
                                       :value-saved (om/get-state store
                                                                  :new-value)}})
                ))
@@ -473,32 +474,26 @@
       )
   )
 
-(deftest ^:async store-posts-new-store-when-user-saves
+(deftest ^:async store-editor-updates-new-store-when-user-saves
   (let [state (setup-state {:name ""})
         store (rendered-component
                board/store-editor state
                {:opts {:stores-url "/api/v1/groups/1/boards/1/stores"}})
-        new-value (om/get-state store :new-value)
-        responded (expect-request
-                   -test-ctx
-                   {:method "POST"
-                    :url "/api/v1/groups/1/boards/1/stores"
-                    :json-data {:name "New Store"}}
-                   (json-response
-                    201
-                    {:id 1
-                     :name "New Store"
-                     :rating_url "/api/v1/groups/1/boards/1/stores/1/rating"
-                     :board {:id 1 :name "Board"}})
-                   )]
-    (put! new-value "New Store")
+        new-value (om/get-state store :new-value)]
     (go
-     (<! responded)
-     (is (= {:id 1
-             :name "New Store"
-             :rating_url "/api/v1/groups/1/boards/1/stores/1/rating"}
-            @state))
-     (done)
+     (put! new-value {:id 1
+                      :name "New Store"
+                      :rating_url "/api/v1/groups/1/boards/1/stores/1/rating"
+                      :board {:id 1 :name "Board"}})
+     (.setTimeout
+      js/window
+      (fn []
+        (is (= {:id 1
+                :name "New Store"
+                :rating_url "/api/v1/groups/1/boards/1/stores/1/rating"}
+               @state))
+        (done))
+      0)
      )
     )
   )

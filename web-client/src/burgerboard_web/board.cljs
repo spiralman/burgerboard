@@ -13,8 +13,7 @@
       {:new-value (chan)})
     om/IWillMount
     (will-mount [this]
-      (go (let [new-value (<! (om/get-state owner :new-value))
-                new-store (<! (api/json-post stores-url {:name new-value}))]
+      (go (let [new-store (<! (om/get-state owner :new-value))]
             (om/transact! data (fn [_] (dissoc new-store :board)))
             )))
     om/IRenderState
@@ -24,6 +23,7 @@
                          data
                          {:opts {:className "store-editor"
                                  :k :name
+                                 :url stores-url
                                  :value-saved (:new-value state)}})
                )
       )

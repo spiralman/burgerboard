@@ -275,7 +275,7 @@
       )
   )
 
-(deftest ^:async board-item-updatesnew-board-when-user-saves
+(deftest ^:async board-item-updates-new-board-when-user-saves
   (let [state (setup-state {:name ""})
         board-item (rendered-component
                     group-nav/board-item state
