@@ -171,6 +171,37 @@
       )
   )
 
+(deftest save-single-value-renders-error
+  (is (rendered
+       widgets/save-single-value
+       {:value "Initial Value"}
+       {:init-state {:error "error message"}
+        :opts {:className "value-editor"
+               :k :value
+               :label "Label"}}
+       (with-rendered [component]
+         (tag "div"
+              (with-class "value-editor")
+              (containing
+               (tag "div"
+                    (with-class "value-editor-error")
+                    (with-text "error message"))
+               (sub-component widgets/text-editor {}
+                              {:opts {:state-k :temp-value
+                                      :state-owner component
+                                      :label "Label"
+                                      :className "value-editor"}})
+               (tag "button"
+                    (with-class "value-editor-save")
+                    (with-attr "type" "button")
+                    (with-text ""))
+               )
+              )
+         )
+       )
+      )
+  )
+
 (deftest ^:async save-single-value-updates-channel-on-save
   (let [app-state (setup-state {:value "Initial Value"})
         value-saved (chan)
@@ -179,7 +210,19 @@
                   app-state
                   {:opts {:className "value-editor"
                           :k :value
-                          :value-saved value-saved}})]
+                          :url "some/url"
+                          :value-saved value-saved}})
+        responded (expect-request
+                   -test-ctx
+                   {:method "POST"
+                    :url "some/url"
+                    :json-data {:value "Changed Value"}}
+                   (json-response
+                    201
+                    {:id 1
+                     :value "Changed Value"})
+                   )]
+
     (after-event
      :change #js {:target #js {:value "Changed Value"}}
      (in rendered "input")
@@ -188,14 +231,71 @@
         :click #js {:target #js {}}
         (in rendered "button")
         (fn [_]
-          (go (let [new-value (<! value-saved)]
-                (is (= "Changed Value" new-value))
-                (done)
-                ))
+          (go
+           (<! responded)
+           (let [new-value (<! value-saved)]
+             (is (= {:id 1
+                     :value "Changed Value"}
+                    new-value))
+             (done)
+             ))
           )
         )
        )
      )
+    )
+  )
+
+(deftest ^:async save-single-value-handles-error-then-saves
+  (let [state (setup-state {:user nil})
+        value-saved (chan)
+        rendered (rendered-component
+                  widgets/save-single-value state
+                  {:init-state {:temp-value "New Value"}
+                   :opts {:className "value-editor"
+                          :k :value
+                          :url "some/url"
+                          :value-saved value-saved}})
+        responded (expect-request
+                   -test-ctx
+                   {:method "POST"
+                    :url "some/url"
+                    :json-data {:value "New Value"}}
+                   {:status 400
+                    :body "Error message"}
+                   )]
+    (after-event
+     :click #js {}
+     (in rendered "button")
+     (fn [_]
+       (go
+        (<! responded)
+        (is (= "Save failed"
+               (om/get-state rendered :error)))
+        (let [second-response (expect-request
+                               -test-ctx
+                               {:method "POST"
+                                :url "some/url"
+                                :json-data {:value "New Value"}}
+                               (json-response
+                                201
+                                {:id 1
+                                 :value "New Value"})
+                               )]
+          (after-event
+           :click #js {}
+           (in rendered "button")
+           (fn [_]
+             (go
+              (<! second-response)
+              (is (= {:id 1
+                      :value "New Value"}
+                     (<! value-saved)))
+              (done)
+              )))
+          )
+        )
+       ))
     )
   )
 
