@@ -45,6 +45,11 @@
     )
   )
 
+(defn logout [request]
+  {:status 201
+   :session nil
+   :body ""})
+
 (defn invalid-user []
   {:status 400
    :body "Invalid user"}
@@ -102,6 +107,9 @@
   (POST "/signups" request
         (signup request))
 
+  (DELETE "/login/current" request
+          (logout request))
+
   (GET "/groups" request
        (require-login request get-users-groups))
 
@@ -146,4 +154,5 @@
   (route/not-found "Not Found"))
 
 (def app
-  (handler/site app-routes))
+  (handler/site app-routes
+                {:session {:cookie-attrs {:secure true}}}))

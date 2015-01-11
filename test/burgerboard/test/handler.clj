@@ -64,6 +64,26 @@
         (is (not (contains? (:headers response) "Set-Cookie")))
         )
       )
+
+    (testing "logout"
+      (let [login (login-as "owner@example.com" "password")
+            response
+            (app
+             (->
+              (request :delete "/api/v1/login/current")
+              (header "Cookie" login)
+             ))]
+        (is (= (:status response) 201))
+        (let [second-response
+              (app
+               (->
+                (request :get "/api/v1/groups")
+                (header "Cookie" login)
+                (header :content-type "application/json")))]
+          (is (= (:status second-response) 401))
+          )
+        )
+      )
     )
 
   (testing "Signup route"
