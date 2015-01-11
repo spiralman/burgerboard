@@ -7,6 +7,34 @@
 body {
   font-family: 'Open Sans', sans-serif; }
 
+@-webkit-keyframes spin {
+  from {
+    -webkit-transform: rotate(0deg); }
+
+  to {
+    -webkit-transform: rotate(360deg); } }
+
+@-moz-keyframes spin {
+  from {
+    -moz-transform: rotate(0deg); }
+
+  to {
+    -moz-transform: rotate(360deg); } }
+
+@-o-keyframes spin {
+  from {
+    -o-transform: rotate(0deg); }
+
+  to {
+    -o-transform: rotate(360deg); } }
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg); }
+
+  to {
+    transform: rotate(360deg); } }
+
 body {
   font-family: 'Open Sans', sans-serif; }
 
@@ -123,6 +151,22 @@ body {
     box-shadow: inset -3px -3px 12px 0 rgba(200, 200, 200, 0.2); }
   .connect button:active {
     box-shadow: inset -3px -3px 12px 0 rgba(200, 200, 200, 0.1); }
+.connect .login-error {
+  padding: 6px;
+  margin-bottom: 18px;
+  background-color: #f28c8d;
+  border: 1px solid #520a0c;
+  font-weight: bold;
+  text-align: center;
+  color: #520a0c; }
+.connect .signup-error {
+  padding: 6px;
+  margin-bottom: 18px;
+  background-color: #f28c8d;
+  border: 1px solid #520a0c;
+  font-weight: bold;
+  text-align: center;
+  color: #520a0c; }
 
 .groups {
   display: block;
@@ -140,6 +184,31 @@ body {
     margin-right: 0; }
   .groups:last-child {
     border-right: none; }
+  .groups .loading {
+    width: 48px;
+    height: 48px;
+    margin-left: auto;
+    margin-right: auto;
+    background-image: url("/static/images/glyphicons-82-refresh.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    -webkit-animation-name: spin;
+    -moz-animation-name: spin;
+    animation-name: spin;
+    -webkit-animation-duration: 1s;
+    -moz-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-iteration-count: infinite;
+    -moz-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+    -moz-animation-timing-function: linear;
+    animation-timing-function: linear;
+    -webkit-transform-origin: 24px 24px;
+    -moz-transform-origin: 24px 24px;
+    -ms-transform-origin: 24px 24px;
+    -o-transform-origin: 24px 24px;
+    transform-origin: 24px 24px; }
   .groups > li {
     color: #1f1c48;
     border-bottom: 1px solid #e8e8ec;
@@ -181,6 +250,14 @@ body {
       box-shadow: inset -3px -3px 12px 0 rgba(200, 200, 200, 0.1); }
   .groups .group-editor input {
     font-size: 22px; }
+  .groups .group-editor div {
+    padding: 6px;
+    margin-bottom: 18px;
+    background-color: #f28c8d;
+    border: 1px solid #520a0c;
+    font-weight: bold;
+    text-align: center;
+    color: #520a0c; }
   .groups .group-editor input {
     max-width: 190px; }
 
@@ -223,6 +300,14 @@ body {
       box-shadow: inset -3px -3px 12px 0 rgba(200, 200, 200, 0.1); }
   .boards .board-editor input {
     font-size: 22px; }
+  .boards .board-editor div {
+    padding: 6px;
+    margin-bottom: 18px;
+    background-color: #f28c8d;
+    border: 1px solid #520a0c;
+    font-weight: bold;
+    text-align: center;
+    color: #520a0c; }
   .boards .board-editor input {
     max-width: 184px;
     margin-left: -6px; }
@@ -239,6 +324,31 @@ body {
     color: #37327f;
     margin-top: 4px;
     margin-bottom: 11px; }
+  .board .loading {
+    width: 64px;
+    height: 64px;
+    margin-left: auto;
+    margin-right: auto;
+    background-image: url("/static/images/glyphicons-82-refresh.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    -webkit-animation-name: spin;
+    -moz-animation-name: spin;
+    animation-name: spin;
+    -webkit-animation-duration: 1s;
+    -moz-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-iteration-count: infinite;
+    -moz-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+    -moz-animation-timing-function: linear;
+    animation-timing-function: linear;
+    -webkit-transform-origin: 32px 32px;
+    -moz-transform-origin: 32px 32px;
+    -ms-transform-origin: 32px 32px;
+    -o-transform-origin: 32px 32px;
+    transform-origin: 32px 32px; }
 
 .leaderboard {
   display: block;
@@ -371,3 +481,11 @@ body {
       box-shadow: inset -3px -3px 12px 0 rgba(200, 200, 200, 0.1); }
   .store .store-editor input {
     font-size: 22px; }
+  .store .store-editor div {
+    padding: 6px;
+    margin-bottom: 18px;
+    background-color: #f28c8d;
+    border: 1px solid #520a0c;
+    font-weight: bold;
+    text-align: center;
+    color: #520a0c; }

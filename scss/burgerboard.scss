@@ -80,6 +80,14 @@ body {
 
 	margin: 8px;
     }
+
+    .login-error {
+	@include error;
+    }
+
+    .signup-error {
+	@include error;
+    }
 }
 
 .groups {
@@ -91,6 +99,10 @@ body {
 
     height: 100%;
     margin-top: 0;
+
+    .loading {
+	@include loader(48px);
+    }
 
     &> li {
 	@include box-item(bottom);
@@ -156,6 +168,10 @@ body {
 	color: $primary-shadow;
 	margin-top: 4px;
 	margin-bottom: 11px;
+    }
+
+    .loading {
+	@include loader(64px);
     }
 }
 

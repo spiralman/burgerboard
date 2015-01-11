@@ -42,6 +42,18 @@ $padding: 6px;
     }
 }
 
+@mixin error {
+    padding: $padding;
+    margin-bottom: $padding*3;
+
+    background-color: $error-highlight;
+    border: 1px solid $error-black;
+
+    font-weight: bold;
+    text-align: center;
+    color: $error-black;
+}
+
 @mixin connect-item {
     @include span-columns(6);
     @include box-item(right);
@@ -59,6 +71,12 @@ $padding: 6px;
     margin-bottom: 32px;
 }
 
+@mixin image($image-url) {
+    background-image: url($image-url);
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
 @mixin editor {
     button {
 	@include control;
@@ -67,12 +85,36 @@ $padding: 6px;
 	vertical-align: middle;
 	width: 36px;
 	height: 36px;
-	background-image: url("/static/images/glyphicons-207-ok-2.svg");
-	background-repeat: no-repeat;
-	background-size: contain;
+	@include image("/static/images/glyphicons-207-ok-2.svg");
     }
 
     input {
 	font-size: $detail-font-size;
     }
+
+    div {
+	@include error;
+    }
+}
+
+@include keyframes(spin) {
+    from {
+	@include transform(rotate(0deg));
+    }
+    to {
+	@include transform(rotate(360deg));
+    }
+}
+
+@mixin loader($loader-size: 32px) {
+    width: $loader-size;
+    height: $loader-size;
+    margin-left: auto;
+    margin-right: auto;
+    @include image("/static/images/glyphicons-82-refresh.svg");
+    @include animation-name(spin);
+    @include animation-duration(1s);
+    @include animation-iteration-count(infinite);
+    @include animation-timing-function(linear);
+    @include transform-origin($loader-size / 2 $loader-size / 2);
 }

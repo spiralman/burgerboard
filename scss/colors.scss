@@ -16,4 +16,9 @@ $secondary-h3: lighten($secondary-highlight, 32%);
 $secondary-h4: lighten($secondary-highlight, 34%);
 $secondary-shadow: #7F7630;
 
+$error: #E83032;
+$error-highlight: lighten($error, 20%);
+$error-shadow: #7F1012;
+$error-black: darken($error-shadow, 10%);
+
 $shadow: rgba(70, 70, 70, 0.3);
