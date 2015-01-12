@@ -8,6 +8,7 @@
                  [ring/ring-jetty-adapter "1.2.2"]
                  [org.clojure/data.json "0.2.3"]
                  [korma "0.3.0-RC5"]
+                 [com.taoensso/carmine "2.9.0"]
                  [org.xerial/sqlite-jdbc "3.7.15-M1"]
                  [postgresql/postgresql "8.4-702.jdbc4"]
                  [javax.mail/mail "1.4.7"]

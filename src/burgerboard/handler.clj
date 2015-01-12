@@ -11,7 +11,8 @@
         [clojure.data.json :as json :only [write-str]]
         )
   (:require [compojure.handler :as handler]
-            [compojure.route :as route]))
+            [compojure.route :as route]
+            [ring.middleware.session.memory :as memory-session]))
 
 (defn render-group [request group]
   (->
@@ -153,6 +154,12 @@
   (route/files "/static" {:root "web-client"})
   (route/not-found "Not Found"))
 
-(def app
+(defn build-app [session-store]
   (handler/site app-routes
-                {:session {:cookie-attrs {:secure true}}}))
+                {:session {:cookie-attrs {:secure true}
+                           :store session-store}}
+                ))
+
+(def app
+  (build-app (memory-session/memory-store))
+  )
