@@ -3,7 +3,7 @@
   :url "http://example.com/FIXME"
   :min-lein-version "2.0.0"
   :dependencies [[org.clojure/clojure "1.5.1"]
-                 [compojure "1.1.5"]
+                 [compojure "1.3.1"]
                  [hiccup "1.0.5"]
                  [ring/ring-jetty-adapter "1.2.2"]
                  [org.clojure/data.json "0.2.3"]
@@ -19,13 +19,13 @@
                  [om "0.7.3"]
                  [cljs-ajax "0.3.3"]]
   :plugins [[lein-ring "0.8.5"]
-            [lein-cljsbuild "1.0.3"]
-            [com.cemerick/clojurescript.test "0.3.1"]
-            [com.cemerick/austin "0.1.5"]]
+            [lein-cljsbuild "1.0.3"]]
   :ring {:handler burgerboard.server/prod-app
          :init burgerboard.server/init}
   :profiles
-  {:dev {:dependencies [[ring-mock "0.1.5"]]}}
+  {:dev {:dependencies [[ring-mock "0.1.5"]]
+         :plugins [[com.cemerick/clojurescript.test "0.3.1"]
+                   [com.cemerick/austin "0.1.5"]]}}
   :cljsbuild {
               :builds [{:id "dev"
                         :source-paths ["web-client/src"]
