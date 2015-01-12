@@ -44,6 +44,10 @@
          ))
     ))
 
+(defn logout! [resp]
+  (go (<! (api/delete "/api/v1/login/current"))
+      (put! resp "")))
+
 (defn login [data owner]
   (reify
     om/IInitState
@@ -170,6 +174,27 @@
     )
   )
 
+(defn logout [data owner]
+  (reify
+    om/IInitState
+    (init-state [this]
+      {:on-logout (chan)})
+    om/IWillMount
+    (will-mount [this]
+      (go (<! (om/get-state owner :on-logout))
+          (om/transact! data (fn [_] {:user nil
+                                      :groups nil
+                                      :board nil}))
+          ))
+    om/IRenderState
+    (render-state [this state]
+      (dom/a #js {:className "logout"
+                  :href "#"
+                  :onClick #(logout! (:on-logout state))}
+             "Logout")
+      )
+    ))
+
 (defn header [data owner]
   (reify
     om/IRender
@@ -177,6 +202,8 @@
       (dom/div #js {:className "header"}
                (dom/div #js {:className "header-nav"}
                         (dom/h1 #js {:className "logo"} "Burgerboard")
+                        (if (:user data)
+                          (om/build logout data))
                ))
       )
     ))
@@ -197,7 +224,7 @@
     (render-state [this state]
       (dom/div
        #js {:className "burgerboard"}
-       (om/build header {})
+       (om/build header data)
        (apply dom/div #js {:className "content"}
               (if (nil? (:user data))
                 (list (om/build connect data))

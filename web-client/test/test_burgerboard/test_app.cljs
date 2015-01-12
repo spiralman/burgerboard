@@ -430,9 +430,46 @@
       )
   )
 
-(deftest header-contains=logo
+(deftest logout-contains-logout-button
   (is (rendered
-       app/header {}
+       app/logout {:user {:email "user@email.com"}
+                   :groups [{:id 1}]
+                   :board {:id 1}}
+       (tag "a"
+            (with-class "logout")
+            (with-attr "href" "#")
+            (with-text "Logout"))
+       ))
+  )
+
+(deftest ^:async logout-logs-out-on-click
+  (let [state (setup-state {:user {:email "user@email.com"}
+                            :groups [{:id 1}]
+                            :board {:id 1}})
+        logout (rendered-component
+                app/logout state)
+        responded (expect-request
+                   -test-ctx
+                   {:method "DELETE"
+                    :url "/api/v1/login/current"}
+                   {:status 201
+                    :body ""})]
+    (after-event
+     :click #js {}
+     (in logout)
+     (fn [_]
+       (go
+        (<! responded)
+        (is (= {:user nil
+                :groups nil
+                :board nil}))
+        (done)
+        )))
+    ))
+
+(deftest header-contains-just-logo-without-user
+  (is (rendered
+       app/header {:user nil}
        (tag "div"
             (with-class "header")
             (containing
@@ -447,13 +484,32 @@
        ))
   )
 
+(deftest header-contains-logout-with-user
+  (is (rendered
+       app/header {:user {:email "user@email.com"}}
+       (tag "div"
+            (with-class "header")
+            (containing
+             (tag "div"
+                  (with-class "header-nav")
+                  (containing
+                   (tag "h1"
+                        (with-class "logo")
+                        (with-text "Burgerboard"))
+                   (sub-component app/logout {:user {:email "user@email.com"}})
+                   ))
+             ))
+       ))
+  )
+
+
 (deftest app-contains-login-without-user
   (is (rendered
        app/app {:user nil}
        (tag "div"
             (with-class "burgerboard")
             (containing
-             (sub-component app/header {})
+             (sub-component app/header {:user nil})
              (tag "div"
                   (with-class "content")
                   (containing
@@ -466,14 +522,16 @@
 
 (deftest app-contains-sub-components
   (is (rendered
-       app/app {:user {:id 1 :email "user@email.com"}
+       app/app {:user {:email "user@email.com"}
                 :groups [{:id 1}]
                 :board {:id 1}}
        (with-rendered [app-comp]
          (tag "div"
               (with-class "burgerboard")
               (containing
-               (sub-component app/header {})
+               (sub-component app/header {:user {:email "user@email.com"}
+                                          :groups [{:id 1}]
+                                          :board {:id 1}})
                (tag "div"
                     (with-class "content")
                     (containing

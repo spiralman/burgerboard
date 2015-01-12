@@ -44,3 +44,9 @@
     response
     )
   )
+
+(defn delete [url]
+  (let [response (chan)]
+    (ajax/DELETE url {:handler (fn [resp] (put! response resp))})
+    response
+    ))
