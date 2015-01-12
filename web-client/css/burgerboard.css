@@ -65,9 +65,30 @@ body {
     .header .header-nav:after {
       clear: both; }
     .header .header-nav .logo {
+      display: block;
+      float: left;
+      margin-right: 2.35765%;
+      width: 23.23176%;
       padding: 18px 6px 18px 6px;
       margin-top: 0;
       margin-bottom: 0; }
+      .header .header-nav .logo:last-child {
+        margin-right: 0; }
+    .header .header-nav .logout {
+      display: block;
+      float: left;
+      margin-right: 2.35765%;
+      width: 14.70196%;
+      margin-left: 59.70863%;
+      padding: 26px 12px 0 6px;
+      text-align: right;
+      font-size: 24px;
+      color: #fffefe;
+      text-decoration: none; }
+      .header .header-nav .logout:last-child {
+        margin-right: 0; }
+      .header .header-nav .logout:visited {
+        color: #fffefe; }
 
 .content {
   *zoom: 1;

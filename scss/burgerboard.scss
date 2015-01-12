@@ -30,9 +30,27 @@ body {
 	@include outer-container;
 
 	.logo {
+	    @include span-columns(3);
 	    padding: 18px $padding 18px $padding;
 	    margin-top: 0;
 	    margin-bottom: 0;
+	}
+
+	.logout {
+	    @include span-columns(2);
+	    @include shift(7);
+
+	    padding: 26px $padding*2 0 $padding;
+	    text-align: right;
+
+	    font-size: $base-font-size;
+
+	    color: $dark-texture;
+	    text-decoration: none;
+
+	    &:visited {
+		color: $dark-texture;
+	    }
 	}
     }
 }
