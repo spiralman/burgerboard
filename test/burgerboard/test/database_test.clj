@@ -96,6 +96,14 @@
         (is (= "VARCHAR" (:type_name (get-column "user_email" ratings-cols))))
         (is (= "INTEGER" (:type_name (get-column "rating" ratings-cols))))
         )
+
+      (is (not (nil? (get-table "invitations" tables))))
+
+      (let [invitations-cols (get-columns "invitations")]
+        (is (= "INTEGER" (:type_name (get-column "id" invitations-cols))))
+        (is (= "VARCHAR" (:type_name (get-column "user_email" invitations-cols))))
+        (is (= "INTEGER" (:type_name (get-column "group_id" invitations-cols))))
+        )
       )
     )
 

@@ -86,6 +86,12 @@
    [:user_email "VARCHAR"]
    [:rating "INTEGER"]
    )
+  (jdbc/create-table
+   "IF NOT EXISTS invitations"
+   [:id "INTEGER" "PRIMARY KEY"]
+   [:group_id "INTEGER"]
+   [:user_email "VARCHAR"]
+   )
   )
 
 (declare users boards stores ratings)
@@ -123,7 +129,12 @@
 (defentity ratings
   (entity-fields :rating)
   (belongs-to stores {:fk :store_id})
-  (belongs-to users {:fk :user_id})
+  (belongs-to users {:fk :user_email})
+  )
+
+(defentity invitations
+  (belongs-to groups {:fk :group_id})
+  (belongs-to users {:fk :user_email})
   )
 
 (defn insert-group [group]
