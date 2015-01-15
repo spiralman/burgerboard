@@ -77,8 +77,14 @@
 
 (defn invite [user group request]
   (let [{:keys [email name]} (body-json request)]
-    (insert-member group (find-user email))
-    {:status 201}
+    (if-let [user (find-user email)]
+      (do
+        (insert-member group (find-user email))
+        {:status 201})
+      (do
+        (insert-invitation {:group_id (:id group) :user_email email})
+        {:status 201})
+      )
     )
   )
 
@@ -146,6 +152,7 @@
      )
     )
   )
+
 
 (defroutes app-routes
   (context "/api/v1" [] api-routes)

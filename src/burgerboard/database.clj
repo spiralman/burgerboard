@@ -191,6 +191,19 @@
     ))
   )
 
+(defn insert-invitation [invitation]
+  (assoc-id
+   invitation
+   (insert invitations
+           (values invitation))
+   ))
+
+(defn find-users-invitations [user]
+  (select
+   invitations
+   (where {:user_email (:email user)})
+   ))
+
 (defn find-group [id]
   (first
    (select

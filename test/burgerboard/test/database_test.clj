@@ -177,6 +177,26 @@
     )
   )
 
+(deftest test-invitations
+  (testing "Insert invitation"
+    (is (= {:id 1 :user_email "new_user@example.com" :group_id 1}
+           (insert-invitation {:user_email "new_user@example.com" :group_id 1})))
+
+    (is (= {:id 1 :user_email "new_user@example.com" :group_id 1}
+           (first (select invitations
+                          (where {:user_email "new_user@example.com"
+                                  :group_id 1})))))
+    )
+
+  (testing "Find users invitations"
+    (insert-invitation {:user_email "new_user@example.com" :group_id 2})
+
+    (is (= [{:id 1 :user_email "new_user@example.com" :group_id 1}
+            {:id 2 :user_email "new_user@example.com" :group_id 2}]
+           (find-users-invitations {:email "new_user@example.com"})))
+    )
+  )
+
 (deftest test-boards
   (testing "Adding a board to a group"
     (insert-group {:name "group" :owner "user@example.com"})

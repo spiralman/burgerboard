@@ -162,12 +162,25 @@
              (->
               (request :post "/api/v1/groups/1/members")
               (header "Cookie" (login-as "owner@example.com" "password"))
-              (body (json/write-str {:email "second_user@example.com"
-                                     :name "Second User"}))
+              (body (json/write-str {:email "second_user@example.com"}))
               ))]
         (is (= (:status response) 201))
         (is (= {:email "second_user@example.com" :name "Second User"}
                (find-member (find-group 1) "second_user@example.com")))
+        )
+      )
+
+    (testing "inserts invitation for non-existing user"
+      (let [response
+            (app
+             (->
+              (request :post "/api/v1/groups/1/members")
+              (header "Cookie" (login-as "owner@example.com" "password"))
+              (body (json/write-str {:email "non_user@example.com"}))
+              ))]
+        (is (= (:status response) 201))
+        (is (= [{:id 1 :group_id 1 :user_email "non_user@example.com"}]
+               (find-users-invitations {:email "non_user@example.com"})))
         )
       )
     )
