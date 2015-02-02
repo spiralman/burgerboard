@@ -56,21 +56,31 @@
    :body "Invalid user"}
   )
 
-(defn signup [request]
-  (let [session (:session request)
-        {:keys [email password name]} (body-json request)]
-    (if (not (nil? (find-user email)))
-      (invalid-user)
-      (if-let [user (create-user email password name)]
+(defn signup-user [request email password name]
+  (let [session (:session request)]
+    (if-let [user (create-user email password name)]
+      (let [user (assoc user
+                   :groups (map #(dissoc (find-group (:group_id %)) :users)
+                                (find-users-invitations user)))]
         (do
           (insert-user user)
+          (delete-users-invitations user)
           {:status 201
            :session (assoc session :email email)
            :body (write-str (render-user request user))
-           }
-          )
-        (invalid-user)
-        )
+           }))
+      (invalid-user)
+      ))
+  )
+
+(defn invitation-id [request]
+  (Integer. (:invitation-id (:params request))))
+
+(defn signup [request]
+  (let [{:keys [email password name]} (body-json request)]
+    (if (not (nil? (find-user email)))
+      (invalid-user)
+      (signup-user request email password name)
       )
     )
   )
@@ -79,12 +89,21 @@
   (let [{:keys [email name]} (body-json request)]
     (if-let [user (find-user email)]
       (do
-        (insert-member group (find-user email))
+        (insert-member group user)
         {:status 201})
       (do
         (insert-invitation {:group_id (:id group) :user_email email})
         {:status 201})
       )
+    )
+  )
+
+(defn accept-invitation [request]
+  (if-let [invitation (find-invitation (invitation-id request))]
+    (let [{:keys [name password]} (body-json request)]
+      (signup-user request (:user_email invitation) password name)
+      )
+    {:status 404}
     )
   )
 
@@ -125,6 +144,9 @@
 
   (POST "/groups/:group-id/members" request
         (require-ownership request invite))
+
+  (POST "/invitations/:invitation-id" request
+        (accept-invitation request))
 
   board-routes
   )

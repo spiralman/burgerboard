@@ -188,12 +188,23 @@
                                   :group_id 1})))))
     )
 
+  (testing "Finding one invitation"
+    (is (= {:id 1 :user_email "new_user@example.com" :group_id 1}
+           (find-invitation 1)))
+    )
+
   (testing "Find users invitations"
     (insert-invitation {:user_email "new_user@example.com" :group_id 2})
 
     (is (= [{:id 1 :user_email "new_user@example.com" :group_id 1}
             {:id 2 :user_email "new_user@example.com" :group_id 2}]
            (find-users-invitations {:email "new_user@example.com"})))
+    )
+
+  (testing "Deleting users invitations"
+    (delete-users-invitations {:email "new_user@example.com"})
+
+    (is (empty? (find-users-invitations {:email "new_user@example.com"})))
     )
   )
 

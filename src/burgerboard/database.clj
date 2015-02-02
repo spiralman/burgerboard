@@ -198,8 +198,22 @@
            (values invitation))
    ))
 
+(defn find-invitation [invitation-id]
+  (first
+   (select
+    invitations
+    (where {:id invitation-id})
+    ))
+  )
+
 (defn find-users-invitations [user]
   (select
+   invitations
+   (where {:user_email (:email user)})
+   ))
+
+(defn delete-users-invitations [user]
+  (delete
    invitations
    (where {:user_email (:email user)})
    ))

@@ -183,6 +183,78 @@
                (find-users-invitations {:email "non_user@example.com"})))
         )
       )
+
+    (testing "Accepting non existing invitation 404s"
+      (let [response
+            (app
+             (->
+              (request :post "/api/v1/invitations/4321")
+              (body (json/write-str {:name "Non User" :password "password"}))
+              ))]
+        (is (= (:status response) 404))
+        ))
+
+    (testing "accepting invitation creates user and adds as member to groups"
+      (insert-group {:name "Group2" :owner "owner@example.com"})
+      (insert-member {:id 2} {:email "owner@example.com"})
+
+      (insert-invitation {:group_id 2 :user_email "non_user@example.com"})
+
+      (let [response
+            (app
+             (->
+              (request :post "/api/v1/invitations/1")
+              (body (json/write-str {:name "Non User" :password "password"}))
+              ))]
+        (is (= (:status response) 201))
+        (is (contains? (:headers response) "Set-Cookie"))
+        (is (= {:email "non_user@example.com"
+                :name "Non User"
+                :groups_url "http://localhost/api/v1/groups"
+                :groups [{:id 1
+                          :name "Group"
+                          :boards_url "http://localhost/api/v1/groups/1/boards"
+                          :members_url "http://localhost/api/v1/groups/1/members"}
+                         {:id 2
+                          :name "Group2"
+                          :boards_url "http://localhost/api/v1/groups/2/boards"
+                          :members_url "http://localhost/api/v1/groups/2/members"}]}
+               (json/read-str (:body response) :key-fn keyword)))
+        (is (not (nil? (find-user "non_user@example.com"))))
+        (is (empty? (find-users-invitations {:email "non_user@example.com"})))
+        )
+      )
+
+    (testing "signing up with invitation email adds as member to groups"
+      (insert-invitation {:group_id 1 :user_email "non_user2@example.com"})
+      (insert-invitation {:group_id 2 :user_email "non_user2@example.com"})
+
+      (let [response
+            (app
+             (->
+              (request :post "/api/v1/signups")
+              (body (json/write-str {:name "Non User2"
+                                     :email "non_user2@example.com"
+                                     :password "password"}))
+              ))]
+        (is (= (:status response) 201))
+        (is (contains? (:headers response) "Set-Cookie"))
+        (is (= {:email "non_user2@example.com"
+                :name "Non User2"
+                :groups_url "http://localhost/api/v1/groups"
+                :groups [{:id 1
+                          :name "Group"
+                          :boards_url "http://localhost/api/v1/groups/1/boards"
+                          :members_url "http://localhost/api/v1/groups/1/members"}
+                         {:id 2
+                          :name "Group2"
+                          :boards_url "http://localhost/api/v1/groups/2/boards"
+                          :members_url "http://localhost/api/v1/groups/2/members"}]}
+               (json/read-str (:body response) :key-fn keyword)))
+        (is (not (nil? (find-user "non_user2@example.com"))))
+        (is (empty? (find-users-invitations {:email "non_user2@example.com"})))
+        )
+      )
     )
 
   (testing "groups route"
@@ -198,8 +270,6 @@
         )
 
       (testing "Returns just user's groups"
-        (insert-group {:name "Group2" :owner "owner@example.com"})
-        (insert-member {:id 2} {:email "owner@example.com"})
         (insert-member {:id 2} {:email "some_user@example.com"})
 
         (insert-group {:name "Other Group" :owner "other-owner@example.com"})
