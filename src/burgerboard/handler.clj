@@ -74,7 +74,7 @@
   )
 
 (defn invitation-id [request]
-  (Integer. (:invitation-id (:params request))))
+  (:invitation-id (:params request)))
 
 (defn signup [request]
   (let [{:keys [email password name]} (body-json request)]
@@ -92,7 +92,7 @@
         (insert-member group user)
         {:status 201})
       (do
-        (insert-invitation {:group_id (:id group) :user_email email})
+        (insert-invitation (create-invitation group email))
         {:status 201})
       )
     )

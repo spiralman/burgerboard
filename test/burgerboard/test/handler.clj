@@ -9,7 +9,7 @@
         korma.db)
   (:require
    [clojure.java.jdbc :as jdbc])
-  (:import [java.net HttpCookie])
+  (:import [java.util UUID])
   )
 
 
@@ -156,7 +156,7 @@
         )
       )
 
-    (testing "inserts existing user"
+    (testing "adds existing user to group"
       (let [response
             (app
              (->
@@ -170,6 +170,16 @@
         )
       )
 
+    (defn uuid? [value]
+      (if (string? value)
+        (try
+          (UUID/fromString value)
+          true
+          (catch IllegalArgumentException _ false)
+          )
+        false
+        ))
+
     (testing "inserts invitation for non-existing user"
       (let [response
             (app
@@ -179,8 +189,12 @@
               (body (json/write-str {:email "non_user@example.com"}))
               ))]
         (is (= (:status response) 201))
-        (is (= [{:id 1 :group_id 1 :user_email "non_user@example.com"}]
-               (find-users-invitations {:email "non_user@example.com"})))
+        (let [created-invitation
+              (first (find-users-invitations {:email "non_user@example.com"}))]
+          (is (= 1 (:group_id created-invitation)))
+          (is (= "non_user@example.com" (:user_email created-invitation)))
+          (is (uuid? (:id created-invitation)))
+          )
         )
       )
 
@@ -198,17 +212,22 @@
       (insert-group {:name "Group2" :owner "owner@example.com"})
       (insert-member {:id 2} {:email "owner@example.com"})
 
-      (insert-invitation {:group_id 2 :user_email "non_user@example.com"})
+      (insert-invitation {:id "first"
+                          :group_id 1
+                          :user_email "invited_user@example.com"})
+      (insert-invitation {:id "second"
+                          :group_id 2
+                          :user_email "invited_user@example.com"})
 
       (let [response
             (app
              (->
-              (request :post "/api/v1/invitations/1")
+              (request :post "/api/v1/invitations/first")
               (body (json/write-str {:name "Non User" :password "password"}))
               ))]
         (is (= (:status response) 201))
         (is (contains? (:headers response) "Set-Cookie"))
-        (is (= {:email "non_user@example.com"
+        (is (= {:email "invited_user@example.com"
                 :name "Non User"
                 :groups_url "http://localhost/api/v1/groups"
                 :groups [{:id 1
@@ -220,26 +239,30 @@
                           :boards_url "http://localhost/api/v1/groups/2/boards"
                           :members_url "http://localhost/api/v1/groups/2/members"}]}
                (json/read-str (:body response) :key-fn keyword)))
-        (is (not (nil? (find-user "non_user@example.com"))))
-        (is (empty? (find-users-invitations {:email "non_user@example.com"})))
+        (is (not (nil? (find-user "invited_user@example.com"))))
+        (is (empty? (find-users-invitations {:email "invited_user@example.com"})))
         )
       )
 
     (testing "signing up with invitation email adds as member to groups"
-      (insert-invitation {:group_id 1 :user_email "non_user2@example.com"})
-      (insert-invitation {:group_id 2 :user_email "non_user2@example.com"})
+      (insert-invitation {:id "third"
+                          :group_id 1
+                          :user_email "invited_user2@example.com"})
+      (insert-invitation {:id "fourth"
+                          :group_id 2
+                          :user_email "invited_user2@example.com"})
 
       (let [response
             (app
              (->
               (request :post "/api/v1/signups")
               (body (json/write-str {:name "Non User2"
-                                     :email "non_user2@example.com"
+                                     :email "invited_user2@example.com"
                                      :password "password"}))
               ))]
         (is (= (:status response) 201))
         (is (contains? (:headers response) "Set-Cookie"))
-        (is (= {:email "non_user2@example.com"
+        (is (= {:email "invited_user2@example.com"
                 :name "Non User2"
                 :groups_url "http://localhost/api/v1/groups"
                 :groups [{:id 1
@@ -251,8 +274,9 @@
                           :boards_url "http://localhost/api/v1/groups/2/boards"
                           :members_url "http://localhost/api/v1/groups/2/members"}]}
                (json/read-str (:body response) :key-fn keyword)))
-        (is (not (nil? (find-user "non_user2@example.com"))))
-        (is (empty? (find-users-invitations {:email "non_user2@example.com"})))
+        (is (not (nil? (find-user "invited_user2@example.com"))))
+        (is (empty? (find-users-invitations
+                     {:email "invited_user2@example.com"})))
         )
       )
     )

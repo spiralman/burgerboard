@@ -1,6 +1,7 @@
 (ns burgerboard.users
   (:import [javax.mail.internet InternetAddress AddressException])
-  (:require [crypto.password.bcrypt :as password]))
+  (:require [crypto.password.bcrypt :as password])
+  (:import [java.util UUID]))
 
 (defn create-user [email password name]
   (try
@@ -32,3 +33,6 @@
 (defn is-member? [group user]
   (some (fn [member] (= (:email user) (:email member))) (:users group))
   )
+
+(defn create-invitation [group email]
+  {:id (UUID/randomUUID) :group_id (:id group) :user_email email})

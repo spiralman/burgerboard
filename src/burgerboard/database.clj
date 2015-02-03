@@ -88,7 +88,7 @@
    )
   (jdbc/create-table
    "IF NOT EXISTS invitations"
-   [:id "INTEGER" "PRIMARY KEY"]
+   [:id "VARCHAR" "PRIMARY KEY"]
    [:group_id "INTEGER"]
    [:user_email "VARCHAR"]
    )
@@ -192,11 +192,9 @@
   )
 
 (defn insert-invitation [invitation]
-  (assoc-id
-   invitation
-   (insert invitations
-           (values invitation))
-   ))
+  (insert invitations
+          (values invitation))
+  invitation)
 
 (defn find-invitation [invitation-id]
   (first

@@ -100,7 +100,7 @@
       (is (not (nil? (get-table "invitations" tables))))
 
       (let [invitations-cols (get-columns "invitations")]
-        (is (= "INTEGER" (:type_name (get-column "id" invitations-cols))))
+        (is (= "VARCHAR" (:type_name (get-column "id" invitations-cols))))
         (is (= "VARCHAR" (:type_name (get-column "user_email" invitations-cols))))
         (is (= "INTEGER" (:type_name (get-column "group_id" invitations-cols))))
         )
@@ -179,25 +179,27 @@
 
 (deftest test-invitations
   (testing "Insert invitation"
-    (is (= {:id 1 :user_email "new_user@example.com" :group_id 1}
-           (insert-invitation {:user_email "new_user@example.com" :group_id 1})))
+    (is (= {:id "a" :user_email "new_user@example.com" :group_id 1}
+           (insert-invitation {:id "a"
+                               :user_email "new_user@example.com"
+                               :group_id 1})))
 
-    (is (= {:id 1 :user_email "new_user@example.com" :group_id 1}
+    (is (= {:id "a" :user_email "new_user@example.com" :group_id 1}
            (first (select invitations
                           (where {:user_email "new_user@example.com"
                                   :group_id 1})))))
     )
 
   (testing "Finding one invitation"
-    (is (= {:id 1 :user_email "new_user@example.com" :group_id 1}
-           (find-invitation 1)))
+    (is (= {:id "a" :user_email "new_user@example.com" :group_id 1}
+           (find-invitation "a")))
     )
 
   (testing "Find users invitations"
-    (insert-invitation {:user_email "new_user@example.com" :group_id 2})
+    (insert-invitation {:id "b" :user_email "new_user@example.com" :group_id 2})
 
-    (is (= [{:id 1 :user_email "new_user@example.com" :group_id 1}
-            {:id 2 :user_email "new_user@example.com" :group_id 2}]
+    (is (= [{:id "a" :user_email "new_user@example.com" :group_id 1}
+            {:id "b" :user_email "new_user@example.com" :group_id 2}]
            (find-users-invitations {:email "new_user@example.com"})))
     )
 
