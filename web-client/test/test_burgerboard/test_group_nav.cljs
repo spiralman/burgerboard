@@ -2,13 +2,13 @@
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [cemerick.cljs.test
                     :refer (is deftest with-test testing test-var done)]
-                   [test-burgerboard.huh :refer [with-rendered]]
+                   [huh.core :refer [with-rendered]]
                    )
   (:require
    [cljs.core.async :refer [<! chan put!]]
-   [test-burgerboard.huh :refer [rendered tag containing with-class with-attr
-                                 sub-component with-text setup-state in
-                                 rendered-component after-event]]
+   [huh.core :as huh :refer [rendered tag containing with-class with-attr
+                             sub-component with-text setup-state in
+                             rendered-component after-event]]
    [test-burgerboard.fake-server :refer [expect-request json-response]]
    [burgerboard-web.group-nav :as group-nav]
    [burgerboard-web.widgets :as widgets]
@@ -186,8 +186,8 @@
                               {:opts {:className "group-editor"
                                       :k :name
                                       :url "/api/v1/groups"
-                                      :value-saved (om/get-state group
-                                                                 :new-value)}})
+                                      :value-saved (huh/get-state group
+                                                                  :new-value)}})
                )
               )
          )
@@ -199,7 +199,7 @@
   (let [state (setup-state {:name ""})
         group (rendered-component
                group-nav/group state)
-        new-value (om/get-state group :new-value)]
+        new-value (huh/get-state group :new-value)]
     (go
      (put! new-value {:id 1
                       :name "New Group"
@@ -266,8 +266,8 @@
                               {:opts {:className "board-editor"
                                       :k :name
                                       :url "/api/v1/groups/1/boards"
-                                      :value-saved (om/get-state board-item
-                                                                 :new-value)}})
+                                      :value-saved (huh/get-state board-item
+                                                                  :new-value)}})
                )
               )
          )
@@ -280,7 +280,7 @@
         board-item (rendered-component
                     group-nav/board-item state
                     {:opts {:boards_url "/api/v1/groups/1/boards"}})
-        new-value (om/get-state board-item :new-value)]
+        new-value (huh/get-state board-item :new-value)]
     (go
      (put! new-value {:id 1
                       :name "New Board"

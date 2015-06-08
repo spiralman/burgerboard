@@ -2,12 +2,13 @@
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [cemerick.cljs.test
                     :refer (is deftest with-test testing test-var done)]
-                   [test-burgerboard.huh :refer (with-rendered)]
+                   [huh.core :refer (with-rendered)]
                    )
   (:require
-   [test-burgerboard.huh :refer [rendered tag containing with-class with-attr
-                                 sub-component with-text in
-                                 rendered-component setup-state after-event]]
+   [huh.core :as huh :refer [rendered tag containing with-class with-attr
+                             sub-component with-text in
+                             rendered-component setup-state after-event
+                             get-rendered get-props]]
    [test-burgerboard.fake-server :refer [expect-request json-response]]
    [burgerboard-web.widgets :as widgets]
    [cljs.core.async :refer [put! <! chan]]
@@ -42,103 +43,7 @@
      (in rendered-component
          "input")
      (fn [_]
-       (is (= "new value" (om/get-state rendered-component :changing-value)))
-       )
-     )
-    )
-  )
-
-(defn test-text-editor-parent [data owner]
-  (reify
-    om/IInitState
-    (init-state [_]
-      {:changing-state "initial value"})
-    om/IRenderState
-    (render-state [this state]
-      (dom/div #js {}
-               ;; Skip instrumentation, so we get a real text-editor
-               ;; widget, not a stub
-               (om/build* widgets/text-editor {}
-                          {:opts {:state-k :changing-state
-                                  :state-owner owner
-                                  :className "test-editor"
-                                  :label "Label"}})
-               )
-      )
-    )
-  )
-
-(deftest text-editor-renders-input-element-for-value
-  (is (rendered
-       test-text-editor-parent {:value "Some Value"}
-       (tag "div"
-            (containing
-             (tag "label"
-                  (with-class "test-editor-label")
-                  (with-text "Label")
-                  (containing
-                   (tag "input"
-                        (with-attr "type" "text")
-                        (with-class "test-editor-input")
-                        (with-attr "value" "initial value")
-                        )
-                   ))
-             )
-            )
-       )
-      )
-  )
-
-(defn test-password-editor-parent [data owner]
-  (reify
-    om/IInitState
-    (init-state [_]
-      {:password "initial value"})
-    om/IRenderState
-    (render-state [this state]
-      (dom/div #js {}
-               ;; Skip instrumentation, so we get a real text-editor
-               ;; widget, not a stub
-               (om/build* widgets/text-editor {}
-                          {:opts {:state-k :password
-                                  :state-owner owner
-                                  :type "password"
-                                  :label "Label"
-                                  :className "password-editor"}})
-               )
-      )
-    )
-  )
-
-(deftest text-editor-renders-input-password-element-for-value
-  (is (rendered
-       test-password-editor-parent {}
-       (tag "div"
-            (containing
-             (tag "label"
-                  (with-class "password-editor-label")
-                  (with-text "Label")
-                  (containing
-                   (tag "input"
-                        (with-attr "type" "password")
-                        (with-class "password-editor-input")
-                        (with-attr "value" "initial value")
-                        )
-                   ))
-             )
-            )
-       )
-      )
-  )
-
-(deftest text-editor-binds-name-to-cursor
-  (let [rendered (rendered-component
-                  test-text-editor-parent (setup-state {}))]
-    (after-event
-     :change #js {:target #js {:value "New Value"}}
-     (in rendered "input")
-     (fn [_]
-       (is (= "New Value" (om/get-state rendered :changing-state)))
+       (is (= "new value" (huh/get-state rendered-component :changing-value)))
        )
      )
     )
@@ -151,22 +56,23 @@
        {:opts {:className "value-editor"
                :k :value
                :label "Label"}}
-       (with-rendered [component]
-         (tag "div"
-              (with-class "value-editor")
-              (containing
-               (sub-component widgets/text-editor {}
-                              {:opts {:state-k :temp-value
-                                      :state-owner component
-                                      :label "Label"
-                                      :className "value-editor"}})
-               (tag "button"
-                    (with-class "value-editor-save")
-                    (with-attr "type" "button")
-                    (with-text ""))
-               )
-              )
-         )
+       (tag "div"
+            (with-class "value-editor")
+            (containing
+             (tag "label"
+                  (with-class "value-editor-label")
+                  (with-text "Label")
+                  (containing
+                   (tag "input"
+                        (with-class "value-editor-input")
+                        (with-attr "type" "text")
+                        (with-attr "value" "Initial Value"))))
+             (tag "button"
+                  (with-class "value-editor-save")
+                  (with-attr "type" "button")
+                  (with-text ""))
+             )
+            )
        )
       )
   )
@@ -179,25 +85,26 @@
         :opts {:className "value-editor"
                :k :value
                :label "Label"}}
-       (with-rendered [component]
-         (tag "div"
-              (with-class "value-editor")
-              (containing
-               (tag "div"
-                    (with-class "value-editor-error")
-                    (with-text "error message"))
-               (sub-component widgets/text-editor {}
-                              {:opts {:state-k :temp-value
-                                      :state-owner component
-                                      :label "Label"
-                                      :className "value-editor"}})
-               (tag "button"
-                    (with-class "value-editor-save")
-                    (with-attr "type" "button")
-                    (with-text ""))
-               )
-              )
-         )
+       (tag "div"
+            (with-class "value-editor")
+            (containing
+             (tag "div"
+                  (with-class "value-editor-error")
+                  (with-text "error message"))
+             (tag "label"
+                  (with-class "value-editor-label")
+                  (with-text "Label")
+                  (containing
+                   (tag "input"
+                        (with-class "value-editor-input")
+                        (with-attr "type" "text")
+                        (with-attr "value" "Initial Value"))))
+             (tag "button"
+                  (with-class "value-editor-save")
+                  (with-attr "type" "button")
+                  (with-text ""))
+             )
+            )
        )
       )
   )
@@ -271,7 +178,7 @@
        (go
         (<! responded)
         (is (= "Save failed"
-               (om/get-state rendered :error)))
+               (huh/get-state rendered :error)))
         (let [second-response (expect-request
                                -test-ctx
                                {:method "POST"

@@ -31,18 +31,13 @@
     )
   )
 
-(defn text-editor [data owner {:keys [label state-k state-owner className type]}]
-  (reify
-    om/IRender
-    (render [_]
-      (dom/label #js {:className (str className "-label")}
-                 label
-                 (dom/input #js {:type (or type "text")
-                                 :value (om/get-state state-owner state-k)
-                                 :className (str className "-input")
-                                 :onChange (bind-value state-owner state-k)}))
-      )
-    ))
+(defn text-editor [{:keys [label state-k state-owner className type]}]
+  (dom/label #js {:className (str className "-label")}
+             label
+             (dom/input #js {:type (or type "text")
+                             :value (om/get-state state-owner state-k)
+                             :className (str className "-input")
+                             :onChange (bind-value state-owner state-k)})))
 
 (defn save-single-value [data owner
                          {:keys [className label k url value-saved]}]
@@ -69,11 +64,10 @@
                (if (contains? (om/get-state owner) :error)
                  (dom/div #js {:className (str className "-error")}
                           (om/get-state owner :error)))
-               (om/build text-editor {}
-                         {:opts {:state-k :temp-value
-                                 :state-owner owner
-                                 :label label
-                                 :className className}})
+               (text-editor {:state-k :temp-value
+                             :state-owner owner
+                             :label label
+                             :className className})
                (dom/button #js {:className (str className "-save")
                                 :type "button"
                                 :onClick #(put! (om/get-state owner

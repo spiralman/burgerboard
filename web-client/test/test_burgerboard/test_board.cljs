@@ -2,11 +2,11 @@
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [cemerick.cljs.test
                     :refer (is deftest with-test testing test-var done)]
-                   [test-burgerboard.huh :refer [with-rendered]]
+                   [huh.core :refer [with-rendered]]
                    )
   (:require
    [cljs.core.async :refer [<! put! chan]]
-   [test-burgerboard.huh :refer [rendered tag containing with-class sub-component with-text with-attr with-prop has-attr after-event rendered-component in setup-state]]
+   [huh.core :as huh :refer [rendered tag containing with-class sub-component with-text with-attr with-prop after-event rendered-component in setup-state]]
    [test-burgerboard.fake-server :refer [expect-request json-response]]
    [burgerboard-web.board :as board]
    [burgerboard-web.widgets :as widgets]
@@ -466,8 +466,9 @@
                               {:opts {:className "store-editor"
                                       :k :name
                                       :url "http://stores"
-                                      :value-saved (om/get-state store
-                                                                 :new-value)}})
+                                      :value-saved (huh/get-state
+                                                    store
+                                                    :new-value)}})
                ))
          )
        )
@@ -479,7 +480,7 @@
         store (rendered-component
                board/store-editor state
                {:opts {:stores-url "/api/v1/groups/1/boards/1/stores"}})
-        new-value (om/get-state store :new-value)]
+        new-value (huh/get-state store :new-value)]
     (go
      (put! new-value {:id 1
                       :name "New Store"

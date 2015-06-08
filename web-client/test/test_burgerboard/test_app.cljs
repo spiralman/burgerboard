@@ -1,12 +1,12 @@
-(ns test-burgerboard.test-app
+ (ns test-burgerboard.test-app
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [cemerick.cljs.test
                     :refer (is deftest with-test testing test-var done)]
-                   [test-burgerboard.huh :refer (with-rendered)]
+                   [huh.core :refer (with-rendered)]
                    )
   (:require
    [cljs.core.async :refer [<! chan put!]]
-   [test-burgerboard.huh :refer [rendered tag containing with-class sub-component with-attr with-text setup-state rendered-component after-event in]]
+   [huh.core :as huh :refer [rendered tag containing with-class sub-component with-attr with-text setup-state rendered-component after-event in]]
    [test-burgerboard.fake-server :refer [expect-request json-response]]
    [burgerboard-web.widgets :as widgets]
    [burgerboard-web.app :as app]
@@ -20,31 +20,32 @@
 (deftest login-contains-login-controls
   (is (rendered
        app/login {:user nil}
-       (with-rendered [login]
-         (tag "div"
-              (with-class "login")
-              (containing
-               (tag "h2"
-                    (with-class "login-title")
-                    (with-text "Login"))
-               (sub-component widgets/text-editor {}
-                              {:opts {:state-owner login
-                                      :state-k :email
-                                      :label "Email"
-                                      :className "login-email"}})
-               (sub-component widgets/text-editor {}
-                              {:opts {:state-owner login
-                                      :state-k :password
-                                      :label "Password"
-                                      :type "password"
-                                      :className "login-password"}})
-               (tag "button"
-                    (with-class "login-button")
-                    (with-attr "type" "button")
-                    (with-text "Login"))
-               )
-              )
-         )
+       (tag "div"
+            (with-class "login")
+            (containing
+             (tag "h2"
+                  (with-class "login-title")
+                  (with-text "Login"))
+             (tag "label"
+                  (with-class "login-email-label")
+                  (with-text "Email")
+                  (containing
+                   (tag "input"
+                        (with-class "login-email-input")
+                        (with-attr "type" "text"))))
+             (tag "label"
+                  (with-class "login-password-label")
+                  (with-text "Password")
+                  (containing
+                   (tag "input"
+                        (with-class "login-password-input")
+                        (with-attr "type" "password"))))
+             (tag "button"
+                  (with-class "login-button")
+                  (with-attr "type" "button")
+                  (with-text "Login"))
+             )
+            )
        )
       )
   )
@@ -63,17 +64,20 @@
                (tag "div"
                     (with-class "login-error")
                     (with-text "Some error"))
-               (sub-component widgets/text-editor {}
-                              {:opts {:state-owner login
-                                      :state-k :email
-                                      :label "Email"
-                                      :className "login-email"}})
-               (sub-component widgets/text-editor {}
-                              {:opts {:state-owner login
-                                      :state-k :password
-                                      :label "Password"
-                                      :type "password"
-                                      :className "login-password"}})
+               (tag "label"
+                  (with-class "login-email-label")
+                  (with-text "Email")
+                  (containing
+                   (tag "input"
+                        (with-class "login-email-input")
+                        (with-attr "type" "text"))))
+               (tag "label"
+                  (with-class "login-password-label")
+                  (with-text "Password")
+                  (containing
+                   (tag "input"
+                        (with-class "login-password-input")
+                        (with-attr "type" "password"))))
                (tag "button"
                     (with-class "login-button")
                     (with-attr "type" "button")
@@ -146,7 +150,7 @@
         (<! responded)
         (is (= {:user nil}
                @state))
-        (is (= "Could not log in" (om/get-state login :error)))
+        (is (= "Could not log in" (huh/get-state login :error)))
         (done)
         )
        )
@@ -218,22 +222,27 @@
                (tag "h2"
                     (with-class "signup-title")
                     (with-text "Signup"))
-               (sub-component widgets/text-editor {}
-                              {:opts {:state-owner signup
-                                      :state-k :name
-                                      :label "Name"
-                                      :className "signup-name"}})
-               (sub-component widgets/text-editor {}
-                              {:opts {:state-owner signup
-                                      :state-k :email
-                                      :label "Email"
-                                      :className "signup-email"}})
-               (sub-component widgets/text-editor {}
-                              {:opts {:state-owner signup
-                                      :state-k :password
-                                      :label "Password"
-                                      :type "password"
-                                      :className "signup-password"}})
+               (tag "label"
+                  (with-class "signup-name-label")
+                  (with-text "Name")
+                  (containing
+                   (tag "input"
+                        (with-class "signup-name-input")
+                        (with-attr "type" "text"))))
+               (tag "label"
+                  (with-class "signup-email-label")
+                  (with-text "Email")
+                  (containing
+                   (tag "input"
+                        (with-class "signup-email-input")
+                        (with-attr "type" "text"))))
+               (tag "label"
+                  (with-class "signup-password-label")
+                  (with-text "Password")
+                  (containing
+                   (tag "input"
+                        (with-class "signup-password-input")
+                        (with-attr "type" "password"))))
                (tag "button"
                     (with-class "signup-button")
                     (with-attr "type" "button")
@@ -259,22 +268,27 @@
                (tag "div"
                     (with-class "signup-error")
                     (with-text "Error message"))
-               (sub-component widgets/text-editor {}
-                              {:opts {:state-owner signup
-                                      :state-k :name
-                                      :label "Name"
-                                      :className "signup-name"}})
-               (sub-component widgets/text-editor {}
-                              {:opts {:state-owner signup
-                                      :state-k :email
-                                      :label "Email"
-                                      :className "signup-email"}})
-               (sub-component widgets/text-editor {}
-                              {:opts {:state-owner signup
-                                      :state-k :password
-                                      :label "Password"
-                                      :type "password"
-                                      :className "signup-password"}})
+               (tag "label"
+                  (with-class "signup-name-label")
+                  (with-text "Name")
+                  (containing
+                   (tag "input"
+                        (with-class "signup-name-input")
+                        (with-attr "type" "text"))))
+               (tag "label"
+                  (with-class "signup-email-label")
+                  (with-text "Email")
+                  (containing
+                   (tag "input"
+                        (with-class "signup-email-input")
+                        (with-attr "type" "text"))))
+               (tag "label"
+                  (with-class "signup-password-label")
+                  (with-text "Password")
+                  (containing
+                   (tag "input"
+                        (with-class "signup-password-input")
+                        (with-attr "type" "password"))))
                (tag "button"
                     (with-class "signup-button")
                     (with-attr "type" "button")
@@ -352,7 +366,7 @@
         (is (= {:user nil}
                @state))
         (is (= "Could not sign up"
-               (om/get-state signup :error)))
+               (huh/get-state signup :error)))
         (done)
         )
        )
@@ -537,8 +551,9 @@
                     (containing
                       (sub-component group-nav/group-nav [{:id 1}]
                                      {:opts
-                                      {:select-board (om/get-state app-comp
-                                                                   :select-board)}})
+                                      {:select-board (huh/get-state
+                                                      app-comp
+                                                      :select-board)}})
                       (sub-component board/board {:id 1}
                                      {:opts {:user-email "user@email.com"}})
                       ))
@@ -554,7 +569,7 @@
                             :groups []
                             :board nil})
         app-comp (rendered-component app/app state)
-        select-board (om/get-state app-comp :select-board)]
+        select-board (huh/get-state app-comp :select-board)]
     (put! select-board {:id 1 :name "Selected Board"}
           (fn [_]
             (is (= {:id 1 :name "Selected Board"}

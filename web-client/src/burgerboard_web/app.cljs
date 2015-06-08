@@ -77,17 +77,15 @@
                (if (contains? (om/get-state owner) :error)
                  (dom/div #js {:className "login-error"}
                           (om/get-state owner :error)))
-               (om/build widgets/text-editor {}
-                         {:opts {:state-owner owner
-                                 :state-k :email
-                                 :label "Email"
-                                 :className "login-email"}})
-               (om/build widgets/text-editor {}
-                         {:opts {:state-owner owner
-                                 :state-k :password
-                                 :label "Password"
-                                 :type "password"
-                                 :className "login-password"}})
+               (widgets/text-editor {:state-owner owner
+                                     :state-k :email
+                                     :label "Email"
+                                     :className "login-email"})
+               (widgets/text-editor {:state-owner owner
+                                     :state-k :password
+                                     :label "Password"
+                                     :type "password"
+                                     :className "login-password"})
                (dom/button #js {:className "login-button"
                                 :type "button"
                                 :onClick (fn [] (login!
@@ -134,22 +132,19 @@
                (if (contains? (om/get-state owner) :error)
                  (dom/div #js {:className "signup-error"}
                           (om/get-state owner :error)))
-               (om/build widgets/text-editor {}
-                         {:opts {:state-owner owner
-                                 :state-k :name
-                                 :label "Name"
-                                 :className "signup-name"}})
-               (om/build widgets/text-editor {}
-                         {:opts {:state-owner owner
-                                 :state-k :email
-                                 :label "Email"
-                                 :className "signup-email"}})
-               (om/build widgets/text-editor {}
-                         {:opts {:state-owner owner
-                                 :state-k :password
-                                 :label "Password"
-                                 :type "password"
-                                 :className "signup-password"}})
+               (widgets/text-editor {:state-owner owner
+                                     :state-k :name
+                                     :label "Name"
+                                     :className "signup-name"})
+               (widgets/text-editor {:state-owner owner
+                                     :state-k :email
+                                     :label "Email"
+                                     :className "signup-email"})
+               (widgets/text-editor {:state-owner owner
+                                     :state-k :password
+                                     :label "Password"
+                                     :type "password"
+                                     :className "signup-password"})
                (dom/button #js {:className "signup-button"
                                 :type "button"
                                 :onClick (fn [] (signup!
